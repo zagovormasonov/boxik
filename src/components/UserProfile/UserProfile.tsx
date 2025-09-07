@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { User, Mail, Calendar, LogOut, RotateCcw, FileText } from 'lucide-react'
 import { useBPDTestResults, BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
 import BPDTestResultCard from '../BPDTestResultCard/BPDTestResultCard'
+import ChatGPTRecommendationCard from '../ChatGPTRecommendationCard/ChatGPTRecommendationCard'
 
 const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
@@ -121,11 +122,14 @@ const UserProfile: React.FC = () => {
             <p>{testError}</p>
           </div>
         ) : lastTestResult ? (
-          <BPDTestResultCard 
-            testResult={lastTestResult}
-            onSendToSpecialist={handleSendToSpecialist}
-            isSending={isSendingResults}
-          />
+          <>
+            <BPDTestResultCard 
+              testResult={lastTestResult}
+              onSendToSpecialist={handleSendToSpecialist}
+              isSending={isSendingResults}
+            />
+            <ChatGPTRecommendationCard testResult={lastTestResult} />
+          </>
         ) : (
           <div className="no-test-message">
             <FileText size={48} style={{ margin: '0 auto 16px', color: '#94a3b8' }} />
