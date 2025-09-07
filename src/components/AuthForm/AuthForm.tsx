@@ -19,135 +19,114 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onSubmit, isLoading, error })
     onSubmit(email, password, mode === 'register' ? name : undefined)
   }
 
+  const inputStyle = {
+    width: '100%',
+    padding: '16px 16px 16px 48px',
+    border: '1px solid #e2e8f0',
+    borderRadius: '12px',
+    fontSize: '16px',
+    outline: 'none',
+    transition: 'all 0.2s ease',
+    backgroundColor: '#ffffff',
+    color: '#1a202c',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+  }
+
+  const inputFocusStyle = {
+    borderColor: '#4f46e5',
+    boxShadow: '0 0 0 3px rgba(79, 70, 229, 0.1)',
+  }
+
+  const iconStyle = {
+    position: 'absolute' as const,
+    left: '16px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    color: '#94a3b8',
+    transition: 'color 0.2s ease',
+  }
+
   return (
-    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {mode === 'register' && (
-        <div style={{ position: 'relative' }}>
-          <User 
-            size={20} 
-            style={{ 
-              position: 'absolute', 
-              left: '12px', 
-              top: '50%', 
-              transform: 'translateY(-50%)',
-              color: '#6b7280'
-            }} 
-          />
+    <div className="auth-form-container">
+      <form onSubmit={handleSubmit} className="auth-form">
+        {mode === 'register' && (
+          <div className="input-group">
+            <User size={20} style={iconStyle} />
+            <input
+              type="text"
+              placeholder="Ваше имя"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required={mode === 'register'}
+              style={inputStyle}
+              onFocus={(e) => {
+                Object.assign(e.target.style, inputFocusStyle)
+              }}
+              onBlur={(e) => {
+                Object.assign(e.target.style, inputStyle)
+              }}
+            />
+          </div>
+        )}
+
+        <div className="input-group">
+          <Mail size={20} style={iconStyle} />
           <input
-            type="text"
-            placeholder="Имя"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required={mode === 'register'}
-            style={{
-              width: '100%',
-              padding: '12px 12px 12px 44px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '8px',
-              fontSize: '16px',
-              outline: 'none',
-              transition: 'border-color 0.2s ease'
+            type="email"
+            placeholder="Электронная почта"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            style={inputStyle}
+            onFocus={(e) => {
+              Object.assign(e.target.style, inputFocusStyle)
+            }}
+            onBlur={(e) => {
+              Object.assign(e.target.style, inputStyle)
             }}
           />
         </div>
-      )}
 
-      <div style={{ position: 'relative' }}>
-        <Mail 
-          size={20} 
-          style={{ 
-            position: 'absolute', 
-            left: '12px', 
-            top: '50%', 
-            transform: 'translateY(-50%)',
-            color: '#6b7280'
-          }} 
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{
-            width: '100%',
-            padding: '12px 12px 12px 44px',
-            border: '2px solid #e5e7eb',
-            borderRadius: '8px',
-            fontSize: '16px',
-            outline: 'none',
-            transition: 'border-color 0.2s ease'
-          }}
-        />
-      </div>
-
-      <div style={{ position: 'relative' }}>
-        <Lock 
-          size={20} 
-          style={{ 
-            position: 'absolute', 
-            left: '12px', 
-            top: '50%', 
-            transform: 'translateY(-50%)',
-            color: '#6b7280'
-          }} 
-        />
-        <input
-          type={showPassword ? 'text' : 'password'}
-          placeholder="Пароль"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{
-            width: '100%',
-            padding: '12px 44px 12px 44px',
-            border: '2px solid #e5e7eb',
-            borderRadius: '8px',
-            fontSize: '16px',
-            outline: 'none',
-            transition: 'border-color 0.2s ease'
-          }}
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          style={{
-            position: 'absolute',
-            right: '12px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            color: '#6b7280'
-          }}
-        >
-          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-        </button>
-      </div>
-
-      {error && (
-        <div style={{
-          padding: '12px',
-          background: '#fef2f2',
-          border: '1px solid #fecaca',
-          borderRadius: '8px',
-          color: '#dc2626',
-          fontSize: '14px'
-        }}>
-          {error}
+        <div className="input-group">
+          <Lock size={20} style={iconStyle} />
+          <input
+            type={showPassword ? 'text' : 'password'}
+            placeholder="Пароль"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            style={inputStyle}
+            onFocus={(e) => {
+              Object.assign(e.target.style, inputFocusStyle)
+            }}
+            onBlur={(e) => {
+              Object.assign(e.target.style, inputStyle)
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="password-toggle"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
         </div>
-      )}
 
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="btn btn-primary"
-        style={{ width: '100%', marginTop: '8px' }}
-      >
-        {isLoading ? 'Загрузка...' : (mode === 'login' ? 'Войти' : 'Зарегистрироваться')}
-      </button>
-    </form>
+        {error && (
+          <div className="error-message">
+            {error}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="submit-button"
+        >
+          {isLoading ? 'Загрузка...' : (mode === 'login' ? 'Войти' : 'Создать аккаунт')}
+        </button>
+      </form>
+    </div>
   )
 }
 
