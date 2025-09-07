@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { User, Mail, Calendar, LogOut, RotateCcw, FileText } from 'lucide-react'
 import { useBPDTestResults, BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
 import BPDTestResultCard from '../BPDTestResultCard/BPDTestResultCard'
-import ChatGPTRecommendationCard from '../ChatGPTRecommendationCard/ChatGPTRecommendationCard'
+import MascotRecommendation from '../MascotRecommendation/MascotRecommendation'
 
 const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
@@ -128,7 +128,7 @@ const UserProfile: React.FC = () => {
               onSendToSpecialist={handleSendToSpecialist}
               isSending={isSendingResults}
             />
-            <ChatGPTRecommendationCard testResult={lastTestResult} />
+            <MascotRecommendation testResult={lastTestResult} />
           </>
         ) : (
           <div className="no-test-message">
