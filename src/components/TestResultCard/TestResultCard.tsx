@@ -1,24 +1,38 @@
 import React from 'react'
-import { Clock, Target, Send, CheckCircle, AlertCircle } from 'lucide-react'
+import { Clock, Target, Send, CheckCircle, AlertCircle, Download } from 'lucide-react'
 import { TestResultWithDetails } from '../../shared/hooks/useTestResults'
+import { usePDFGenerator } from '../../shared/hooks/usePDFGenerator'
+import { Question } from '../../types'
 
 interface TestResultCardProps {
   testResult: TestResultWithDetails
   onSendToSpecialist: (result: TestResultWithDetails) => Promise<boolean>
   isSending?: boolean
+  questions: Question[]
+  userAnswers: number[]
 }
 
 const TestResultCard: React.FC<TestResultCardProps> = ({ 
   testResult, 
   onSendToSpecialist, 
-  isSending = false 
+  isSending = false,
+  questions,
+  userAnswers
 }) => {
   const [isSent, setIsSent] = React.useState(false)
+  const { generateTestResultPDF, isGenerating, error: pdfError } = usePDFGenerator()
 
   const handleSendToSpecialist = async () => {
     const success = await onSendToSpecialist(testResult)
     if (success) {
       setIsSent(true)
+    }
+  }
+
+  const handleDownloadPDF = async () => {
+    const success = await generateTestResultPDF(testResult, questions, userAnswers)
+    if (success) {
+      console.log('PDF успешно скачан')
     }
   }
 
@@ -87,6 +101,15 @@ const TestResultCard: React.FC<TestResultCardProps> = ({
               {isSending ? 'Отправка...' : 'Отправить специалисту'}
             </button>
           )}
+          
+          <button
+            onClick={handleDownloadPDF}
+            disabled={isGenerating}
+            className="download-pdf-button"
+          >
+            <Download size={20} />
+            {isGenerating ? 'Генерация PDF...' : 'Скачать PDF'}
+          </button>
         </div>
       </div>
     </div>

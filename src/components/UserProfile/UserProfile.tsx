@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { useTest } from '../../contexts/TestContext'
 import { User, Mail, Calendar, LogOut, RotateCcw, FileText } from 'lucide-react'
 import { useTestResults, TestResultWithDetails } from '../../shared/hooks/useTestResults'
 import TestResultCard from '../TestResultCard/TestResultCard'
 
 const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
+  const { questions } = useTest()
   const navigate = useNavigate()
   const [isSendingResults, setIsSendingResults] = useState(false)
   
@@ -125,6 +127,8 @@ const UserProfile: React.FC = () => {
             testResult={lastTestResult}
             onSendToSpecialist={handleSendToSpecialist}
             isSending={isSendingResults}
+            questions={questions}
+            userAnswers={lastTestResult.answers}
           />
         ) : (
           <div className="no-test-message">
