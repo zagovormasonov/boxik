@@ -20,7 +20,7 @@ const TestResultCard: React.FC<TestResultCardProps> = ({
   userAnswers
 }) => {
   const [isSent, setIsSent] = React.useState(false)
-  const { generateTestResultPDF, isGenerating, error: pdfError } = usePDFGenerator()
+  const { generateTestResultPDF, isGenerating } = usePDFGenerator()
 
   const handleSendToSpecialist = async () => {
     const success = await onSendToSpecialist(testResult)
