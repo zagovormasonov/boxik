@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import jsPDF from 'jspdf'
+import 'jspdf-autotable'
 import { TestResultWithDetails } from './useTestResults'
 import { Question } from '../../types'
+
+// Расширяем типы для jsPDF
+declare module 'jspdf' {
+  interface jsPDF {
+    autoTable: (options: any) => jsPDF
+  }
+}
 
 export interface TestResultPDFData extends TestResultWithDetails {
   questions: Question[]
@@ -36,37 +44,55 @@ export function usePDFGenerator() {
         }
       }
 
+      // Функция для добавления текста с поддержкой кириллицы
+      const addText = (text: string, x: number, y: number, options?: any) => {
+        // Заменяем кириллические символы на латинские аналоги для совместимости
+        const transliteratedText = text
+          .replace(/[а-яё]/gi, (char) => {
+            const map: { [key: string]: string } = {
+              'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e',
+              'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
+              'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
+              'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
+              'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'
+            }
+            return map[char.toLowerCase()] || char
+          })
+        
+        pdf.text(transliteratedText, x, y, options)
+      }
+
       // Заголовок
       pdf.setFontSize(20)
       pdf.setFont('helvetica', 'bold')
-      pdf.text('Результаты психологического теста', pageWidth / 2, yPosition, { align: 'center' })
+      addText('Результаты психологического теста', pageWidth / 2, yPosition, { align: 'center' })
       yPosition += 20
 
       // Информация о пользователе и дате
       pdf.setFontSize(12)
       pdf.setFont('helvetica', 'normal')
-      pdf.text(`Дата прохождения: ${testResult.completed_date}`, margin, yPosition)
+      addText(`Дата прохождения: ${testResult.completed_date}`, margin, yPosition)
       yPosition += 15
 
       // Общий результат
       pdf.setFontSize(16)
       pdf.setFont('helvetica', 'bold')
-      pdf.text('Общий результат:', margin, yPosition)
+      addText('Общий результат:', margin, yPosition)
       yPosition += 10
 
       pdf.setFontSize(14)
       pdf.setFont('helvetica', 'normal')
-      pdf.text(`Баллы: ${testResult.score} из ${testResult.total_questions}`, margin, yPosition)
+      addText(`Баллы: ${testResult.score} из ${testResult.total_questions}`, margin, yPosition)
       yPosition += 8
-      pdf.text(`Процент: ${testResult.percentage}%`, margin, yPosition)
+      addText(`Процент: ${testResult.percentage}%`, margin, yPosition)
       yPosition += 8
-      pdf.text(`Оценка: ${testResult.grade}`, margin, yPosition)
+      addText(`Оценка: ${testResult.grade}`, margin, yPosition)
       yPosition += 20
 
       // Детальные результаты по вопросам
       pdf.setFontSize(16)
       pdf.setFont('helvetica', 'bold')
-      pdf.text('Детальные результаты:', margin, yPosition)
+      addText('Детальные результаты:', margin, yPosition)
       yPosition += 15
 
       pdf.setFontSize(12)
@@ -77,7 +103,7 @@ export function usePDFGenerator() {
         
         // Номер вопроса
         pdf.setFont('helvetica', 'bold')
-        pdf.text(`${index + 1}. ${question.text}`, margin, yPosition)
+        addText(`${index + 1}. ${question.text}`, margin, yPosition)
         yPosition += 8
 
         // Варианты ответов
@@ -95,7 +121,7 @@ export function usePDFGenerator() {
             prefix = '→ ' // Правильный ответ (не выбранный пользователем)
           }
 
-          pdf.text(`${prefix}${option}`, margin + 10, yPosition)
+          addText(`${prefix}${option}`, margin + 10, yPosition)
           yPosition += 6
         })
 
@@ -107,9 +133,9 @@ export function usePDFGenerator() {
       yPosition += 10
       pdf.setFontSize(10)
       pdf.setFont('helvetica', 'italic')
-      pdf.text('Этот документ содержит результаты психологического теста.', margin, yPosition)
+      addText('Этот документ содержит результаты психологического теста.', margin, yPosition)
       yPosition += 6
-      pdf.text('Для получения профессиональной консультации обратитесь к специалисту.', margin, yPosition)
+      addText('Для получения профессиональной консультации обратитесь к специалисту.', margin, yPosition)
 
       // Генерируем имя файла
       const fileName = `test_results_${new Date().toISOString().split('T')[0]}.pdf`
