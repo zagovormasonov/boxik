@@ -1,11 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { User, Mail, Calendar, LogOut, RotateCcw } from 'lucide-react'
+import { User, Mail, Calendar, LogOut, RotateCcw, FileText } from 'lucide-react'
+import { useTestResults } from '../../shared/hooks/useTestResults'
+import TestResultCard from '../TestResultCard/TestResultCard'
 
 const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
   const navigate = useNavigate()
+  const [isSendingResults, setIsSendingResults] = useState(false)
+  
+  const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useTestResults(authState.user?.id || null)
 
   console.log('UserProfile: Рендер компонента, authState:', authState)
 
@@ -20,6 +25,17 @@ const UserProfile: React.FC = () => {
 
   const handleRetakeTest = () => {
     navigate('/')
+  }
+
+  const handleSendToSpecialist = async (testResult: any) => {
+    setIsSendingResults(true)
+    try {
+      await sendToSpecialist(testResult)
+    } catch (error) {
+      console.error('Ошибка при отправке результатов:', error)
+    } finally {
+      setIsSendingResults(false)
+    }
   }
 
   if (!authState.user) {
@@ -83,6 +99,31 @@ const UserProfile: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Результаты теста */}
+        {isLoadingResults ? (
+          <div className="no-test-message">
+            <h3>Загрузка результатов...</h3>
+            <p>Получаем данные о последнем тесте</p>
+          </div>
+        ) : testError ? (
+          <div className="no-test-message">
+            <h3>Ошибка загрузки</h3>
+            <p>{testError}</p>
+          </div>
+        ) : lastTestResult ? (
+          <TestResultCard 
+            testResult={lastTestResult}
+            onSendToSpecialist={handleSendToSpecialist}
+            isSending={isSendingResults}
+          />
+        ) : (
+          <div className="no-test-message">
+            <FileText size={48} style={{ margin: '0 auto 16px', color: '#94a3b8' }} />
+            <h3>Тесты не пройдены</h3>
+            <p>Пройдите тест, чтобы увидеть результаты здесь</p>
+          </div>
+        )}
 
         {/* Кнопки действий */}
         <div className="profile-actions">
