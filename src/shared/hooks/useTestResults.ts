@@ -31,8 +31,12 @@ export function useTestResults(userId: string | null) {
   }, [userId])
 
   const fetchLastTestResult = async () => {
-    if (!userId) return
+    if (!userId) {
+      console.log('useTestResults: userId не предоставлен')
+      return
+    }
 
+    console.log('useTestResults: Загружаем результаты для пользователя:', userId)
     setIsLoading(true)
     setError(null)
 
@@ -45,12 +49,16 @@ export function useTestResults(userId: string | null) {
         .limit(1)
         .single()
 
+      console.log('useTestResults: Ответ от Supabase:', { data, error })
+
       if (error) {
         if (error.code === 'PGRST116') {
           // Нет результатов тестов
+          console.log('useTestResults: Нет результатов тестов для пользователя')
           setLastTestResult(null)
           return
         }
+        console.error('useTestResults: Ошибка при загрузке результатов:', error)
         throw error
       }
 

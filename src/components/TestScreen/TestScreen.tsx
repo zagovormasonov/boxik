@@ -1,20 +1,56 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTest } from '../../contexts/TestContext'
+import { useAuth } from '../../contexts/AuthContext'
+import { useSaveTestResult } from '../../shared/hooks/useSaveTestResult'
 import ProgressBar from '../ProgressBar/ProgressBar'
 import QuestionCard from '../QuestionCard/QuestionCard'
 import Navigation from '../Navigation/Navigation'
 
 const TestScreen: React.FC = () => {
   const { state, questions, dispatch } = useTest()
+  const { authState } = useAuth()
   const navigate = useNavigate()
+  const { saveTestResult, isSaving, error: saveError } = useSaveTestResult()
+  const [isTestCompleted, setIsTestCompleted] = useState(false)
 
   const currentQuestion = questions[state.currentQuestion]
   const selectedAnswer = state.answers[state.currentQuestion]
 
   useEffect(() => {
     console.log('TestScreen: Компонент загружен')
-  }, [])
+    
+    // Проверяем авторизацию пользователя
+    if (!authState.user) {
+      console.log('TestScreen: Пользователь не авторизован, перенаправляем на авторизацию')
+      navigate('/auth')
+      return
+    }
+    
+    console.log('TestScreen: Пользователь авторизован:', authState.user)
+  }, [authState.user, navigate])
+
+  // Сохраняем результаты теста при завершении
+  useEffect(() => {
+    if (state.isCompleted && !isTestCompleted && authState.user?.id) {
+      const handleTestCompletion = async () => {
+        try {
+          setIsTestCompleted(true)
+          await saveTestResult({
+            userId: authState.user.id,
+            testState: state,
+            totalQuestions: questions.length
+          })
+          console.log('Результат теста успешно сохранен')
+        } catch (error) {
+          console.error('Ошибка при сохранении результата теста:', error)
+          // Показываем ошибку, но не блокируем переход
+        }
+      }
+      
+      handleTestCompletion()
+    }
+  }, [state.isCompleted, isTestCompleted, authState.user?.id, state, questions.length, saveTestResult])
 
   const handleAnswerSelect = (answer: number) => {
     dispatch({ 
@@ -56,11 +92,25 @@ const TestScreen: React.FC = () => {
           <p style={{ fontSize: '18px', marginBottom: '20px' }}>
             Ваш результат: {state.score} из {questions.length}
           </p>
+          
+          {isSaving && (
+            <p style={{ color: '#6b7280', marginBottom: '20px' }}>
+              Сохранение результатов...
+            </p>
+          )}
+          
+          {saveError && (
+            <p style={{ color: '#ef4444', marginBottom: '20px' }}>
+              Ошибка сохранения: {saveError}
+            </p>
+          )}
+          
           <button 
             onClick={() => navigate('/auth')}
             className="btn btn-primary"
+            disabled={isSaving}
           >
-            Перейти к авторизации
+            {isSaving ? 'Сохранение...' : 'Перейти к авторизации'}
           </button>
         </div>
       </div>
