@@ -1,15 +1,7 @@
 import { useState } from 'react'
 import jsPDF from 'jspdf'
-import 'jspdf-autotable'
 import { TestResultWithDetails } from './useTestResults'
 import { Question } from '../../types'
-
-// Расширяем типы для jsPDF
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF
-  }
-}
 
 export interface TestResultPDFData extends TestResultWithDetails {
   questions: Question[]
@@ -27,12 +19,8 @@ export function usePDFGenerator() {
     try {
       console.log('PDF Generator: Начинаем генерацию PDF')
       
-      // Создаем новый PDF документ с поддержкой UTF-8
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      })
+      // Создаем новый PDF документ
+      const pdf = new jsPDF()
       
       // Настройки
       const pageWidth = pdf.internal.pageSize.getWidth()
@@ -50,8 +38,8 @@ export function usePDFGenerator() {
 
       // Функция для добавления текста с поддержкой кириллицы
       const addText = (text: string, x: number, y: number, options?: any) => {
+        // Используем встроенную поддержку UTF-8 в jsPDF 2.x
         try {
-          // Пробуем добавить текст напрямую
           pdf.text(text, x, y, options)
         } catch (error) {
           console.warn('Ошибка при добавлении текста:', error)
