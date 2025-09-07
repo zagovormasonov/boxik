@@ -114,8 +114,19 @@ const getCategoryName = (category: string): string => {
 const callChatGPTAPI = async (prompt: string): Promise<string> => {
   const API_KEY = process.env.REACT_APP_CHATGPT_API_KEY
   
+  // Отладочная информация
+  console.log('ChatGPT API Debug:')
+  console.log('- API_KEY exists:', !!API_KEY)
+  console.log('- API_KEY length:', API_KEY?.length || 0)
+  console.log('- API_KEY starts with sk-:', API_KEY?.startsWith('sk-') || false)
+  console.log('- All env vars:', Object.keys(process.env).filter(key => key.includes('CHATGPT')))
+  
   if (!API_KEY) {
     throw new Error('API ключ ChatGPT не настроен. Добавьте REACT_APP_CHATGPT_API_KEY в переменные окружения.')
+  }
+  
+  if (!API_KEY.startsWith('sk-')) {
+    throw new Error('Неверный формат API ключа. Ключ должен начинаться с "sk-"')
   }
   
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
