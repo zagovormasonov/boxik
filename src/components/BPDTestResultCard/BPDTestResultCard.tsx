@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { CheckCircle, Send, Download } from 'lucide-react'
-import { BPDCategory } from '../../types'
 import { usePDFGenerator } from '../../shared/hooks/usePDFGenerator'
 import { BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
 
@@ -74,31 +73,6 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
     }
   }
 
-  const getCategoryText = (category: BPDCategory): string => {
-    switch (category) {
-      case BPDCategory.FEAR_OF_ABANDONMENT:
-        return 'Страх покинутости'
-      case BPDCategory.UNSTABLE_RELATIONSHIPS:
-        return 'Нестабильные отношения'
-      case BPDCategory.IDENTITY_DISTURBANCE:
-        return 'Нарушение идентичности'
-      case BPDCategory.IMPULSIVITY:
-        return 'Импульсивность'
-      case BPDCategory.SUICIDAL_BEHAVIOR:
-        return 'Суицидальное поведение'
-      case BPDCategory.AFFECTIVE_INSTABILITY:
-        return 'Аффективная нестабильность'
-      case BPDCategory.EMPTINESS:
-        return 'Чувство пустоты'
-      case BPDCategory.ANGER:
-        return 'Приступы гнева'
-      case BPDCategory.PARANOID_IDEATION:
-        return 'Параноидные идеи'
-      default:
-        return 'Неизвестная категория'
-    }
-  }
-
   const getSeverityColor = (severity: string): string => {
     switch (severity) {
       case 'none':
@@ -142,20 +116,6 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
           </span>
         </div>
       </div>
-
-      {Object.keys(testResult.categoryScores).length > 0 && (
-        <div className="category-scores">
-          <h4>Баллы по категориям:</h4>
-          <div className="category-grid">
-            {Object.entries(testResult.categoryScores).map(([category, score]) => (
-              <div key={category} className="category-item">
-                <span className="category-name">{getCategoryText(category as BPDCategory)}</span>
-                <span className="category-score">{String(score)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       <div className="test-result-actions">
         {isSent ? (

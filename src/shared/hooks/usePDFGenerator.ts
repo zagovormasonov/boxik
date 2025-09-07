@@ -33,6 +33,32 @@ export function usePDFGenerator() {
       tempDiv.style.lineHeight = '1.6'
       tempDiv.style.color = '#333'
       
+      // Функция для получения текста категории БПД
+      const getCategoryText = (category: string): string => {
+        switch (category) {
+          case 'fear_of_abandonment':
+            return 'Страх покинутости'
+          case 'unstable_relationships':
+            return 'Нестабильные отношения'
+          case 'identity_disturbance':
+            return 'Нарушение идентичности'
+          case 'impulsivity':
+            return 'Импульсивность'
+          case 'suicidal_behavior':
+            return 'Суицидальное поведение'
+          case 'affective_instability':
+            return 'Аффективная нестабильность'
+          case 'emptiness':
+            return 'Чувство пустоты'
+          case 'anger':
+            return 'Приступы гнева'
+          case 'paranoid_ideation':
+            return 'Параноидные идеи'
+          default:
+            return 'Неизвестная категория'
+        }
+      }
+      
       // Генерируем HTML контент
       tempDiv.innerHTML = `
         <div style="text-align: center; margin-bottom: 30px;">
@@ -52,7 +78,7 @@ export function usePDFGenerator() {
         
         <div>
           <h2 style="font-size: 16px; margin: 0 0 20px 0; color: #374151; font-weight: 600;">Детальные результаты</h2>
-          ${questions.map((question, index) => `
+          ${questions.length > 0 ? questions.map((question, index) => `
             <div style="margin-bottom: 25px; page-break-inside: avoid;">
               <h3 style="font-size: 14px; margin: 0 0 10px 0; color: #374151; font-weight: 500;">${index + 1}. ${question.text}</h3>
               <div style="margin-left: 20px;">
@@ -80,7 +106,19 @@ export function usePDFGenerator() {
                 }).join('')}
               </div>
             </div>
-          `).join('')}
+          `).join('') : `
+            <div style="margin-bottom: 25px;">
+              <h3 style="font-size: 14px; margin: 0 0 10px 0; color: #374151; font-weight: 500;">Результаты по категориям симптомов БПД:</h3>
+              <div style="margin-left: 20px;">
+                ${Object.entries((testResult as any).categoryScores || {}).map(([category, score]) => {
+                  const categoryText = getCategoryText(category)
+                  return `<p style="margin: 8px 0; padding: 8px; background-color: #f8fafc; border-radius: 4px; border: 1px solid #e5e7eb;">
+                    <strong>${categoryText}:</strong> ${score} баллов
+                  </p>`
+                }).join('')}
+              </div>
+            </div>
+          `}
         </div>
         
         <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #9ca3af;">
