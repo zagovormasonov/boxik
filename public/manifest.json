@@ -1,0 +1,21 @@
+{
+  "name": "Boxik PWA",
+  "short_name": "Boxik",
+  "description": "PWA приложение с психологическими тестами и авторизацией",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "ru"
+}
+
