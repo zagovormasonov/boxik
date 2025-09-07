@@ -36,44 +36,44 @@ export function usePDFGenerator() {
       // Генерируем HTML контент
       tempDiv.innerHTML = `
         <div style="text-align: center; margin-bottom: 30px;">
-          <h1 style="font-size: 24px; margin: 0; color: #2563eb;">Результаты психологического теста</h1>
+          <h1 style="font-size: 22px; margin: 0; color: #374151; font-weight: 600;">Результаты психологического теста</h1>
         </div>
         
         <div style="margin-bottom: 25px;">
-          <p style="font-size: 14px; margin: 5px 0;"><strong>Дата прохождения:</strong> ${testResult.completed_date}</p>
+          <p style="font-size: 14px; margin: 5px 0; color: #6b7280;"><strong>Дата прохождения:</strong> ${testResult.completed_date}</p>
         </div>
         
-        <div style="background-color: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
-          <h2 style="font-size: 18px; margin: 0 0 15px 0; color: #1e40af;">Общий результат</h2>
-          <p style="margin: 5px 0;"><strong>Баллы:</strong> ${testResult.score} из ${testResult.total_questions}</p>
-          <p style="margin: 5px 0;"><strong>Процент:</strong> ${testResult.percentage}%</p>
-          <p style="margin: 5px 0;"><strong>Оценка:</strong> ${testResult.grade}</p>
+        <div style="background-color: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; margin-bottom: 25px;">
+          <h2 style="font-size: 16px; margin: 0 0 15px 0; color: #374151; font-weight: 600;">Общий результат</h2>
+          <p style="margin: 5px 0; color: #4b5563;"><strong>Баллы:</strong> ${testResult.score} из ${testResult.total_questions}</p>
+          <p style="margin: 5px 0; color: #4b5563;"><strong>Процент:</strong> ${testResult.percentage}%</p>
+          <p style="margin: 5px 0; color: #4b5563;"><strong>Оценка:</strong> ${testResult.grade}</p>
         </div>
         
         <div>
-          <h2 style="font-size: 18px; margin: 0 0 20px 0; color: #1e40af;">Детальные результаты</h2>
+          <h2 style="font-size: 16px; margin: 0 0 20px 0; color: #374151; font-weight: 600;">Детальные результаты</h2>
           ${questions.map((question, index) => `
             <div style="margin-bottom: 25px; page-break-inside: avoid;">
-              <h3 style="font-size: 16px; margin: 0 0 10px 0; color: #374151;">${index + 1}. ${question.text}</h3>
+              <h3 style="font-size: 14px; margin: 0 0 10px 0; color: #374151; font-weight: 500;">${index + 1}. ${question.text}</h3>
               <div style="margin-left: 20px;">
                 ${question.options.map((option, optionIndex) => {
                   const isUserAnswer = userAnswers[index] === optionIndex
                   const isCorrectAnswer = question.correctAnswer === optionIndex
                   
                   let prefix = ''
-                  let style = 'margin: 3px 0; padding: 5px;'
+                  let style = 'margin: 3px 0; padding: 8px; border-radius: 4px;'
                   
                   if (isUserAnswer && isCorrectAnswer) {
                     prefix = '✓ '
-                    style += 'background-color: #dcfce7; color: #166534;'
+                    style += 'background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;'
                   } else if (isUserAnswer && !isCorrectAnswer) {
                     prefix = '✗ '
-                    style += 'background-color: #fef2f2; color: #dc2626;'
+                    style += 'background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca;'
                   } else if (!isUserAnswer && isCorrectAnswer) {
                     prefix = '→ '
-                    style += 'background-color: #f0f9ff; color: #0369a1;'
+                    style += 'background-color: #f8fafc; color: #475569; border: 1px solid #cbd5e1;'
                   } else {
-                    style += 'background-color: #f9fafb;'
+                    style += 'background-color: #ffffff; color: #6b7280; border: 1px solid #e5e7eb;'
                   }
                   
                   return `<p style="${style}">${prefix}${option}</p>`
@@ -83,7 +83,7 @@ export function usePDFGenerator() {
           `).join('')}
         </div>
         
-        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280;">
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #9ca3af;">
           <p style="margin: 5px 0;">Этот документ содержит результаты психологического теста.</p>
           <p style="margin: 5px 0;">Для получения профессиональной консультации обратитесь к специалисту.</p>
         </div>
