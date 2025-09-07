@@ -696,6 +696,121 @@ body {
   transform: none;
 }
 
+/* BPD Test Styles */
+.bpd-question-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+}
+
+.question-category {
+  margin-bottom: 20px;
+}
+
+.category-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid #cbd5e1;
+}
+
+.question-content {
+  text-align: center;
+}
+
+.question-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+.answer-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.answer-option {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.answer-option:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.answer-option.selected {
+  background: #dbeafe;
+  border-color: #3b82f6;
+  color: #1e40af;
+}
+
+.option-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #e2e8f0;
+  color: #64748b;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.answer-option.selected .option-number {
+  background: #3b82f6;
+  color: white;
+}
+
+.option-text {
+  font-size: 16px;
+  font-weight: 500;
+  flex: 1;
+}
+
+.test-info {
+  margin-top: 24px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.test-info p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.test-description {
+  font-size: 16px;
+  color: #64748b;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
