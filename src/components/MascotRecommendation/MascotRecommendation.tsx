@@ -33,78 +33,83 @@ const MascotRecommendation: React.FC<MascotRecommendationProps> = ({ testResult 
 
   if (!isVisible) {
     return (
-      <div className="mascot-recommendation-closed">
+      <div className="mascot-button-container">
         <button
           onClick={() => setIsVisible(true)}
           className="mascot-button"
-          title="Получить рекомендацию"
+          title="Получить рекомендацию от маскота"
         >
-          <img src="/mascot.png" alt="Маскот" className="mascot-image" />
+          <img src="/mascot.png" alt="Маскот" className="mascot-button-image" />
+          <span className="mascot-button-text">Получить рекомендацию</span>
         </button>
       </div>
     )
   }
 
   return (
-    <div className="mascot-recommendation-container">
-      <div className="mascot-speech-bubble">
-        <button
-          onClick={handleClose}
-          className="close-button"
-          title="Закрыть"
-        >
-          <X size={16} />
-        </button>
+    <div className="mascot-recommendation-modal">
+      <div className="mascot-modal-overlay" onClick={handleClose}></div>
+      
+      <div className="mascot-recommendation-container">
+        <div className="mascot-speech-bubble">
+          <button
+            onClick={handleClose}
+            className="close-button"
+            title="Закрыть"
+          >
+            <X size={16} />
+          </button>
 
-        <div className="speech-bubble-content">
-          {error && (
-            <div className="recommendation-error">
-              <AlertCircle size={16} />
-              <span>Ошибка: {error}</span>
-            </div>
-          )}
+          <div className="speech-bubble-content">
+            {error && (
+              <div className="recommendation-error">
+                <AlertCircle size={16} />
+                <span>Ошибка: {error}</span>
+              </div>
+            )}
 
-          {isLoading && (
-            <div className="recommendation-loading">
-              <div className="loading-spinner"></div>
-              <span>Генерирую рекомендацию...</span>
-            </div>
-          )}
+            {isLoading && (
+              <div className="recommendation-loading">
+                <div className="loading-spinner"></div>
+                <span>Генерирую рекомендацию...</span>
+              </div>
+            )}
 
-          {recommendation && (
-            <div className="recommendation-content">
-              <p>{recommendation}</p>
-              <button
-                onClick={handleRegenerate}
-                disabled={isLoading}
-                className="regenerate-button"
-              >
-                <RefreshCw size={14} />
-                Обновить
-              </button>
-            </div>
-          )}
+            {recommendation && (
+              <div className="recommendation-content">
+                <p>{recommendation}</p>
+                <button
+                  onClick={handleRegenerate}
+                  disabled={isLoading}
+                  className="regenerate-button"
+                >
+                  <RefreshCw size={14} />
+                  Обновить
+                </button>
+              </div>
+            )}
 
-          {!hasGenerated && !isLoading && !error && (
-            <div className="recommendation-prompt">
-              <p>Привет! Я могу дать тебе персональную рекомендацию на основе результатов твоего теста.</p>
-              <button
-                onClick={handleGenerateRecommendation}
-                disabled={isLoading}
-                className="generate-button"
-              >
-                <MessageCircle size={16} />
-                Получить рекомендацию
-              </button>
-            </div>
-          )}
+            {!hasGenerated && !isLoading && !error && (
+              <div className="recommendation-prompt">
+                <p>Привет! Я могу дать тебе персональную рекомендацию на основе результатов твоего теста.</p>
+                <button
+                  onClick={handleGenerateRecommendation}
+                  disabled={isLoading}
+                  className="generate-button"
+                >
+                  <MessageCircle size={16} />
+                  Получить рекомендацию
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="speech-bubble-tail"></div>
         </div>
 
-        <div className="speech-bubble-tail"></div>
-      </div>
-
-      <div className="mascot-character">
-        <img src="/mascot.png" alt="Маскот-советчик" className="mascot-image" />
+        <div className="mascot-character">
+          <img src="/mascot.png" alt="Маскот-советчик" className="mascot-image" />
+        </div>
       </div>
     </div>
   )

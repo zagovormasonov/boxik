@@ -1040,21 +1040,79 @@ body {
 }
 
 /* Mascot Recommendation Styles */
-.mascot-recommendation-container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
+.mascot-button-container {
   display: flex;
-  align-items: flex-end;
-  gap: 10px;
+  justify-content: center;
+  margin: 20px 0;
 }
 
-.mascot-recommendation-closed {
+.mascot-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.mascot-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 1);
+}
+
+.mascot-button-image {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.mascot-button-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Modal Styles */
+.mascot-recommendation-modal {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.mascot-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.mascot-recommendation-container {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  z-index: 1001;
+  animation: slideInUp 0.5s ease-out;
 }
 
 .mascot-character {
@@ -1062,8 +1120,8 @@ body {
 }
 
 .mascot-image {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
   border-radius: 50%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -1074,53 +1132,40 @@ body {
   transform: scale(1.05);
 }
 
-.mascot-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  border-radius: 50%;
-  transition: transform 0.3s ease;
-}
-
-.mascot-button:hover {
-  transform: scale(1.05);
-}
-
 .mascot-speech-bubble {
   position: relative;
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
-  padding: 20px;
-  max-width: 320px;
+  padding: 24px;
+  max-width: 400px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   border: 2px solid rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(10px);
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .speech-bubble-tail {
   position: absolute;
-  bottom: -8px;
-  right: 20px;
+  bottom: -12px;
+  right: 30px;
   width: 0;
   height: 0;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-top: 12px solid rgba(255, 255, 255, 0.95);
+  border-left: 16px solid transparent;
+  border-right: 16px solid transparent;
+  border-top: 16px solid rgba(255, 255, 255, 0.95);
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
 }
 
 .close-button {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 12px;
+  right: 12px;
   background: none;
   border: none;
   cursor: pointer;
   color: #6b7280;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 6px;
+  border-radius: 6px;
   transition: all 0.2s ease;
 }
 
@@ -1130,26 +1175,26 @@ body {
 }
 
 .speech-bubble-content {
-  padding-right: 20px;
+  padding-right: 30px;
 }
 
 .speech-bubble-content p {
-  margin: 0 0 12px 0;
-  font-size: 14px;
-  line-height: 1.5;
+  margin: 0 0 16px 0;
+  font-size: 15px;
+  line-height: 1.6;
   color: #374151;
 }
 
 .speech-bubble-content .generate-button {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: 10px;
+  padding: 12px 20px;
   background: #3b82f6;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1169,17 +1214,17 @@ body {
 .speech-bubble-content .regenerate-button {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
+  gap: 8px;
+  padding: 8px 12px;
   background: #f3f4f6;
   color: #6b7280;
   border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 11px;
+  border-radius: 8px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 .speech-bubble-content .regenerate-button:hover:not(:disabled) {
@@ -1195,16 +1240,16 @@ body {
 .speech-bubble-content .recommendation-loading {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 0;
+  gap: 12px;
+  padding: 16px 0;
   text-align: center;
   color: #6b7280;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .speech-bubble-content .loading-spinner {
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
   border: 2px solid #e5e7eb;
   border-top: 2px solid #3b82f6;
   border-radius: 50%;
@@ -1214,26 +1259,26 @@ body {
 .speech-bubble-content .recommendation-error {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px;
+  gap: 10px;
+  padding: 12px;
   background: #fef2f2;
   border: 1px solid #fecaca;
-  border-radius: 8px;
+  border-radius: 10px;
   color: #dc2626;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .speech-bubble-content .recommendation-content {
   background: rgba(255, 255, 255, 0.7);
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 10px;
+  padding: 16px;
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .speech-bubble-content .recommendation-content p {
-  margin: 0 0 8px 0;
-  font-size: 13px;
-  line-height: 1.5;
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  line-height: 1.6;
   color: #374151;
 }
 
@@ -1242,21 +1287,17 @@ body {
 }
 
 .speech-bubble-content .recommendation-prompt p {
-  margin: 0 0 12px 0;
-  font-size: 13px;
+  margin: 0 0 16px 0;
+  font-size: 14px;
   color: #6b7280;
   font-style: italic;
 }
 
 /* Анимация появления */
-.mascot-recommendation-container {
-  animation: slideInUp 0.5s ease-out;
-}
-
 @keyframes slideInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -1266,19 +1307,39 @@ body {
 
 /* Адаптивность */
 @media (max-width: 768px) {
+  .mascot-recommendation-modal {
+    padding: 10px;
+  }
+  
   .mascot-recommendation-container {
-    bottom: 10px;
-    right: 10px;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
   }
   
   .mascot-speech-bubble {
-    max-width: 280px;
-    padding: 16px;
+    max-width: 320px;
+    padding: 20px;
+    margin-bottom: 0;
   }
   
   .mascot-image {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
+  }
+  
+  .speech-bubble-tail {
+    display: none;
+  }
+  
+  .mascot-button {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  .mascot-button-image {
+    width: 32px;
+    height: 32px;
   }
 }
 
