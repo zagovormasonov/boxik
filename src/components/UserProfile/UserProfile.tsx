@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { User, Mail, Calendar, LogOut, RotateCcw } from 'lucide-react'
 
 const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
@@ -29,132 +30,77 @@ const UserProfile: React.FC = () => {
   console.log('UserProfile: Рендерим личный кабинет для', authState.user.name)
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      minHeight: '100vh',
-      padding: '20px',
-      background: '#f8fafc'
-    }}>
-      <div style={{ 
-        maxWidth: '500px', 
-        width: '100%',
-        background: 'white',
-        borderRadius: '12px',
-        padding: '24px',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-      }}>
-        {/* Простой заголовок для диагностики */}
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h1 style={{ 
-            fontSize: '28px', 
-            fontWeight: '600', 
-            marginBottom: '8px',
-            color: '#1f2937'
-          }}>
-            🎉 Личный кабинет работает!
+    <div className="profile-container">
+      <div className="profile-card">
+        {/* Заголовок */}
+        <div className="profile-header">
+          <h1 className="profile-title">
+            Личный кабинет
           </h1>
-          <p style={{ color: '#6b7280', fontSize: '16px' }}>
+          <p className="profile-subtitle">
             Добро пожаловать, {authState.user.name}!
           </p>
         </div>
 
         {/* Аватар */}
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center',
-          marginBottom: '24px'
-        }}>
-          <div style={{
-            width: '80px',
-            height: '80px',
-            borderRadius: '50%',
-            background: authState.user.avatar ? 'none' : '#4f46e5',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden'
-          }}>
+        <div className="profile-avatar-section">
+          <div className="profile-avatar">
             {authState.user.avatar ? (
               <img 
                 src={authState.user.avatar} 
                 alt="Аватар" 
-                style={{ 
-                  width: '100%', 
-                  height: '100%', 
-                  objectFit: 'cover' 
-                }}
+                className="avatar-image"
               />
             ) : (
-              <span style={{ color: 'white', fontSize: '24px' }}>👤</span>
+              <User size={32} className="avatar-icon" />
             )}
           </div>
         </div>
 
         {/* Информация о пользователе */}
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h2 style={{ 
-            fontSize: '20px', 
-            fontWeight: '600', 
-            marginBottom: '8px',
-            color: '#1f2937'
-          }}>
-            {authState.user.name}
-          </h2>
-          <p style={{ color: '#6b7280', fontSize: '14px' }}>
-            {authState.user.email}
-          </p>
+        <div className="profile-info">
+          <div className="info-item">
+            <User size={18} className="info-icon" />
+            <div className="info-content">
+              <span className="info-label">Имя</span>
+              <span className="info-value">{authState.user.name}</span>
+            </div>
+          </div>
+          
+          <div className="info-item">
+            <Mail size={18} className="info-icon" />
+            <div className="info-content">
+              <span className="info-label">Email</span>
+              <span className="info-value">{authState.user.email}</span>
+            </div>
+          </div>
+          
+          <div className="info-item">
+            <Calendar size={18} className="info-icon" />
+            <div className="info-content">
+              <span className="info-label">Дата регистрации</span>
+              <span className="info-value">{new Date().toLocaleDateString('ru-RU')}</span>
+            </div>
+          </div>
         </div>
 
-        {/* Простые кнопки */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        {/* Кнопки действий */}
+        <div className="profile-actions">
           <button
             onClick={handleRetakeTest}
-            style={{ 
-              width: '100%',
-              padding: '12px 24px',
-              background: '#4f46e5',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: '500',
-              cursor: 'pointer'
-            }}
+            className="action-button action-button-primary"
           >
-            🧪 Пройти тест снова
+            <RotateCcw size={20} />
+            Пройти тест снова
           </button>
           
           <button
             onClick={handleLogout}
-            style={{ 
-              width: '100%',
-              padding: '12px 24px',
-              background: '#6b7280',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: '500',
-              cursor: 'pointer'
-            }}
+            className="action-button action-button-secondary"
           >
-            🚪 Выйти из аккаунта
+            <LogOut size={20} />
+            Выйти из аккаунта
           </button>
-        </div>
-
-        {/* Дополнительная информация */}
-        <div style={{ 
-          marginTop: '24px', 
-          padding: '16px', 
-          background: '#f8fafc', 
-          borderRadius: '8px',
-          fontSize: '14px',
-          color: '#6b7280',
-          textAlign: 'center'
-        }}>
-          <span>Зарегистрирован: {new Date().toLocaleDateString('ru-RU')}</span>
         </div>
       </div>
     </div>
