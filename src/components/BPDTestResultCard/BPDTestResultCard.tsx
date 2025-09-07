@@ -143,17 +143,19 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
         </div>
       </div>
 
-      <div className="category-scores">
-        <h4>Баллы по категориям:</h4>
-        <div className="category-grid">
-          {Object.entries(testResult.categoryScores).map(([category, score]) => (
-            <div key={category} className="category-item">
-              <span className="category-name">{getCategoryText(category as BPDCategory)}</span>
-              <span className="category-score">{String(score)}</span>
-            </div>
-          ))}
+      {Object.keys(testResult.categoryScores).length > 0 && (
+        <div className="category-scores">
+          <h4>Баллы по категориям:</h4>
+          <div className="category-grid">
+            {Object.entries(testResult.categoryScores).map(([category, score]) => (
+              <div key={category} className="category-item">
+                <span className="category-name">{getCategoryText(category as BPDCategory)}</span>
+                <span className="category-score">{String(score)}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="test-result-actions">
         {isSent ? (

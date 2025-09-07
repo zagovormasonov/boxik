@@ -27,7 +27,8 @@ export function useBPDTestResults(userId: string | null) {
       try {
         console.log('useBPDTestResults: Загружаем результаты БПД теста для пользователя:', userId)
 
-        const { data, error: fetchError } = await supabase
+        // Сначала попробуем найти результаты БПД теста
+        let { data, error: fetchError } = await supabase
           .from('test_results')
           .select('*')
           .eq('user_id', userId)
@@ -36,10 +37,31 @@ export function useBPDTestResults(userId: string | null) {
           .limit(1)
           .single()
 
+        // Если не найдены результаты БПД, попробуем найти любые результаты
+        if (fetchError && fetchError.code === 'PGRST116') {
+          console.log('useBPDTestResults: Результаты БПД не найдены, ищем любые результаты')
+          const { data: anyData, error: anyError } = await supabase
+            .from('test_results')
+            .select('*')
+            .eq('user_id', userId)
+            .order('completed_at', { ascending: false })
+            .limit(1)
+            .single()
+          
+          data = anyData
+          fetchError = anyError
+        }
+
         if (fetchError) {
           console.error('useBPDTestResults: Ошибка при загрузке:', fetchError)
+          console.error('useBPDTestResults: Детали ошибки:', {
+            code: fetchError.code,
+            message: fetchError.message,
+            details: fetchError.details,
+            hint: fetchError.hint
+          })
           if (fetchError.code === 'PGRST116') {
-            console.log('useBPDTestResults: Нет результатов БПД тестов для пользователя')
+            console.log('useBPDTestResults: Нет результатов тестов для пользователя')
             setLastTestResult(null)
             return
           }
@@ -49,6 +71,9 @@ export function useBPDTestResults(userId: string | null) {
         console.log('useBPDTestResults: Получены данные:', data)
 
         if (data) {
+          // Определяем тип теста
+          const isBPDTest = data.test_type === 'bpd'
+          
           const result: BPDTestResultWithDetails = {
             id: data.id,
             userId: data.user_id,
@@ -63,9 +88,10 @@ export function useBPDTestResults(userId: string | null) {
           }
 
           console.log('useBPDTestResults: Обработанный результат:', result)
+          console.log('useBPDTestResults: Тип теста:', isBPDTest ? 'БПД' : 'Старый')
           setLastTestResult(result)
         } else {
-          console.log('useBPDTestResults: Нет результатов БПД тестов для пользователя')
+          console.log('useBPDTestResults: Нет результатов тестов для пользователя')
           setLastTestResult(null)
         }
       } catch (err) {
