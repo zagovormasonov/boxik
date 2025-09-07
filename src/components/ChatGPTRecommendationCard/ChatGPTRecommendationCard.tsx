@@ -79,7 +79,7 @@ const ChatGPTRecommendationCard: React.FC<ChatGPTRecommendationCardProps> = ({ t
         </div>
       )}
     </div>
-  )
+  ) 
 }
 
 export default ChatGPTRecommendationCard
