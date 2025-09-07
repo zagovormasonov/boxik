@@ -11,7 +11,7 @@ const BPDTestScreen: React.FC = () => {
   const { state, questions, dispatch, severity } = useBPDTest()
   const { authState } = useAuth()
   const navigate = useNavigate()
-  const { saveBPDTestResult, isSaving, error: saveError } = useSaveBPDTestResult()
+  const { saveBPDTestResult, error: saveError } = useSaveBPDTestResult()
 
   const currentQuestion = questions[state.currentQuestion]
   const selectedAnswer = state.answers[state.currentQuestion]
@@ -73,7 +73,6 @@ const BPDTestScreen: React.FC = () => {
     dispatch({ type: 'PREV_QUESTION' })
   }
 
-  const progress = ((state.currentQuestion + 1) / questions.length) * 100
 
   if (!authState.user) {
     return (
@@ -112,7 +111,7 @@ const BPDTestScreen: React.FC = () => {
           </p>
         </div>
 
-        <ProgressBar progress={progress} />
+        <ProgressBar current={state.currentQuestion + 1} total={questions.length} />
 
         <div className="test-content">
           <div className="question-counter">
@@ -126,12 +125,11 @@ const BPDTestScreen: React.FC = () => {
           />
 
           <Navigation
+            currentQuestion={state.currentQuestion}
+            totalQuestions={questions.length}
             onPrevious={handlePrevious}
             onNext={handleNext}
-            canGoPrevious={state.currentQuestion > 0}
             canGoNext={selectedAnswer !== -1}
-            isLastQuestion={state.currentQuestion === questions.length - 1}
-            isLoading={isSaving}
           />
 
           {saveError && (

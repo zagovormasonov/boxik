@@ -188,7 +188,7 @@ const calculateCategoryScores = (answers: number[], questions: BPDQuestion[]): R
 }
 
 // Функция для определения уровня выраженности БПД
-const calculateSeverity = (totalScore: number, categoryScores: Record<BPDCategory, number>): BPDSeverity => {
+const calculateSeverity = (totalScore: number): BPDSeverity => {
   // Пороговые значения на основе клинических стандартов
   if (totalScore < 20) return BPDSeverity.NONE
   if (totalScore < 40) return BPDSeverity.MILD
@@ -253,7 +253,7 @@ const BPDTestContext = createContext<BPDTestContextType | undefined>(undefined)
 export const BPDTestProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(bpdTestReducer, initialState)
   
-  const severity = calculateSeverity(state.totalScore, state.categoryScores)
+  const severity = calculateSeverity(state.totalScore)
 
   return (
     <BPDTestContext.Provider value={{

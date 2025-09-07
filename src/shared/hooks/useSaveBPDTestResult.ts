@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { BPDTestState, BPDTestResult, BPDSeverity, BPDCategory } from '../../types'
+import { BPDTestState, BPDTestResult, BPDSeverity } from '../../types'
 
 interface SaveBPDTestResultParams {
   userId: string
@@ -21,7 +21,7 @@ export function useSaveBPDTestResult() {
       console.log('useSaveBPDTestResult: Данные для сохранения:', { userId, testState, totalQuestions })
 
       // Определяем уровень выраженности БПД
-      const severity = calculateSeverity(testState.totalScore, testState.categoryScores)
+      const severity = calculateSeverity(testState.totalScore)
 
       // Создаем объект результата БПД теста
       const bpdTestResult: BPDTestResult = {
@@ -77,7 +77,7 @@ export function useSaveBPDTestResult() {
 }
 
 // Функция для определения уровня выраженности БПД
-const calculateSeverity = (totalScore: number, categoryScores: Record<BPDCategory, number>): BPDSeverity => {
+const calculateSeverity = (totalScore: number): BPDSeverity => {
   // Пороговые значения на основе клинических стандартов
   if (totalScore < 20) return BPDSeverity.NONE
   if (totalScore < 40) return BPDSeverity.MILD
