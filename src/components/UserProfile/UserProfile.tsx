@@ -12,6 +12,13 @@ const UserProfile: React.FC = () => {
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useTestResults(authState.user?.id || null)
 
+  console.log('UserProfile: Состояние результатов теста:', {
+    lastTestResult,
+    isLoadingResults,
+    testError,
+    userId: authState.user?.id
+  })
+
   console.log('UserProfile: Рендер компонента, authState:', authState)
 
   const handleLogout = async () => {

@@ -12,7 +12,6 @@ const TestScreen: React.FC = () => {
   const { authState } = useAuth()
   const navigate = useNavigate()
   const { saveTestResult, isSaving, error: saveError } = useSaveTestResult()
-  const [isTestCompleted, setIsTestCompleted] = useState(false)
 
   const currentQuestion = questions[state.currentQuestion]
   const selectedAnswer = state.answers[state.currentQuestion]
@@ -30,27 +29,6 @@ const TestScreen: React.FC = () => {
     console.log('TestScreen: Пользователь авторизован:', authState.user)
   }, [authState.user, navigate])
 
-  // Сохраняем результаты теста при завершении
-  useEffect(() => {
-    if (state.isCompleted && !isTestCompleted && authState.user?.id) {
-      const handleTestCompletion = async () => {
-        try {
-          setIsTestCompleted(true)
-          await saveTestResult({
-            userId: authState.user!.id, // Используем ! так как уже проверили выше
-            testState: state,
-            totalQuestions: questions.length
-          })
-          console.log('Результат теста успешно сохранен')
-        } catch (error) {
-          console.error('Ошибка при сохранении результата теста:', error)
-          // Показываем ошибку, но не блокируем переход
-        }
-      }
-      
-      handleTestCompletion()
-    }
-  }, [state.isCompleted, isTestCompleted, authState.user?.id, state, questions.length, saveTestResult])
 
   const handleAnswerSelect = (answer: number) => {
     dispatch({ 
@@ -60,9 +38,38 @@ const TestScreen: React.FC = () => {
     })
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (state.currentQuestion === questions.length - 1) {
       dispatch({ type: 'COMPLETE_TEST' })
+      
+      // Сохраняем результаты теста перед переходом
+      if (authState.user?.id) {
+        try {
+          console.log('TestScreen: Сохраняем результаты теста перед переходом')
+          
+          // Подсчитываем очки
+          const score = questions.reduce((acc, question, index) => {
+            return acc + (state.answers[index] === question.correctAnswer ? 1 : 0)
+          }, 0)
+          
+          const completedTestState = {
+            ...state,
+            isCompleted: true,
+            score: score
+          }
+          
+          await saveTestResult({
+            userId: authState.user.id,
+            testState: completedTestState,
+            totalQuestions: questions.length
+          })
+          console.log('TestScreen: Результаты сохранены, переходим к авторизации')
+        } catch (error) {
+          console.error('TestScreen: Ошибка при сохранении результатов:', error)
+          // Продолжаем переход даже при ошибке сохранения
+        }
+      }
+      
       navigate('/auth')
     } else {
       dispatch({ type: 'NEXT_QUESTION' })
