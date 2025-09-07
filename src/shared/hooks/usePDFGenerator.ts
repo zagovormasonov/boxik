@@ -27,8 +27,12 @@ export function usePDFGenerator() {
     try {
       console.log('PDF Generator: Начинаем генерацию PDF')
       
-      // Создаем новый PDF документ
-      const pdf = new jsPDF()
+      // Создаем новый PDF документ с поддержкой UTF-8
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      })
       
       // Настройки
       const pageWidth = pdf.internal.pageSize.getWidth()
@@ -46,20 +50,21 @@ export function usePDFGenerator() {
 
       // Функция для добавления текста с поддержкой кириллицы
       const addText = (text: string, x: number, y: number, options?: any) => {
-        // Заменяем кириллические символы на латинские аналоги для совместимости
-        const transliteratedText = text
-          .replace(/[а-яё]/gi, (char) => {
-            const map: { [key: string]: string } = {
-              'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e',
-              'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm',
-              'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
-              'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
-              'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya'
-            }
-            return map[char.toLowerCase()] || char
-          })
-        
-        pdf.text(transliteratedText, x, y, options)
+        try {
+          // Пробуем добавить текст напрямую
+          pdf.text(text, x, y, options)
+        } catch (error) {
+          console.warn('Ошибка при добавлении текста:', error)
+          // Если не получается, разбиваем на строки
+          const lines = pdf.splitTextToSize(text, pageWidth - 2 * margin)
+          if (Array.isArray(lines)) {
+            lines.forEach((line: string, index: number) => {
+              pdf.text(line, x, y + (index * 5), options)
+            })
+          } else {
+            pdf.text(lines, x, y, options)
+          }
+        }
       }
 
       // Заголовок
