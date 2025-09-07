@@ -66,7 +66,13 @@ export function usePDFGenerator() {
         </div>
         
         <div style="margin-bottom: 25px;">
-          <p style="font-size: 14px; margin: 5px 0; color: #6b7280;"><strong>Дата прохождения:</strong> ${testResult.completed_date}</p>
+          <p style="font-size: 14px; margin: 5px 0; color: #6b7280;"><strong>Дата прохождения:</strong> ${new Date(testResult.completed_date).toLocaleDateString('ru-RU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}</p>
         </div>
         
         <div style="background-color: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; margin-bottom: 25px;">
@@ -84,20 +90,13 @@ export function usePDFGenerator() {
               <div style="margin-left: 20px;">
                 ${question.options.map((option, optionIndex) => {
                   const isUserAnswer = userAnswers[index] === optionIndex
-                  const isCorrectAnswer = question.correctAnswer === optionIndex
                   
                   let prefix = ''
                   let style = 'margin: 3px 0; padding: 8px; border-radius: 4px;'
                   
-                  if (isUserAnswer && isCorrectAnswer) {
+                  if (isUserAnswer) {
                     prefix = '✓ '
-                    style += 'background-color: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;'
-                  } else if (isUserAnswer && !isCorrectAnswer) {
-                    prefix = '✗ '
-                    style += 'background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca;'
-                  } else if (!isUserAnswer && isCorrectAnswer) {
-                    prefix = '→ '
-                    style += 'background-color: #f8fafc; color: #475569; border: 1px solid #cbd5e1;'
+                    style += 'background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd;'
                   } else {
                     style += 'background-color: #ffffff; color: #6b7280; border: 1px solid #e5e7eb;'
                   }
@@ -114,6 +113,17 @@ export function usePDFGenerator() {
                   const categoryText = getCategoryText(category)
                   return `<p style="margin: 8px 0; padding: 8px; background-color: #f8fafc; border-radius: 4px; border: 1px solid #e5e7eb;">
                     <strong>${categoryText}:</strong> ${score} баллов
+                  </p>`
+                }).join('')}
+              </div>
+            </div>
+            <div style="margin-bottom: 25px;">
+              <h3 style="font-size: 14px; margin: 0 0 10px 0; color: #374151; font-weight: 500;">Детальные ответы по вопросам:</h3>
+              <div style="margin-left: 20px;">
+                ${userAnswers.map((answer, index) => {
+                  const answerText = answer >= 0 ? ['Никогда', 'Редко', 'Иногда', 'Часто', 'Всегда'][answer] : 'Не отвечено'
+                  return `<p style="margin: 6px 0; padding: 6px; background-color: #f8fafc; border-radius: 4px; border: 1px solid #e5e7eb;">
+                    <strong>Вопрос ${index + 1}:</strong> ${answerText}
                   </p>`
                 }).join('')}
               </div>
