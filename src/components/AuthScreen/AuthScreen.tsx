@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import AuthForm from '../AuthForm/AuthForm'
 import YandexAuth from '../YandexAuth/YandexAuth'
