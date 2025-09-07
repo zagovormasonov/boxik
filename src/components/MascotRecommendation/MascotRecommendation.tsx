@@ -39,7 +39,7 @@ const MascotRecommendation: React.FC<MascotRecommendationProps> = ({ testResult 
           className="mascot-button"
           title="Получить рекомендацию"
         >
-          <img src="/src/img/mascot.png" alt="Маскот" className="mascot-image" />
+          <img src="/mascot.png" alt="Маскот" className="mascot-image" />
         </button>
       </div>
     )
@@ -104,7 +104,7 @@ const MascotRecommendation: React.FC<MascotRecommendationProps> = ({ testResult 
       </div>
 
       <div className="mascot-character">
-        <img src="/src/img/mascot.png" alt="Маскот-советчик" className="mascot-image" />
+        <img src="/mascot.png" alt="Маскот-советчик" className="mascot-image" />
       </div>
     </div>
   )
