@@ -1,18 +1,16 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { useTest } from '../../contexts/TestContext'
 import { User, Mail, Calendar, LogOut, RotateCcw, FileText } from 'lucide-react'
-import { useTestResults, TestResultWithDetails } from '../../shared/hooks/useTestResults'
-import TestResultCard from '../TestResultCard/TestResultCard'
+import { useBPDTestResults, BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
+import BPDTestResultCard from '../BPDTestResultCard/BPDTestResultCard'
 
 const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
-  const { questions } = useTest()
   const navigate = useNavigate()
   const [isSendingResults, setIsSendingResults] = useState(false)
   
-  const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useTestResults(authState.user?.id || null)
+  const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
 
   console.log('UserProfile: Состояние результатов теста:', {
     lastTestResult,
@@ -36,7 +34,7 @@ const UserProfile: React.FC = () => {
     navigate('/')
   }
 
-  const handleSendToSpecialist = async (testResult: TestResultWithDetails): Promise<boolean> => {
+  const handleSendToSpecialist = async (testResult: BPDTestResultWithDetails): Promise<boolean> => {
     setIsSendingResults(true)
     try {
       const success = await sendToSpecialist(testResult)
@@ -123,12 +121,10 @@ const UserProfile: React.FC = () => {
             <p>{testError}</p>
           </div>
         ) : lastTestResult ? (
-          <TestResultCard 
+          <BPDTestResultCard 
             testResult={lastTestResult}
             onSendToSpecialist={handleSendToSpecialist}
             isSending={isSendingResults}
-            questions={questions}
-            userAnswers={lastTestResult.answers}
           />
         ) : (
           <div className="no-test-message">
