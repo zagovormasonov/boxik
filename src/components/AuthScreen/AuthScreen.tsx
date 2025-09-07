@@ -7,8 +7,7 @@ import UserProfile from '../UserProfile/UserProfile'
 
 const AuthScreen: React.FC = () => {
   const [mode, setMode] = useState<'login' | 'register'>('login')
-  const { authState, login, register, logout } = useAuth()
-  const navigate = useNavigate()
+  const { authState, login, register } = useAuth()
 
   useEffect(() => {
     console.log('AuthScreen: Экран авторизации загружен')
