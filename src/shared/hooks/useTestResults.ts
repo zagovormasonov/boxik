@@ -41,6 +41,9 @@ export function useTestResults(userId: string | null) {
     setError(null)
 
     try {
+      console.log('useTestResults: Выполняем запрос к Supabase...')
+      console.log('useTestResults: userId:', userId)
+      
       const { data, error } = await supabase
         .from('test_results')
         .select('*')
@@ -50,6 +53,7 @@ export function useTestResults(userId: string | null) {
         .single()
 
       console.log('useTestResults: Ответ от Supabase:', { data, error })
+      console.log('useTestResults: Статус ошибки:', error?.code, error?.message)
 
       if (error) {
         if (error.code === 'PGRST116') {

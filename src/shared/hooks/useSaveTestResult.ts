@@ -25,7 +25,8 @@ export function useSaveTestResult() {
         completed_at: new Date().toISOString()
       }
 
-      console.log('Сохранение результата теста:', testResultData)
+      console.log('useSaveTestResult: Сохранение результата теста:', testResultData)
+      console.log('useSaveTestResult: userId:', userId)
 
       const { data, error: insertError } = await supabase
         .from('test_results')
@@ -33,12 +34,15 @@ export function useSaveTestResult() {
         .select()
         .single()
 
+      console.log('useSaveTestResult: Ответ от Supabase:', { data, insertError })
+      console.log('useSaveTestResult: Статус ошибки:', insertError?.code, insertError?.message)
+
       if (insertError) {
-        console.error('Ошибка при сохранении результата теста:', insertError)
+        console.error('useSaveTestResult: Ошибка при сохранении результата теста:', insertError)
         throw insertError
       }
 
-      console.log('Результат теста успешно сохранен:', data)
+      console.log('useSaveTestResult: Результат теста успешно сохранен:', data)
       return data
     } catch (err) {
       console.error('Ошибка при сохранении результата теста:', err)
