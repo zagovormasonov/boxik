@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { User, Mail, Calendar, LogOut, RotateCcw, FileText } from 'lucide-react'
-import { useTestResults } from '../../shared/hooks/useTestResults'
+import { useTestResults, TestResultWithDetails } from '../../shared/hooks/useTestResults'
 import TestResultCard from '../TestResultCard/TestResultCard'
 
 const UserProfile: React.FC = () => {
@@ -27,12 +27,14 @@ const UserProfile: React.FC = () => {
     navigate('/')
   }
 
-  const handleSendToSpecialist = async (testResult: any) => {
+  const handleSendToSpecialist = async (testResult: TestResultWithDetails): Promise<boolean> => {
     setIsSendingResults(true)
     try {
-      await sendToSpecialist(testResult)
+      const success = await sendToSpecialist(testResult)
+      return success
     } catch (error) {
       console.error('Ошибка при отправке результатов:', error)
+      return false
     } finally {
       setIsSendingResults(false)
     }
