@@ -50,7 +50,7 @@ const createRecommendationPrompt = (testResult: BPDTestResultWithDetails): strin
     return `${categoryName}: ${score} баллов`
   }).join(', ')
 
-  return `Ты эксперт в [укажи сферу: психология, профориентация, здоровье, обучение и т.д.]. 
+  return `Ты эксперт в психологии. 
 У меня есть результаты тестирования. Твоя задача: 
 
 1. Внимательно проанализировать их.  
