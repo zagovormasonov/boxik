@@ -112,17 +112,28 @@ const getCategoryName = (category: string): string => {
 
 // Реальная функция для вызова ChatGPT API
 const callChatGPTAPI = async (prompt: string): Promise<string> => {
-  const API_KEY = process.env.REACT_APP_CHATGPT_API_KEY
+  // Пробуем разные варианты переменных окружения
+  const API_KEY = process.env.REACT_APP_CHATGPT_API_KEY || 
+                  process.env.VITE_CHATGPT_API_KEY ||
+                  import.meta.env.VITE_CHATGPT_API_KEY ||
+                  import.meta.env.REACT_APP_CHATGPT_API_KEY
   
   // Отладочная информация
   console.log('ChatGPT API Debug:')
-  console.log('- API_KEY exists:', !!API_KEY)
+  console.log('- process.env.REACT_APP_CHATGPT_API_KEY:', !!process.env.REACT_APP_CHATGPT_API_KEY)
+  console.log('- process.env.VITE_CHATGPT_API_KEY:', !!process.env.VITE_CHATGPT_API_KEY)
+  console.log('- import.meta.env.VITE_CHATGPT_API_KEY:', !!import.meta.env.VITE_CHATGPT_API_KEY)
+  console.log('- import.meta.env.REACT_APP_CHATGPT_API_KEY:', !!import.meta.env.REACT_APP_CHATGPT_API_KEY)
+  console.log('- Final API_KEY:', !!API_KEY)
   console.log('- API_KEY length:', API_KEY?.length || 0)
   console.log('- API_KEY starts with sk-:', API_KEY?.startsWith('sk-') || false)
-  console.log('- All env vars:', Object.keys(process.env).filter(key => key.includes('CHATGPT')))
+  console.log('- All process.env vars:', Object.keys(process.env).filter(key => key.includes('CHATGPT')))
+  console.log('- All import.meta.env vars:', Object.keys(import.meta.env).filter(key => key.includes('CHATGPT')))
+  console.log('- All VITE vars:', Object.keys(import.meta.env).filter(key => key.startsWith('VITE_')))
+  console.log('- import.meta.env keys:', Object.keys(import.meta.env))
   
   if (!API_KEY) {
-    throw new Error('API ключ ChatGPT не настроен. Добавьте REACT_APP_CHATGPT_API_KEY в переменные окружения.')
+    throw new Error('API ключ ChatGPT не настроен. Добавьте VITE_CHATGPT_API_KEY в переменные окружения Vercel.')
   }
   
   if (!API_KEY.startsWith('sk-')) {

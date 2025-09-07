@@ -12,9 +12,10 @@
 - Или сделайте новый коммит в Git
 
 ### 2. Неправильное имя переменной
-**Проверьте**: Имя должно быть точно `REACT_APP_CHATGPT_API_KEY`
-- ✅ Правильно: `REACT_APP_CHATGPT_API_KEY`
-- ❌ Неправильно: `CHATGPT_API_KEY`, `REACT_CHATGPT_API_KEY`
+**Проверьте**: Имя должно быть `VITE_CHATGPT_API_KEY` (для Vite) или `REACT_APP_CHATGPT_API_KEY`
+- ✅ Правильно: `VITE_CHATGPT_API_KEY` (рекомендуется для Vite)
+- ✅ Правильно: `REACT_APP_CHATGPT_API_KEY` (для Create React App)
+- ❌ Неправильно: `CHATGPT_API_KEY`, `OPENAI_API_KEY`
 
 ### 3. Переменная не добавлена для всех окружений
 **Решение**: В Vercel Dashboard → Settings → Environment Variables
@@ -37,7 +38,7 @@
 1. Откройте [Vercel Dashboard](https://vercel.com/dashboard)
 2. Выберите ваш проект
 3. Settings → Environment Variables
-4. Убедитесь что есть `REACT_APP_CHATGPT_API_KEY`
+4. Убедитесь что есть `VITE_CHATGPT_API_KEY` (рекомендуется) или `REACT_APP_CHATGPT_API_KEY`
 
 ### Шаг 2: Перезапустите деплой
 1. Deployments → найдите последний деплой
