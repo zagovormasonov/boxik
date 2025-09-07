@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { MessageCircle, RefreshCw, AlertCircle, X } from 'lucide-react'
+import { RefreshCw, AlertCircle, X } from 'lucide-react'
 import { BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
 import { useChatGPTRecommendation } from '../../shared/hooks/useChatGPTRecommendation'
 
@@ -10,7 +10,7 @@ interface MascotRecommendationProps {
 const MascotRecommendation: React.FC<MascotRecommendationProps> = ({ testResult }) => {
   const [recommendation, setRecommendation] = useState<string | null>(null)
   const [hasGenerated, setHasGenerated] = useState(false)
-  const [isVisible, setIsVisible] = useState(true)
+  const [isVisible, setIsVisible] = useState(false)
   const { generateRecommendation, isLoading, error } = useChatGPTRecommendation()
 
   const handleGenerateRecommendation = async () => {
@@ -27,6 +27,14 @@ const MascotRecommendation: React.FC<MascotRecommendationProps> = ({ testResult 
     await handleGenerateRecommendation()
   }
 
+  const handleOpenModal = async () => {
+    setIsVisible(true)
+    // Автоматически генерируем рекомендацию при открытии модального окна
+    if (!hasGenerated && !isLoading) {
+      await handleGenerateRecommendation()
+    }
+  }
+
   const handleClose = () => {
     setIsVisible(false)
   }
@@ -35,7 +43,7 @@ const MascotRecommendation: React.FC<MascotRecommendationProps> = ({ testResult 
     return (
       <div className="mascot-button-container">
         <button
-          onClick={() => setIsVisible(true)}
+          onClick={handleOpenModal}
           className="mascot-button"
           title="Получить рекомендацию от маскота"
         >
@@ -91,15 +99,11 @@ const MascotRecommendation: React.FC<MascotRecommendationProps> = ({ testResult 
 
             {!hasGenerated && !isLoading && !error && (
               <div className="recommendation-prompt">
-                <p>Привет! Я могу дать тебе персональную рекомендацию на основе результатов твоего теста.</p>
-                <button
-                  onClick={handleGenerateRecommendation}
-                  disabled={isLoading}
-                  className="generate-button"
-                >
-                  <MessageCircle size={16} />
-                  Получить рекомендацию
-                </button>
+                <p>Привет! Генерирую персональную рекомендацию на основе результатов твоего теста...</p>
+                <div className="recommendation-loading">
+                  <div className="loading-spinner"></div>
+                  <span>Анализирую результаты...</span>
+                </div>
               </div>
             )}
           </div>
