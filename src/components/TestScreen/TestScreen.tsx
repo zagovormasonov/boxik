@@ -37,7 +37,7 @@ const TestScreen: React.FC = () => {
         try {
           setIsTestCompleted(true)
           await saveTestResult({
-            userId: authState.user.id,
+            userId: authState.user!.id, // Используем ! так как уже проверили выше
             testState: state,
             totalQuestions: questions.length
           })
