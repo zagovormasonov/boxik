@@ -1,7 +1,16 @@
+// Получаем переменные окружения
+const clientId = import.meta.env.VITE_YANDEX_CLIENT_ID
+const redirectUri = import.meta.env.VITE_YANDEX_REDIRECT_URI || 'http://localhost:5173/auth/yandex/callback'
+
+// Проверяем, что Client ID задан
+if (!clientId) {
+  console.warn('VITE_YANDEX_CLIENT_ID не задан. Яндекс авторизация может не работать.')
+}
+
 // Конфигурация для Яндекс OAuth
 export const yandexConfig = {
-  clientId: import.meta.env.VITE_YANDEX_CLIENT_ID || 'your-yandex-client-id',
-  redirectUri: import.meta.env.VITE_YANDEX_REDIRECT_URI || 'http://localhost:5173/auth/yandex/callback',
+  clientId: clientId || '',
+  redirectUri,
   scope: 'login:email login:info'
 }
 
