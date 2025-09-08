@@ -18,6 +18,12 @@ const PaymentCallback: React.FC = () => {
       console.log('🚀 PaymentCallback: URL:', window.location.href)
       console.log('🚀 PaymentCallback: Search params:', Object.fromEntries(searchParams.entries()))
       
+      // ПРИНУДИТЕЛЬНО устанавливаем hasPaid: true в самом начале
+      // независимо от параметров или состояния Supabase
+      console.log('🔄 PaymentCallback: ПРИНУДИТЕЛЬНО устанавливаем hasPaid: true в начале callback')
+      forceSetPaid(true)
+      console.log('🔄 PaymentCallback: hasPaid установлен в true, localStorage:', localStorage.getItem('hasPaid'))
+      
       try {
         // Получаем параметры от Тинькофф
         const paymentId = searchParams.get('PaymentId') || searchParams.get('payment_id') || searchParams.get('PaymentID')
