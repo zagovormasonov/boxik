@@ -1,28 +1,19 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Check, Star, Shield, FileText, Send, CreditCard } from 'lucide-react'
-import { useAuth } from '../../contexts/AuthContext'
 
 const SubscriptionLanding: React.FC = () => {
-  const navigate = useNavigate()
-  const { authState } = useAuth()
   const [isProcessing, setIsProcessing] = useState(false)
 
   const handleLoginAndPay = async () => {
-    if (authState.user) {
-      // Если пользователь уже авторизован, переходим на страницу оплаты
-      navigate('/payment')
-    } else {
-      // Если не авторизован, запускаем авторизацию через Яндекс с редиректом на оплату
-      setIsProcessing(true)
-      
-      // Создаем URL для авторизации через Яндекс с редиректом на страницу оплаты
-      // Добавляем force_confirm=true для обязательного выбора аккаунта
-      const yandexAuthUrl = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${import.meta.env.VITE_YANDEX_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/yandex/callback')}&scope=login:email+login:info&state=${encodeURIComponent('/payment')}&force_confirm=true`
-      
-      console.log('Перенаправляем на авторизацию Яндекс с редиректом на оплату:', yandexAuthUrl)
-      window.location.href = yandexAuthUrl
-    }
+    // Всегда запускаем авторизацию через Яндекс с обязательным выбором аккаунта
+    setIsProcessing(true)
+    
+    // Создаем URL для авторизации через Яндекс с редиректом на страницу оплаты
+    // Добавляем force_confirm=true для обязательного выбора аккаунта
+    const yandexAuthUrl = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${import.meta.env.VITE_YANDEX_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/yandex/callback')}&scope=login:email+login:info&state=${encodeURIComponent('/payment')}&force_confirm=true`
+    
+    console.log('Перенаправляем на авторизацию Яндекс с обязательным выбором аккаунта:', yandexAuthUrl)
+    window.location.href = yandexAuthUrl
   }
 
   const advantages = [
@@ -119,24 +110,14 @@ const SubscriptionLanding: React.FC = () => {
               </div>
             </div>
 
-            {authState.user ? (
-              <button 
-                onClick={() => navigate('/payment')}
-                className="purchase-button"
-              >
-                <CreditCard size={20} />
-                Перейти к оплате
-              </button>
-            ) : (
-              <button 
-                onClick={handleLoginAndPay}
-                disabled={isProcessing}
-                className="purchase-button login-and-pay-button"
-              >
-                <CreditCard size={20} />
-                {isProcessing ? 'Перенаправляем...' : 'Войти через Яндекс и оплатить 200₽'}
-              </button>
-            )}
+            <button 
+              onClick={handleLoginAndPay}
+              disabled={isProcessing}
+              className="purchase-button login-and-pay-button"
+            >
+              <CreditCard size={20} />
+              {isProcessing ? 'Перенаправляем...' : 'Войти через Яндекс и оплатить 200₽'}
+            </button>
           </div>
         </div>
 

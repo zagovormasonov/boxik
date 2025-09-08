@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CreditCard, Shield, Check, ArrowLeft, TestTube } from 'lucide-react'
+import { CreditCard, Shield, Check, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePayment } from '../../shared/hooks/usePayment'
 import SupabaseDiagnostics from '../SupabaseDiagnostics/SupabaseDiagnostics'
@@ -10,7 +10,6 @@ const PaymentPage: React.FC = () => {
   const { authState } = useAuth()
   const { createPayment, isProcessing, error } = usePayment()
   const [isCreatingPayment, setIsCreatingPayment] = useState(false)
-  const [isTestMode, setIsTestMode] = useState(false)
   const [showDiagnostics, setShowDiagnostics] = useState(false)
 
   // Проверяем авторизацию
@@ -30,18 +29,14 @@ const PaymentPage: React.FC = () => {
       console.log('Создаем платеж для авторизованного пользователя:', {
         userId: authState.user.id,
         userEmail: authState.user.email,
-        userName: authState.user.name,
-        isTestMode
+        userName: authState.user.name
       })
 
       const result = await createPayment({
-        amount: isTestMode ? 1 : 200, // В тестовом режиме 1 копейка
-        description: isTestMode 
-          ? 'ТЕСТОВЫЙ ПЛАТЕЖ - Полный доступ к результатам психологического теста БПД'
-          : 'Полный доступ к результатам психологического теста БПД',
+        amount: 200,
+        description: 'Полный доступ к результатам психологического теста БПД',
         userId: authState.user.id,
-        userEmail: authState.user.email,
-        isTestMode
+        userEmail: authState.user.email
       })
 
       if (result.success && result.paymentUrl) {
@@ -140,36 +135,13 @@ const PaymentPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Переключатель тестового режима */}
-        <div className="test-mode-card">
-          <div className="test-mode-toggle">
-            <label className="toggle-label">
-              <input
-                type="checkbox"
-                checked={isTestMode}
-                onChange={(e) => setIsTestMode(e.target.checked)}
-                className="toggle-input"
-              />
-              <span className="toggle-slider"></span>
-              <TestTube size={20} />
-              <span className="toggle-text">Тестовый режим</span>
-            </label>
-            <p className="test-mode-description">
-              {isTestMode 
-                ? 'Включен тестовый режим - списание 1 копейки вместо 200₽' 
-                : 'Отключен тестовый режим - будет списано 200₽'
-              }
-            </p>
-          </div>
-        </div>
-
         {/* Цена и кнопка оплаты */}
         <div className="pricing-card">
           <div className="pricing-header">
             <h3>Полный доступ</h3>
             <div className="pricing-price">
-              <span className="price-amount">{isTestMode ? '1' : '200'}</span>
-              <span className="price-currency">{isTestMode ? 'коп.' : '₽'}</span>
+              <span className="price-amount">200</span>
+              <span className="price-currency">₽</span>
             </div>
           </div>
           
@@ -181,15 +153,10 @@ const PaymentPage: React.FC = () => {
           <button 
             onClick={handlePayment}
             disabled={isProcessing || isCreatingPayment}
-            className={`payment-button ${isTestMode ? 'test-mode' : ''}`}
+            className="payment-button"
           >
             <CreditCard size={20} />
-            {isProcessing || isCreatingPayment 
-              ? 'Создаем платеж...' 
-              : isTestMode 
-                ? 'Тестовый платеж (1 коп.)' 
-                : 'Оплатить через СБП'
-            }
+            {isProcessing || isCreatingPayment ? 'Создаем платеж...' : 'Оплатить через СБП'}
           </button>
 
           {error && (

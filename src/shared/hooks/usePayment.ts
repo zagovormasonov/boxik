@@ -10,7 +10,6 @@ export interface PaymentConfig {
   description: string
   userId?: string
   userEmail?: string
-  isTestMode?: boolean
 }
 
 export interface PaymentResult {
@@ -93,56 +92,10 @@ export function usePayment() {
       console.log('- VITE_TINKOFF_PASSWORD:', import.meta.env.VITE_TINKOFF_PASSWORD ? '✅ Настроен' : '❌ Не настроен')
       console.log('- VITE_TINKOFF_API_URL:', import.meta.env.VITE_TINKOFF_API_URL || 'Используется по умолчанию')
       
-      // Проверяем, что переменные окружения настроены или включен тестовый режим
-      if (paymentConfig.terminalKey === 'your_terminal_key' || paymentConfig.password === 'your_password' || paymentConfig.isTestMode) {
-        console.warn('⚠️ Тестовый режим активирован:', {
-          envNotSet: paymentConfig.terminalKey === 'your_terminal_key' || paymentConfig.password === 'your_password',
-          explicitTestMode: paymentConfig.isTestMode
-        })
-        
-        // Тестовый режим - симуляция
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
-        // Создаем запись о подписке в Supabase даже в тестовом режиме
-        if (paymentConfig.userId) {
-          const testPaymentId = 'test_payment_' + Date.now()
-          const testOrderId = `u${paymentConfig.userId.substring(0, 8)}test${Date.now().toString().substring(8)}`
-          
-          const subscriptionData = {
-            user_id: paymentConfig.userId,
-            payment_id: testPaymentId,
-            order_id: testOrderId,
-            amount: paymentConfig.amount * 100, // в копейках
-            payment_url: 'https://securepay.tinkoff.ru/payments/test_payment',
-            metadata: {
-              user_email: paymentConfig.userEmail,
-              description: paymentConfig.description,
-              created_at: new Date().toISOString(),
-              is_test_mode: true
-            }
-          }
-
-          console.log('💾 Сохраняем тестовую подписку в Supabase:', subscriptionData)
-          await createSubscription(subscriptionData)
-          
-          const mockResult: PaymentResult = {
-            success: true,
-            paymentId: testPaymentId,
-            paymentUrl: `/payment/callback?PaymentId=${testPaymentId}&Status=CONFIRMED&OrderId=${testOrderId}`
-          }
-          
-          console.log('🧪 Тестовый режим: возвращаем моковый результат', mockResult)
-          return mockResult
-        }
-        
-        const mockResult: PaymentResult = {
-          success: true,
-          paymentId: 'test_payment_' + Date.now(),
-          paymentUrl: '/payment/callback?PaymentId=test_payment_' + Date.now() + '&Status=CONFIRMED&OrderId=test_order_' + Date.now()
-        }
-        
-        console.log('🧪 Тестовый режим: возвращаем моковый результат', mockResult)
-        return mockResult
+      // Проверяем, что переменные окружения настроены
+      if (paymentConfig.terminalKey === 'your_terminal_key' || paymentConfig.password === 'your_password') {
+        console.warn('⚠️ Переменные окружения Тинькофф не настроены')
+        throw new Error('Переменные окружения Тинькофф не настроены. Обратитесь к администратору.')
       }
 
       console.log('💳 Создаем реальный платеж через Тинькофф СБП:', {
