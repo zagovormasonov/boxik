@@ -67,6 +67,7 @@ export interface User {
   email: string
   name?: string
   avatar?: string
+  created_at?: string
 }
 
 export interface AuthState {

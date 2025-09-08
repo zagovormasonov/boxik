@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { User, Mail, Calendar, LogOut, RotateCcw, FileText } from 'lucide-react'
@@ -16,14 +16,12 @@ const UserProfile: React.FC = () => {
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
 
-  console.log('UserProfile: Состояние результатов теста:', {
-    lastTestResult,
-    isLoadingResults,
-    testError,
-    userId: authState.user?.id
-  })
-
-  console.log('UserProfile: Рендер компонента, authState:', authState)
+  useEffect(() => {
+    if (!authState.user) {
+      console.log('UserProfile: Пользователь не авторизован, перенаправляем на тест')
+      navigate('/')
+    }
+  }, [authState.user, navigate])
 
   const handleRetakeTest = () => {
     navigate('/')
@@ -51,12 +49,7 @@ const UserProfile: React.FC = () => {
     setPaymentModalOpen(false)
   }
 
-  if (!authState.user) {
-    console.log('UserProfile: Пользователь не найден, возвращаем null')
-    return null
-  }
-
-  console.log('UserProfile: Рендерим личный кабинет для', authState.user.name)
+  console.log('UserProfile: Рендерим личный кабинет для', authState.user?.name)
 
   return (
     <div className="profile-container">
@@ -67,14 +60,14 @@ const UserProfile: React.FC = () => {
             Личный кабинет
           </h1>
           <p className="profile-subtitle">
-            Добро пожаловать, {authState.user.name}!
+            Добро пожаловать, {authState.user?.name || 'Пользователь'}!
           </p>
         </div>
 
         {/* Аватар */}
         <div className="profile-avatar-section">
           <div className="profile-avatar">
-            {authState.user.avatar ? (
+            {authState.user?.avatar ? (
               <img 
                 src={authState.user.avatar} 
                 alt="Аватар" 
@@ -92,7 +85,7 @@ const UserProfile: React.FC = () => {
             <User size={18} className="info-icon" />
             <div className="info-content">
               <span className="info-label">Имя</span>
-              <span className="info-value">{authState.user.name}</span>
+              <span className="info-value">{authState.user?.name || 'Не указано'}</span>
             </div>
           </div>
           
@@ -100,7 +93,7 @@ const UserProfile: React.FC = () => {
             <Mail size={18} className="info-icon" />
             <div className="info-content">
               <span className="info-label">Email</span>
-              <span className="info-value">{authState.user.email}</span>
+              <span className="info-value">{authState.user?.email || 'Не указан'}</span>
             </div>
           </div>
           
@@ -108,7 +101,7 @@ const UserProfile: React.FC = () => {
             <Calendar size={18} className="info-icon" />
             <div className="info-content">
               <span className="info-label">Дата регистрации</span>
-              <span className="info-value">{new Date().toLocaleDateString('ru-RU')}</span>
+              <span className="info-value">{authState.user?.created_at ? new Date(authState.user.created_at).toLocaleDateString('ru-RU') : 'Неизвестно'}</span>
             </div>
           </div>
         </div>

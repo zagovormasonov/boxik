@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import AuthForm from '../AuthForm/AuthForm'
 import YandexAuth from '../YandexAuth/YandexAuth'
-import UserProfile from '../UserProfile/UserProfile'
 
 const AuthScreen: React.FC = () => {
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const { authState, login, register } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
     console.log('AuthScreen: Экран авторизации загружен')
@@ -14,11 +15,10 @@ const AuthScreen: React.FC = () => {
 
   useEffect(() => {
     if (authState.user) {
-      console.log('AuthScreen: Пользователь авторизован', authState.user)
-      console.log('AuthScreen: Состояние isLoading:', authState.isLoading)
-      console.log('AuthScreen: Состояние error:', authState.error)
+      console.log('AuthScreen: Пользователь авторизован, переходим в профиль', authState.user)
+      navigate('/profile')
     }
-  }, [authState.user, authState.isLoading, authState.error])
+  }, [authState.user, navigate])
 
   const handleAuth = async (email: string, password: string, name?: string) => {
     if (mode === 'login') {
@@ -33,11 +33,6 @@ const AuthScreen: React.FC = () => {
   }
 
   console.log('AuthScreen: Рендер компонента, authState:', authState)
-
-  if (authState.user) {
-    console.log('AuthScreen: Отображение UserProfile для пользователя', authState.user)
-    return <UserProfile />
-  }
 
   return (
     <div style={{ 

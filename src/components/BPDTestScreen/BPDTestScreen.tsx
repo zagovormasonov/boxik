@@ -18,16 +18,8 @@ const BPDTestScreen: React.FC = () => {
 
   useEffect(() => {
     console.log('BPDTestScreen: Компонент загружен')
-    
-    // Проверяем авторизацию пользователя
-    if (!authState.user) {
-      console.log('BPDTestScreen: Пользователь не авторизован, перенаправляем на авторизацию')
-      navigate('/auth')
-      return
-    }
-    
-    console.log('BPDTestScreen: Пользователь авторизован:', authState.user)
-  }, [authState.user, navigate])
+    console.log('BPDTestScreen: Состояние авторизации:', authState.user ? 'авторизован' : 'не авторизован')
+  }, [authState.user])
 
   const handleAnswerSelect = (answer: number) => {
     dispatch({ 
@@ -41,10 +33,10 @@ const BPDTestScreen: React.FC = () => {
     if (state.currentQuestion === questions.length - 1) {
       dispatch({ type: 'COMPLETE_TEST' })
       
-      // Сохраняем результаты теста БПД перед переходом
+      // Если пользователь авторизован, сохраняем результаты и переходим в профиль
       if (authState.user?.id) {
         try {
-          console.log('BPDTestScreen: Сохраняем результаты теста БПД перед переходом')
+          console.log('BPDTestScreen: Сохраняем результаты теста БПД для авторизованного пользователя')
           
           const completedTestState = {
             ...state,
@@ -56,14 +48,18 @@ const BPDTestScreen: React.FC = () => {
             testState: completedTestState,
             totalQuestions: questions.length
           })
-          console.log('BPDTestScreen: Результаты БПД теста сохранены, переходим к авторизации')
+          console.log('BPDTestScreen: Результаты БПД теста сохранены, переходим в профиль')
+          navigate('/profile')
         } catch (error) {
           console.error('BPDTestScreen: Ошибка при сохранении результатов БПД теста:', error)
           // Продолжаем переход даже при ошибке сохранения
+          navigate('/profile')
         }
+      } else {
+        // Если пользователь не авторизован, переходим на авторизацию
+        console.log('BPDTestScreen: Пользователь не авторизован, переходим на авторизацию')
+        navigate('/auth')
       }
-
-      navigate('/auth')
     } else {
       dispatch({ type: 'NEXT_QUESTION' })
     }
@@ -74,26 +70,35 @@ const BPDTestScreen: React.FC = () => {
   }
 
 
-  if (!authState.user) {
-    return (
-      <div className="test-screen">
-        <div className="test-container">
-          <div className="loading-message">
-            <h2>Проверка авторизации...</h2>
-            <p>Перенаправляем на страницу входа</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   if (state.isCompleted) {
     return (
       <div className="test-screen">
         <div className="test-container">
-          <div className="test-completed">
+          <div className="test-completion">
             <h2>Тест завершен!</h2>
-            <p>Результаты сохранены. Перенаправляем в личный кабинет...</p>
+            <p>Спасибо за прохождение теста. Ваши ответы сохранены.</p>
+            
+            {authState.user ? (
+              <div className="completion-actions">
+                <p>Результаты сохранены в вашем профиле.</p>
+                <button 
+                  onClick={() => navigate('/profile')}
+                  className="btn btn-primary"
+                >
+                  Перейти в профиль
+                </button>
+              </div>
+            ) : (
+              <div className="completion-actions">
+                <p>Для просмотра результатов и скачивания PDF отчета необходимо авторизоваться.</p>
+                <button 
+                  onClick={() => navigate('/auth')}
+                  className="btn btn-primary"
+                >
+                  Авторизоваться
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
