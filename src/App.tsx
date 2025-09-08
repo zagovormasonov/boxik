@@ -23,7 +23,7 @@ function App() {
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/subscription" element={<SubscriptionLanding />} />
               <Route path="/payment" element={<PaymentPage />} />
-              <Route path="/payment/callback" element={<PaymentCallback />} />
+              <Route path="/payment-callback" element={<PaymentCallback />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/auth/yandex/callback" element={<YandexCallback />} />
             </Routes>

@@ -15,6 +15,9 @@ const PaymentCallback: React.FC = () => {
   useEffect(() => {
     const processPaymentCallback = async () => {
       console.log('🚀 PaymentCallback: Начинаем обработку callback')
+      console.log('🚀 PaymentCallback: URL:', window.location.href)
+      console.log('🚀 PaymentCallback: Search params:', Object.fromEntries(searchParams.entries()))
+      
       try {
         // Получаем параметры от Тинькофф
         const paymentId = searchParams.get('PaymentId') || searchParams.get('payment_id') || searchParams.get('PaymentID')
@@ -104,8 +107,9 @@ const PaymentCallback: React.FC = () => {
             setMessage('Перенаправляем в личный кабинет...')
             setTimeout(() => {
               navigate('/profile')
-            }, 2000)
+            }, 1000) // Уменьшили время ожидания
           } else {
+            console.log('❌ PaymentCallback: Есть параметры, но нет PaymentId/OrderId')
             setStatus('error')
             setMessage('Ошибка: отсутствуют необходимые параметры платежа')
             setTimeout(() => {
