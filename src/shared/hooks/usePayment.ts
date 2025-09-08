@@ -131,7 +131,7 @@ export function usePayment() {
       })
 
       // Добавляем URL для callback'а (проверяем валидность)
-      const callbackUrl = `${window.location.origin}/payment/callback`
+      const callbackUrl = `${window.location.origin}/payment-callback`
       console.log('Callback URL:', callbackUrl)
 
       // Подготавливаем данные для запроса

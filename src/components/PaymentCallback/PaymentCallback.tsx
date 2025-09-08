@@ -95,12 +95,23 @@ const PaymentCallback: React.FC = () => {
           console.log('❌ PaymentCallback: Нет PaymentId или OrderId - считаем платеж неуспешным')
           console.log('❌ PaymentCallback: PaymentId =', paymentId, 'OrderId =', orderId)
           console.log('❌ PaymentCallback: Все параметры от Тинькофф:', Object.fromEntries(searchParams.entries()))
-          setStatus('error')
-          setMessage('Ошибка: отсутствуют необходимые параметры платежа')
           
-          setTimeout(() => {
-            navigate('/subscription')
-          }, 3000)
+          // Если нет параметров вообще, возможно пользователь попал по прямой ссылке
+          const allParams = Object.fromEntries(searchParams.entries())
+          if (Object.keys(allParams).length === 0) {
+            console.log('🔄 PaymentCallback: Нет параметров, перенаправляем в личный кабинет')
+            setStatus('success')
+            setMessage('Перенаправляем в личный кабинет...')
+            setTimeout(() => {
+              navigate('/profile')
+            }, 2000)
+          } else {
+            setStatus('error')
+            setMessage('Ошибка: отсутствуют необходимые параметры платежа')
+            setTimeout(() => {
+              navigate('/subscription')
+            }, 3000)
+          }
         }
       } catch (error) {
         console.error('❌ PaymentCallback: Ошибка при обработке callback:', error)
