@@ -164,21 +164,21 @@ export function usePDFGenerator() {
       const pageHeight = 295
       const imgHeight = (canvas.height * imgWidth) / canvas.width
       
-      // Добавляем отступы для лучшей читаемости
-      const marginTop = 15
-      const marginBottom = 15
-      const availableHeight = pageHeight - marginTop - marginBottom
+      // Добавляем безопасную зону (safezone) для предотвращения обрезания текста
+      const safezoneBottom = 30 // 30px снизу страницы
+      const safezoneTop = 30    // 30px сверху следующей страницы
+      const availableHeight = pageHeight - safezoneBottom - safezoneTop
       
       let heightLeft = imgHeight
-      let position = -marginTop
+      let position = -safezoneTop
       
-      // Добавляем первую страницу
+      // Добавляем первую страницу с безопасной зоной сверху
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
       heightLeft -= availableHeight
       
-      // Добавляем дополнительные страницы с правильными отступами
+      // Добавляем дополнительные страницы с правильными безопасными зонами
       while (heightLeft > 0) {
-        position = -marginTop - (imgHeight - heightLeft)
+        position = -safezoneTop - (imgHeight - heightLeft)
         pdf.addPage()
         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
         heightLeft -= availableHeight
