@@ -148,14 +148,6 @@ export function useSubscriptions() {
 
     try {
       console.log('🔍 useSubscriptions: Получаем активную подписку для пользователя:', userId)
-      
-      // Проверяем авторизацию в Supabase
-      const { data: { user }, error: authError } = await supabase.auth.getUser()
-      if (authError) {
-        console.error('❌ useSubscriptions: Ошибка авторизации:', authError)
-        throw authError
-      }
-      console.log('🔍 useSubscriptions: Авторизованный пользователь:', user?.id)
 
       const { data: subscriptions, error } = await supabase
         .from('subscriptions')
