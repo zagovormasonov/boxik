@@ -179,6 +179,7 @@ const YandexCallback: React.FC = () => {
             .insert({
               id: newUserId,
               email: userEmail,
+
               name: userName,
               avatar_url: userAvatar,
               provider: 'yandex',
@@ -224,8 +225,17 @@ const YandexCallback: React.FC = () => {
         
         // Небольшая задержка для обновления состояния
         setTimeout(() => {
-          console.log('YandexCallback: Перенаправление в личный кабинет')
-          navigate('/auth')
+          // Проверяем, откуда пришел пользователь (из state параметра)
+          const state = searchParams.get('state')
+          console.log('YandexCallback: State параметр:', state)
+          
+          if (state === '/payment') {
+            console.log('YandexCallback: Перенаправление на страницу оплаты')
+            navigate('/payment')
+          } else {
+            console.log('YandexCallback: Перенаправление в личный кабинет')
+            navigate('/auth')
+          }
         }, 100)
         
       } catch (error) {

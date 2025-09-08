@@ -22,13 +22,13 @@ const SubscriptionLanding: React.FC = () => {
       // Если пользователь уже авторизован, сразу открываем оплату
       setPaymentModalOpen(true)
     } else {
-      // Если не авторизован, запускаем авторизацию через Яндекс
+      // Если не авторизован, запускаем авторизацию через Яндекс с редиректом на оплату
       setIsProcessing(true)
       
-      // Создаем URL для авторизации через Яндекс с редиректом обратно на лендинг
-      const yandexAuthUrl = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${import.meta.env.VITE_YANDEX_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/yandex/callback')}&scope=login:email+login:info&state=${encodeURIComponent(window.location.pathname)}`
+      // Создаем URL для авторизации через Яндекс с редиректом на страницу оплаты
+      const yandexAuthUrl = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${import.meta.env.VITE_YANDEX_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/yandex/callback')}&scope=login:email+login:info&state=${encodeURIComponent('/payment')}`
       
-      console.log('Перенаправляем на авторизацию Яндекс:', yandexAuthUrl)
+      console.log('Перенаправляем на авторизацию Яндекс с редиректом на оплату:', yandexAuthUrl)
       window.location.href = yandexAuthUrl
     }
   }
