@@ -1180,6 +1180,108 @@ body {
   color: #374151;
 }
 
+/* Yandex Auth Styles */
+.yandex-auth-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: #e5e7eb;
+}
+
+.divider-text {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.yandex-auth-button {
+  width: 100%;
+  padding: 14px 24px;
+  border: 2px solid #FFCC00;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(255, 204, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.yandex-auth-button:hover:not(:disabled) {
+  background: #FFCC00;
+  color: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(255, 204, 0, 0.3);
+}
+
+.yandex-auth-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(255, 204, 0, 0.2);
+}
+
+.yandex-auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.yandex-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #FFCC00;
+  flex-shrink: 0;
+}
+
+.yandex-logo svg {
+  width: 16px;
+  height: 16px;
+}
+
+.yandex-button-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: inherit;
+}
+
+/* Анимация загрузки */
+.yandex-auth-button:disabled .yandex-logo {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

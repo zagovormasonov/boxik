@@ -13,45 +13,27 @@ const YandexAuth: React.FC = () => {
   }
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '20px' }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '8px',
-        marginBottom: '16px',
-        color: '#6b7280',
-        fontSize: '14px'
-      }}>
-        <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
-        <span>или</span>
-        <div style={{ flex: 1, height: '1px', background: '#e5e7eb' }} />
+    <div className="yandex-auth-container">
+      <div className="auth-divider">
+        <div className="divider-line" />
+        <span className="divider-text">или</span>
+        <div className="divider-line" />
       </div>
 
       <button
         onClick={handleYandexLogin}
         disabled={authState.isLoading}
-        style={{
-          width: '100%',
-          padding: '12px 24px',
-          border: '2px solid #ffcc00',
-          borderRadius: '8px',
-          background: 'white',
-          color: '#000',
-          fontSize: '16px',
-          fontWeight: '500',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px'
-        }}
+        className="yandex-auth-button"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-        </svg>
-        {authState.isLoading ? 'Загрузка...' : 'Войти через Яндекс'}
+        <div className="yandex-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" fill="#FFCC00"/>
+            <path d="M8 8h8v2H8V8zm0 3h8v2H8v-2zm0 3h5v2H8v-2z" fill="#000"/>
+          </svg>
+        </div>
+        <span className="yandex-button-text">
+          {authState.isLoading ? 'Загрузка...' : 'Войти через Яндекс'}
+        </span>
       </button>
     </div>
   )
