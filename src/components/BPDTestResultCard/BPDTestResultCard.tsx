@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { CheckCircle, Send, Download } from 'lucide-react'
+import { CheckCircle, Send, Download, Lock } from 'lucide-react'
 import { usePDFGenerator } from '../../shared/hooks/usePDFGenerator'
 import { BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
 import { bpdQuestions } from '../../contexts/BPDTestContext'
+import { usePaymentContext } from '../../contexts/PaymentContext'
 
 interface BPDTestResultCardProps {
   testResult: BPDTestResultWithDetails
@@ -17,8 +18,14 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
 }) => {
   const [isSent, setIsSent] = useState(false)
   const { generateTestResultPDF, isGenerating } = usePDFGenerator()
+  const { hasPaid, showPaymentModal } = usePaymentContext()
 
   const handleSendToSpecialist = async () => {
+    if (!hasPaid) {
+      showPaymentModal()
+      return
+    }
+
     const success = await onSendToSpecialist(testResult)
     if (success) {
       setIsSent(true)
@@ -26,6 +33,11 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
   }
 
   const handleDownloadPDF = async () => {
+    if (!hasPaid) {
+      showPaymentModal()
+      return
+    }
+
     // Для БПД теста создаем упрощенную версию PDF
     const success = await generateBPDTestResultPDF(testResult)
     if (!success) {
@@ -134,20 +146,20 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
           <button
             onClick={handleSendToSpecialist}
             disabled={isSending}
-            className="send-button"
+            className={`send-button ${!hasPaid ? 'locked' : ''}`}
           >
-            <Send size={20} />
-            {isSending ? 'Отправка...' : 'Отправить специалисту'}
+            {!hasPaid ? <Lock size={20} /> : <Send size={20} />}
+            {isSending ? 'Отправка...' : !hasPaid ? 'Оплатить для отправки' : 'Отправить специалисту'}
           </button>
         )}
 
         <button
           onClick={handleDownloadPDF}
           disabled={isGenerating}
-          className="download-pdf-button"
+          className={`download-pdf-button ${!hasPaid ? 'locked' : ''}`}
         >
-          <Download size={20} />
-          {isGenerating ? 'Генерация PDF...' : 'Скачать PDF'}
+          {!hasPaid ? <Lock size={20} /> : <Download size={20} />}
+          {isGenerating ? 'Генерация PDF...' : !hasPaid ? 'Оплатить для скачивания' : 'Скачать PDF'}
         </button>
       </div>
     </div>

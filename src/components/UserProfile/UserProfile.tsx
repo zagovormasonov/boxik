@@ -5,11 +5,14 @@ import { User, Mail, Calendar, LogOut, RotateCcw, FileText } from 'lucide-react'
 import { useBPDTestResults, BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
 import BPDTestResultCard from '../BPDTestResultCard/BPDTestResultCard'
 import MascotRecommendation from '../MascotRecommendation/MascotRecommendation'
+import PaymentModal from '../PaymentModal/PaymentModal'
+import { usePaymentContext } from '../../contexts/PaymentContext'
 
 const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
   const navigate = useNavigate()
   const [isSendingResults, setIsSendingResults] = useState(false)
+  const { paymentModalOpen, setPaymentModalOpen, setHasPaid } = usePaymentContext()
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
 
@@ -21,15 +24,6 @@ const UserProfile: React.FC = () => {
   })
 
   console.log('UserProfile: Рендер компонента, authState:', authState)
-
-  const handleLogout = async () => {
-    try {
-      await logout()
-      navigate('/')
-    } catch (error) {
-      console.error('UserProfile: Ошибка выхода', error)
-    }
-  }
 
   const handleRetakeTest = () => {
     navigate('/')
@@ -46,6 +40,15 @@ const UserProfile: React.FC = () => {
     } finally {
       setIsSendingResults(false)
     }
+  }
+
+  const handlePaymentSuccess = () => {
+    setHasPaid(true)
+    console.log('Оплата успешно завершена')
+  }
+
+  const handleClosePaymentModal = () => {
+    setPaymentModalOpen(false)
   }
 
   if (!authState.user) {
@@ -149,7 +152,7 @@ const UserProfile: React.FC = () => {
           </button>
           
           <button
-            onClick={handleLogout}
+            onClick={logout}
             className="action-button action-button-secondary"
           >
             <LogOut size={20} />
@@ -157,6 +160,15 @@ const UserProfile: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* Модальное окно оплаты */}
+      <PaymentModal
+        isOpen={paymentModalOpen}
+        onClose={handleClosePaymentModal}
+        onPaymentSuccess={handlePaymentSuccess}
+        amount={500}
+        description="Доступ к результатам психологического теста БПД и возможность скачивания PDF отчета"
+      />
     </div>
   )
 }

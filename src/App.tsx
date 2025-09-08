@@ -5,19 +5,22 @@ import AuthCallback from './components/AuthCallback/AuthCallback'
 import YandexCallback from './components/YandexCallback/YandexCallback'
 import { BPDTestProvider } from './contexts/BPDTestContext'
 import { AuthProvider } from './contexts/AuthContext'
+import { PaymentProvider } from './contexts/PaymentContext'
 
 function App() {
   return (
     <BPDTestProvider>
       <AuthProvider>
-        <div className="container">
-          <Routes>
-            <Route path="/" element={<BPDTestScreen />} />
-            <Route path="/auth" element={<AuthScreen />} />
-            <Route path="/auth/callback" element={<AuthCallback />} />
-            <Route path="/auth/yandex/callback" element={<YandexCallback />} />
-          </Routes>
-        </div>
+        <PaymentProvider>
+          <div className="container">
+            <Routes>
+              <Route path="/" element={<BPDTestScreen />} />
+              <Route path="/auth" element={<AuthScreen />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
+              <Route path="/auth/yandex/callback" element={<YandexCallback />} />
+            </Routes>
+          </div>
+        </PaymentProvider>
       </AuthProvider>
     </BPDTestProvider>
   )
