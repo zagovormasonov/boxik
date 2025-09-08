@@ -24,6 +24,10 @@ const PaymentCallback: React.FC = () => {
       forceSetPaid(true)
       console.log('🔄 PaymentCallback: hasPaid установлен в true, localStorage:', localStorage.getItem('hasPaid'))
       
+      // Устанавливаем статус успеха сразу
+      setStatus('success')
+      setMessage('Оплата успешно завершена!')
+      
       try {
         // Получаем параметры от Тинькофф
         const paymentId = searchParams.get('PaymentId') || searchParams.get('payment_id') || searchParams.get('PaymentID')

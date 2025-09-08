@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { User, Mail, Calendar, LogOut, RotateCcw, FileText } from 'lucide-react'
 import { useBPDTestResults, BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
@@ -11,6 +11,7 @@ import { usePaymentContext } from '../../contexts/PaymentContext'
 const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [isSendingResults, setIsSendingResults] = useState(false)
   const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, hasPaid, forceSetPaid } = usePaymentContext()
   
@@ -38,6 +39,32 @@ const UserProfile: React.FC = () => {
   useEffect(() => {
     console.log('UserProfile: hasPaid изменился на:', hasPaid)
   }, [hasPaid])
+
+  // Проверяем параметры оплаты в URL
+  useEffect(() => {
+    const paymentId = searchParams.get('PaymentId') || searchParams.get('payment_id') || searchParams.get('PaymentID')
+    const orderId = searchParams.get('OrderId') || searchParams.get('order_id') || searchParams.get('OrderID')
+    const status = searchParams.get('Status') || searchParams.get('status')
+    
+    console.log('UserProfile: Проверяем параметры оплаты в URL:', {
+      paymentId,
+      orderId,
+      status,
+      allParams: Object.fromEntries(searchParams.entries())
+    })
+    
+    // Если есть параметры оплаты, автоматически устанавливаем hasPaid: true
+    if (paymentId || orderId) {
+      console.log('UserProfile: Обнаружены параметры оплаты, автоматически устанавливаем hasPaid: true')
+      forceSetPaid(true)
+      
+      // Очищаем URL от параметров оплаты
+      const newUrl = new URL(window.location.href)
+      newUrl.search = ''
+      window.history.replaceState({}, '', newUrl.toString())
+      console.log('UserProfile: URL очищен от параметров оплаты')
+    }
+  }, [searchParams, forceSetPaid])
 
   useEffect(() => {
     // Добавляем небольшую задержку для восстановления пользователя из localStorage
