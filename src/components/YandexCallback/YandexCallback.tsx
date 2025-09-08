@@ -73,10 +73,34 @@ const YandexCallback: React.FC = () => {
           
           const userData = await userResponse.json()
           console.log('YandexCallback: Данные пользователя получены', userData)
+          console.log('YandexCallback: Доступные поля имени:', {
+            first_name: userData.first_name,
+            last_name: userData.last_name,
+            real_name: userData.real_name,
+            display_name: userData.display_name,
+            login: userData.login
+          })
           
           // Извлекаем данные пользователя
           userEmail = userData.default_email || `yandex_${userData.id}@yandex.ru`
-          userName = userData.real_name || userData.display_name || userData.login || `Пользователь Яндекс ${userData.id}`
+          
+          // Приоритет для имени: first_name + last_name, затем real_name, затем display_name, затем login
+          if (userData.first_name && userData.last_name) {
+            userName = `${userData.first_name} ${userData.last_name}`.trim()
+          } else if (userData.first_name) {
+            userName = userData.first_name
+          } else if (userData.real_name) {
+            userName = userData.real_name
+          } else if (userData.display_name) {
+            userName = userData.display_name
+          } else if (userData.login) {
+            userName = userData.login
+          } else {
+            userName = `Пользователь Яндекс ${userData.id}`
+          }
+          
+          console.log('YandexCallback: Финальное имя пользователя:', userName)
+          
           userAvatar = userData.default_avatar_id ? `https://avatars.yandex.net/get-yapic/${userData.default_avatar_id}/islands-200` : null
           yandexId = userData.id
           yandexLogin = userData.login
