@@ -147,8 +147,6 @@ export function useSubscriptions() {
     setError(null)
 
     try {
-      console.log('🔍 useSubscriptions: Получаем активную подписку для пользователя:', userId)
-
       const { data: subscriptions, error } = await supabase
         .from('subscriptions')
         .select('*')
@@ -169,11 +167,9 @@ export function useSubscriptions() {
       }
 
       if (!subscriptions || subscriptions.length === 0) {
-        console.log('ℹ️ useSubscriptions: Активная подписка не найдена для пользователя:', userId)
         return null
       }
 
-      console.log('✅ useSubscriptions: Активная подписка найдена:', subscriptions[0])
       return subscriptions[0]
     } catch (err) {
       console.error('❌ useSubscriptions: Ошибка при получении подписки:', err)
@@ -186,12 +182,9 @@ export function useSubscriptions() {
 
   // Проверка наличия активной подписки
   const hasActiveSubscription = async (userId: string): Promise<boolean> => {
-    console.log('🔍 hasActiveSubscription: Проверяем активную подписку для пользователя:', userId)
     try {
       const subscription = await getActiveSubscription(userId)
-      const hasActive = subscription !== null
-      console.log('🔍 hasActiveSubscription: Результат проверки:', hasActive)
-      return hasActive
+      return subscription !== null
     } catch (error) {
       console.error('❌ hasActiveSubscription: Ошибка при проверке подписки:', error)
       return false
