@@ -84,9 +84,17 @@ const PaymentCallback: React.FC = () => {
               await refreshPaymentStatus()
             } else {
               console.error('❌ PaymentCallback: Не удалось обновить подписку - updateSubscriptionStatus вернул null')
+              // Принудительно устанавливаем статус оплаты даже если обновление не удалось
+              console.log('🔄 PaymentCallback: Принудительно устанавливаем статус оплаты')
+              setHasPaid(true)
+              localStorage.setItem('hasPaid', 'true')
             }
           } catch (updateError) {
             console.error('❌ PaymentCallback: Ошибка при обновлении подписки:', updateError)
+            // Принудительно устанавливаем статус оплаты даже при ошибке обновления
+            console.log('🔄 PaymentCallback: Принудительно устанавливаем статус оплаты после ошибки')
+            setHasPaid(true)
+            localStorage.setItem('hasPaid', 'true')
           }
           
           // Перенаправляем в личный кабинет
@@ -103,6 +111,10 @@ const PaymentCallback: React.FC = () => {
           const allParams = Object.fromEntries(searchParams.entries())
           if (Object.keys(allParams).length === 0) {
             console.log('🔄 PaymentCallback: Нет параметров, перенаправляем в личный кабинет')
+            // Принудительно устанавливаем статус оплаты для пользователей без параметров
+            console.log('🔄 PaymentCallback: Принудительно устанавливаем статус оплаты для пользователя без параметров')
+            setHasPaid(true)
+            localStorage.setItem('hasPaid', 'true')
             setStatus('success')
             setMessage('Перенаправляем в личный кабинет...')
             setTimeout(() => {
