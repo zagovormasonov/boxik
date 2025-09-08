@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
+import { usePaymentContext } from '../../contexts/PaymentContext'
 import AuthForm from '../AuthForm/AuthForm'
 import YandexAuth from '../YandexAuth/YandexAuth'
 
 const AuthScreen: React.FC = () => {
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const { authState, login, register } = useAuth()
+  const { hasPaid } = usePaymentContext()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -43,6 +45,25 @@ const AuthScreen: React.FC = () => {
       padding: '20px'
     }}>
       <div className="card" style={{ maxWidth: '400px', width: '100%' }}>
+        {/* Сообщение об успешной оплате */}
+        {hasPaid && (
+          <div style={{
+            background: 'linear-gradient(135deg, #10b981, #059669)',
+            color: 'white',
+            padding: '16px',
+            borderRadius: '12px',
+            marginBottom: '24px',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: '600' }}>
+              ✅ Оплата успешно завершена!
+            </h3>
+            <p style={{ margin: '0', fontSize: '14px', opacity: 0.9 }}>
+              Теперь авторизуйтесь, чтобы получить доступ к результатам теста
+            </p>
+          </div>
+        )}
+
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
           <h1 style={{ 
             fontSize: '24px', 
@@ -50,12 +71,21 @@ const AuthScreen: React.FC = () => {
             marginBottom: '8px',
             color: '#1f2937'
           }}>
-            {mode === 'login' ? 'Вход в систему' : 'Регистрация'}
+            {hasPaid 
+              ? (mode === 'login' ? 'Вход для доступа к результатам' : 'Регистрация для доступа к результатам')
+              : (mode === 'login' ? 'Вход в систему' : 'Регистрация')
+            }
           </h1>
           <p style={{ color: '#6b7280', fontSize: '14px' }}>
-            {mode === 'login' 
-              ? 'Войдите в свой аккаунт' 
-              : 'Создайте новый аккаунт'
+            {hasPaid 
+              ? (mode === 'login' 
+                  ? 'Войдите в аккаунт, чтобы получить доступ к результатам теста' 
+                  : 'Создайте аккаунт, чтобы получить доступ к результатам теста'
+                )
+              : (mode === 'login' 
+                  ? 'Войдите в свой аккаунт' 
+                  : 'Создайте новый аккаунт'
+                )
             }
           </p>
         </div>

@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { X, CreditCard, Shield } from 'lucide-react'
+import { usePayment } from '../../shared/hooks/usePayment'
 
 interface PaymentModalProps {
   isOpen: boolean
@@ -16,37 +17,36 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   amount,
   description
 }) => {
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const { createPayment, isProcessing, error } = usePayment()
 
   const handlePayment = async () => {
-    setIsProcessing(true)
-    setError(null)
-
     try {
-      // Здесь будет интеграция с Тинькофф СБП
-      // Пока что симуляция успешной оплаты
       console.log('Инициируем оплату через Тинькофф СБП:', {
         amount,
         description
       })
 
-      // Симуляция задержки оплаты
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const result = await createPayment({
+        amount,
+        description
+      })
 
-      // В реальной реализации здесь будет:
-      // 1. Создание платежа через API Тинькофф
-      // 2. Получение ссылки на оплату
-      // 3. Перенаправление пользователя на оплату
-      // 4. Обработка callback'а об успешной оплате
-
-      onPaymentSuccess()
-      onClose()
+      if (result.success) {
+        console.log('Платеж успешно создан:', result)
+        
+        // В реальной реализации здесь будет:
+        // 1. Перенаправление на result.paymentUrl
+        // 2. Обработка callback'а об успешной оплате
+        // 3. Проверка статуса платежа
+        
+        // Пока что симулируем успешную оплату
+        onPaymentSuccess()
+        onClose()
+      } else {
+        console.error('Ошибка при создании платежа:', result.error)
+      }
     } catch (err) {
       console.error('Ошибка при обработке платежа:', err)
-      setError('Произошла ошибка при обработке платежа. Попробуйте еще раз.')
-    } finally {
-      setIsProcessing(false)
     }
   }
 

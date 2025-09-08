@@ -19,11 +19,11 @@ export function usePayment() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Конфигурация для Тинькофф СБП (пока что заглушка)
+  // Конфигурация для Тинькофф СБП
   const defaultConfig: PaymentConfig = {
-    terminalKey: process.env.VITE_TINKOFF_TERMINAL_KEY || 'your_terminal_key',
-    password: process.env.VITE_TINKOFF_PASSWORD || 'your_password',
-    apiUrl: process.env.VITE_TINKOFF_API_URL || 'https://securepay.tinkoff.ru/v2/',
+    terminalKey: import.meta.env.VITE_TINKOFF_TERMINAL_KEY || process.env.VITE_TINKOFF_TERMINAL_KEY || 'your_terminal_key',
+    password: import.meta.env.VITE_TINKOFF_PASSWORD || process.env.VITE_TINKOFF_PASSWORD || 'your_password',
+    apiUrl: import.meta.env.VITE_TINKOFF_API_URL || process.env.VITE_TINKOFF_API_URL || 'https://securepay.tinkoff.ru/v2/',
     amount: 500, // 500 рублей за доступ к результатам
     description: 'Доступ к результатам психологического теста БПД'
   }
@@ -35,10 +35,17 @@ export function usePayment() {
     try {
       const paymentConfig = { ...defaultConfig, ...config }
       
-      console.log('Создаем платеж через Тинькофф СБП:', {
+      // Отладочная информация для проверки переменных окружения
+      console.log('🔧 Отладка переменных окружения:')
+      console.log('- VITE_TINKOFF_TERMINAL_KEY:', import.meta.env.VITE_TINKOFF_TERMINAL_KEY ? '✅ Настроен' : '❌ Не настроен')
+      console.log('- VITE_TINKOFF_PASSWORD:', import.meta.env.VITE_TINKOFF_PASSWORD ? '✅ Настроен' : '❌ Не настроен')
+      console.log('- VITE_TINKOFF_API_URL:', import.meta.env.VITE_TINKOFF_API_URL || 'Используется по умолчанию')
+      
+      console.log('💳 Создаем платеж через Тинькофф СБП:', {
         terminalKey: paymentConfig.terminalKey,
         amount: paymentConfig.amount,
-        description: paymentConfig.description
+        description: paymentConfig.description,
+        apiUrl: paymentConfig.apiUrl
       })
 
       // Здесь будет реальная интеграция с Тинькофф API
