@@ -224,6 +224,11 @@ export function usePayment() {
           await createSubscription(subscriptionData)
         }
 
+        // Принудительно устанавливаем hasPaid в localStorage после создания платежа
+        // Это гарантирует доступ даже если callback не сработает
+        console.log('🔄 Принудительно устанавливаем hasPaid: true в localStorage после создания платежа')
+        localStorage.setItem('hasPaid', 'true')
+        
         return {
           success: true,
           paymentId: result.PaymentId,

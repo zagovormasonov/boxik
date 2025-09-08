@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import { CreditCard, Shield, Check, ArrowLeft } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePayment } from '../../shared/hooks/usePayment'
+import { usePaymentContext } from '../../contexts/PaymentContext'
 import SupabaseDiagnostics from '../SupabaseDiagnostics/SupabaseDiagnostics'
 
 const PaymentPage: React.FC = () => {
   const navigate = useNavigate()
   const { authState } = useAuth()
   const { createPayment, isProcessing, error } = usePayment()
+  const { forceSetPaid } = usePaymentContext()
   const [isCreatingPayment, setIsCreatingPayment] = useState(false)
   const [showDiagnostics, setShowDiagnostics] = useState(false)
 
@@ -41,6 +43,9 @@ const PaymentPage: React.FC = () => {
 
       if (result.success && result.paymentUrl) {
         console.log('Платеж успешно создан, перенаправляем на оплату:', result)
+        // Принудительно устанавливаем hasPaid: true перед редиректом
+        console.log('🔄 PaymentPage: Принудительно устанавливаем hasPaid: true перед редиректом')
+        forceSetPaid(true)
         window.location.href = result.paymentUrl
       } else {
         console.error('Ошибка при создании платежа:', result.error)
