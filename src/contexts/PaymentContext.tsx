@@ -37,6 +37,10 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
           localStorage.setItem('hasPaid', hasActive.toString())
         } catch (error) {
           console.error('PaymentProvider: Ошибка при начальной проверке подписки:', error)
+          // Fallback: используем localStorage если Supabase недоступен
+          const localHasPaid = localStorage.getItem('hasPaid') === 'true'
+          console.log('🔄 PaymentProvider: Используем fallback из localStorage для начальной проверки:', localHasPaid)
+          setHasPaid(localHasPaid)
         }
       }
     }
@@ -54,8 +58,10 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
           localStorage.setItem('hasPaid', hasActive.toString())
         } catch (error) {
           console.error('❌ PaymentContext: Ошибка при проверке подписки:', error)
-          setHasPaid(false)
-          localStorage.setItem('hasPaid', 'false')
+          // Fallback: проверяем localStorage если Supabase недоступен
+          const localHasPaid = localStorage.getItem('hasPaid') === 'true'
+          console.log('🔄 PaymentContext: Используем fallback из localStorage:', localHasPaid)
+          setHasPaid(localHasPaid)
         }
       } else {
         setHasPaid(false)
@@ -83,10 +89,18 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
   const refreshPaymentStatus = async () => {
     if (authState.user?.id) {
       console.log('🔄 Принудительно обновляем статус оплаты для пользователя:', authState.user.id)
-      const hasActive = await hasActiveSubscription(authState.user.id)
-      console.log('🔄 Новый статус оплаты:', hasActive)
-      setHasPaid(hasActive)
-      localStorage.setItem('hasPaid', hasActive.toString())
+      try {
+        const hasActive = await hasActiveSubscription(authState.user.id)
+        console.log('🔄 Новый статус оплаты:', hasActive)
+        setHasPaid(hasActive)
+        localStorage.setItem('hasPaid', hasActive.toString())
+      } catch (error) {
+        console.error('❌ PaymentContext: Ошибка при обновлении статуса оплаты:', error)
+        // Fallback: используем localStorage если Supabase недоступен
+        const localHasPaid = localStorage.getItem('hasPaid') === 'true'
+        console.log('🔄 PaymentContext: Используем fallback из localStorage для обновления:', localHasPaid)
+        setHasPaid(localHasPaid)
+      }
     }
   }
 
