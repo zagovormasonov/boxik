@@ -55,10 +55,16 @@ const PaymentCallback: React.FC = () => {
 
         // Проверяем статус платежа
         console.log('🔍 Проверяем статус платежа:', status)
+        console.log('🔍 Проверяем условия:', {
+          statusIsNull: status === null,
+          statusIsEmpty: status === '',
+          hasPaymentId: !!paymentId,
+          hasOrderId: !!orderId,
+          success: success
+        })
         
         // Если статус null, но есть PaymentId и OrderId, считаем платеж успешным
-        // Также проверяем параметр Success
-        if ((status === null || status === '') && paymentId && orderId && (success === 'true' || success === null)) {
+        if ((status === null || status === '') && paymentId && orderId) {
           console.log('✅ Статус null/пустой, но есть PaymentId и OrderId - считаем платеж успешным')
           setStatus('success')
           setMessage('Оплата успешно завершена!')
@@ -89,6 +95,40 @@ const PaymentCallback: React.FC = () => {
           // Перенаправляем в личный кабинет
           setTimeout(() => {
             console.log('🔄 Перенаправляем в профиль после успешной оплаты (статус null)')
+            navigate('/profile')
+          }, 3000)
+        } else if (paymentId && orderId) {
+          // Fallback: если есть PaymentId и OrderId, но нет явного статуса ошибки, считаем успешным
+          console.log('✅ Fallback: есть PaymentId и OrderId, считаем платеж успешным')
+          setStatus('success')
+          setMessage('Оплата успешно завершена!')
+          
+          // Обновляем статус подписки в Supabase
+          console.log('🔄 Обновляем статус подписки в Supabase (fallback):', paymentId)
+          try {
+            const updatedSubscription = await updateSubscriptionStatus(paymentId, 'confirmed', {
+              callback_status: status || 'fallback_success',
+              callback_message: message || 'Платеж успешен (fallback логика)',
+              callback_order_id: orderId,
+              callback_user_id: userId,
+              completed_at: new Date().toISOString()
+            })
+            
+            if (updatedSubscription) {
+              console.log('✅ Подписка успешно обновлена:', updatedSubscription)
+              setHasPaid(true)
+              localStorage.setItem('hasPaid', 'true')
+              await refreshPaymentStatus()
+            } else {
+              console.error('❌ Не удалось обновить подписку - updateSubscriptionStatus вернул null')
+            }
+          } catch (updateError) {
+            console.error('❌ Ошибка при обновлении подписки:', updateError)
+          }
+          
+          // Перенаправляем в личный кабинет
+          setTimeout(() => {
+            console.log('🔄 Перенаправляем в профиль после успешной оплаты (fallback)')
             navigate('/profile')
           }, 3000)
         } else if (status === 'CONFIRMED' || status === 'AUTHORIZED' || status === 'COMPLETED' || status === 'SUCCESS') {
@@ -153,40 +193,6 @@ const PaymentCallback: React.FC = () => {
           // Перенаправляем на лендинг через 3 секунды
           setTimeout(() => {
             navigate('/subscription')
-          }, 3000)
-        } else if (paymentId && orderId) {
-          // Fallback: если есть PaymentId и OrderId, но нет явного статуса ошибки, считаем успешным
-          console.log('✅ Fallback: есть PaymentId и OrderId, считаем платеж успешным')
-          setStatus('success')
-          setMessage('Оплата успешно завершена!')
-          
-          // Обновляем статус подписки в Supabase
-          console.log('🔄 Обновляем статус подписки в Supabase (fallback):', paymentId)
-          try {
-            const updatedSubscription = await updateSubscriptionStatus(paymentId, 'confirmed', {
-              callback_status: status || 'fallback_success',
-              callback_message: message || 'Платеж успешен (fallback логика)',
-              callback_order_id: orderId,
-              callback_user_id: userId,
-              completed_at: new Date().toISOString()
-            })
-            
-            if (updatedSubscription) {
-              console.log('✅ Подписка успешно обновлена:', updatedSubscription)
-              setHasPaid(true)
-              localStorage.setItem('hasPaid', 'true')
-              await refreshPaymentStatus()
-            } else {
-              console.error('❌ Не удалось обновить подписку - updateSubscriptionStatus вернул null')
-            }
-          } catch (updateError) {
-            console.error('❌ Ошибка при обновлении подписки:', updateError)
-          }
-          
-          // Перенаправляем в личный кабинет
-          setTimeout(() => {
-            console.log('🔄 Перенаправляем в профиль после успешной оплаты (fallback)')
-            navigate('/profile')
           }, 3000)
         } else {
           // Неизвестный статус
