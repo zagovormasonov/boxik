@@ -1,5 +1,6 @@
 import React from 'react'
 import { useAuth } from '../../contexts/AuthContext'
+import yandexLogo from '../../img/yandex.png'
 
 const YandexAuth: React.FC = () => {
   const { loginWithYandex, authState } = useAuth()
@@ -26,10 +27,11 @@ const YandexAuth: React.FC = () => {
         className="yandex-auth-button"
       >
         <div className="yandex-logo">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" fill="#FFCC00"/>
-            <path d="M8 8h8v2H8V8zm0 3h8v2H8v-2zm0 3h5v2H8v-2z" fill="#000"/>
-          </svg>
+          <img 
+            src={yandexLogo} 
+            alt="Яндекс" 
+            className="yandex-logo-image"
+          />
         </div>
         <span className="yandex-button-text">
           {authState.isLoading ? 'Загрузка...' : 'Войти через Яндекс'}

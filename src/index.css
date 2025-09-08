@@ -1255,11 +1255,14 @@ body {
   border-radius: 50%;
   background: #FFCC00;
   flex-shrink: 0;
+  padding: 2px;
 }
 
-.yandex-logo svg {
-  width: 16px;
-  height: 16px;
+.yandex-logo-image {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 50%;
 }
 
 .yandex-button-text {
