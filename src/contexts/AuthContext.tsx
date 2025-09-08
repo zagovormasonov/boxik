@@ -8,6 +8,7 @@ interface AuthContextType {
   register: (email: string, password: string, name?: string) => Promise<void>
   loginWithYandex: () => Promise<void>
   logout: () => void
+  updateUser: (updatedUser: User) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -318,13 +319,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const updateUser = (updatedUser: User) => {
+    console.log('AuthProvider: Обновление пользователя', updatedUser)
+    setAuthState(prev => ({
+      ...prev,
+      user: updatedUser
+    }))
+  }
+
   return (
     <AuthContext.Provider value={{
       authState,
       login,
       register,
       loginWithYandex,
-      logout
+      logout,
+      updateUser
     }}>
       {children}
     </AuthContext.Provider>
