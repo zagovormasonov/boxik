@@ -25,10 +25,15 @@ const UserProfile: React.FC = () => {
   }, [authState.user?.id, refreshPaymentStatus])
 
   useEffect(() => {
-    if (!authState.user) {
-      console.log('UserProfile: Пользователь не авторизован, перенаправляем на тест')
-      navigate('/')
-    }
+    // Добавляем небольшую задержку для восстановления пользователя из localStorage
+    const timer = setTimeout(() => {
+      if (!authState.user) {
+        console.log('UserProfile: Пользователь не авторизован после задержки, перенаправляем на тест')
+        navigate('/')
+      }
+    }, 1000) // 1 секунда задержки
+
+    return () => clearTimeout(timer)
   }, [authState.user, navigate])
 
   const handleRetakeTest = () => {
@@ -53,6 +58,20 @@ const UserProfile: React.FC = () => {
   }
 
   console.log('UserProfile: Рендерим личный кабинет для', authState.user?.name)
+
+  // Показываем загрузку, если пользователь еще не восстановлен
+  if (!authState.user) {
+    return (
+      <div className="profile-container">
+        <div className="profile-card">
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <p>Восстанавливаем сессию...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="profile-container">

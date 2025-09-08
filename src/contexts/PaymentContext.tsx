@@ -18,11 +18,31 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
   const [hasPaid, setHasPaid] = useState<boolean>(() => {
     // Загружаем состояние оплаты из localStorage при инициализации
     const saved = localStorage.getItem('hasPaid')
+    console.log('PaymentProvider: Инициализация с hasPaid из localStorage:', saved)
     return saved === 'true'
   })
   const [paymentModalOpen, setPaymentModalOpen] = useState(false)
   const { hasActiveSubscription } = useSubscriptions()
   const { authState } = useAuth()
+
+  // Принудительная проверка подписки при инициализации
+  useEffect(() => {
+    const initialCheck = async () => {
+      if (authState.user?.id) {
+        console.log('PaymentProvider: Начальная проверка подписки для пользователя:', authState.user.id)
+        try {
+          const hasActive = await hasActiveSubscription(authState.user.id)
+          console.log('PaymentProvider: Начальная проверка - активная подписка:', hasActive)
+          setHasPaid(hasActive)
+          localStorage.setItem('hasPaid', hasActive.toString())
+        } catch (error) {
+          console.error('PaymentProvider: Ошибка при начальной проверке подписки:', error)
+        }
+      }
+    }
+    
+    initialCheck()
+  }, []) // Выполняем только при инициализации
 
   // Проверяем активную подписку при изменении пользователя
   useEffect(() => {
