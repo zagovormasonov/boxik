@@ -10,6 +10,7 @@ export interface PaymentConfig {
   description: string
   userId?: string
   userEmail?: string
+  isTestMode?: boolean
 }
 
 export interface PaymentResult {
@@ -92,17 +93,40 @@ export function usePayment() {
       console.log('- VITE_TINKOFF_PASSWORD:', import.meta.env.VITE_TINKOFF_PASSWORD ? '✅ Настроен' : '❌ Не настроен')
       console.log('- VITE_TINKOFF_API_URL:', import.meta.env.VITE_TINKOFF_API_URL || 'Используется по умолчанию')
       
-      // Проверяем, что переменные окружения настроены
-      if (paymentConfig.terminalKey === 'your_terminal_key' || paymentConfig.password === 'your_password') {
-        console.warn('⚠️ Переменные окружения Тинькофф не настроены, используем тестовый режим')
+      // Проверяем, что переменные окружения настроены или включен тестовый режим
+      if (paymentConfig.terminalKey === 'your_terminal_key' || paymentConfig.password === 'your_password' || paymentConfig.isTestMode) {
+        console.warn('⚠️ Тестовый режим активирован:', {
+          envNotSet: paymentConfig.terminalKey === 'your_terminal_key' || paymentConfig.password === 'your_password',
+          explicitTestMode: paymentConfig.isTestMode
+        })
         
         // Тестовый режим - симуляция
         await new Promise(resolve => setTimeout(resolve, 1000))
         
+        // Создаем запись о подписке в Supabase даже в тестовом режиме
+        if (paymentConfig.userId) {
+          const subscriptionData = {
+            user_id: paymentConfig.userId,
+            payment_id: 'test_payment_' + Date.now(),
+            order_id: 'test_order_' + Date.now(),
+            amount: paymentConfig.amount * 100, // в копейках
+            payment_url: 'https://securepay.tinkoff.ru/payments/test_payment',
+            metadata: {
+              user_email: paymentConfig.userEmail,
+              description: paymentConfig.description,
+              created_at: new Date().toISOString(),
+              is_test_mode: true
+            }
+          }
+
+          console.log('💾 Сохраняем тестовую подписку в Supabase:', subscriptionData)
+          await createSubscription(subscriptionData)
+        }
+        
         const mockResult: PaymentResult = {
           success: true,
           paymentId: 'test_payment_' + Date.now(),
-          paymentUrl: 'https://securepay.tinkoff.ru/payments/test_payment'
+          paymentUrl: '/payment/callback?PaymentId=test_payment_' + Date.now() + '&Status=CONFIRMED&OrderId=test_order_' + Date.now()
         }
         
         console.log('🧪 Тестовый режим: возвращаем моковый результат', mockResult)
