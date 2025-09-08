@@ -118,10 +118,16 @@ export function usePayment() {
 
       // Генерируем уникальный ID заказа (максимум 20 символов для Тинькофф)
       const timestamp = Date.now().toString()
-      const random = Math.random().toString(36).substr(2, 6)
-      const orderId = paymentConfig.userId 
-        ? `u${paymentConfig.userId.substr(0, 8)}${timestamp.substr(-8)}${random}`
-        : `o${timestamp.substr(-10)}${random}`
+      const random = Math.random().toString(36).substring(2, 8)
+      let orderId = paymentConfig.userId 
+        ? `u${paymentConfig.userId.substring(0, 8)}${timestamp.substring(timestamp.length - 8)}${random}`
+        : `o${timestamp.substring(timestamp.length - 10)}${random}`
+
+      // Проверяем длину OrderId
+      if (orderId.length > 20) {
+        orderId = `o${timestamp.substring(timestamp.length - 15)}${random}`
+        console.warn('OrderId слишком длинный, используем короткий:', orderId)
+      }
 
       // Очищаем описание от специальных символов
       const cleanDescription = paymentConfig.description
