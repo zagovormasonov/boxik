@@ -39,7 +39,12 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
           console.error('PaymentProvider: Ошибка при начальной проверке подписки:', error)
           // Fallback: используем localStorage если Supabase недоступен
           const localHasPaid = localStorage.getItem('hasPaid') === 'true'
-          console.log('🔄 PaymentProvider: Используем fallback из localStorage для начальной проверки:', localHasPaid)
+          console.log('🔄 PaymentProvider: Supabase недоступен, используем fallback из localStorage для начальной проверки:', localHasPaid)
+          console.log('🔄 PaymentProvider: Все значения localStorage:', {
+            hasPaid: localStorage.getItem('hasPaid'),
+            test_session_id: localStorage.getItem('test_session_id'),
+            user: localStorage.getItem('user')
+          })
           setHasPaid(localHasPaid)
         }
       }
@@ -60,7 +65,12 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
           console.error('❌ PaymentContext: Ошибка при проверке подписки:', error)
           // Fallback: проверяем localStorage если Supabase недоступен
           const localHasPaid = localStorage.getItem('hasPaid') === 'true'
-          console.log('🔄 PaymentContext: Используем fallback из localStorage:', localHasPaid)
+          console.log('🔄 PaymentContext: Supabase недоступен, используем fallback из localStorage:', localHasPaid)
+          console.log('🔄 PaymentContext: Все значения localStorage:', {
+            hasPaid: localStorage.getItem('hasPaid'),
+            test_session_id: localStorage.getItem('test_session_id'),
+            user: localStorage.getItem('user')
+          })
           setHasPaid(localHasPaid)
         }
       } else {
@@ -98,7 +108,12 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
         console.error('❌ PaymentContext: Ошибка при обновлении статуса оплаты:', error)
         // Fallback: используем localStorage если Supabase недоступен
         const localHasPaid = localStorage.getItem('hasPaid') === 'true'
-        console.log('🔄 PaymentContext: Используем fallback из localStorage для обновления:', localHasPaid)
+        console.log('🔄 PaymentContext: Supabase недоступен, используем fallback из localStorage для обновления:', localHasPaid)
+        console.log('🔄 PaymentContext: Все значения localStorage:', {
+          hasPaid: localStorage.getItem('hasPaid'),
+          test_session_id: localStorage.getItem('test_session_id'),
+          user: localStorage.getItem('user')
+        })
         setHasPaid(localHasPaid)
       }
     }

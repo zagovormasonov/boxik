@@ -19,23 +19,23 @@ const SubscriptionLanding: React.FC = () => {
   const advantages = [
     {
       icon: <FileText size={24} />,
-      title: "Детальный PDF отчет",
-      description: "Получите подробный анализ ваших результатов с рекомендациями"
+      title: "Получи персональный план",
+      description: "Конкретные действия, какие тесты ещё пройти в твоём случае, какой метод терапии использовать, какой нужен психолог"
     },
     {
       icon: <Send size={24} />,
-      title: "Отправка специалисту",
-      description: "Поделитесь результатами с психологом для консультации"
+      title: "Подберём психолога под твой случай",
+      description: "Найдём специалиста, который лучше всего подходит именно для твоей ситуации"
     },
     {
       icon: <Shield size={24} />,
-      title: "Конфиденциальность",
-      description: "Ваши данные защищены и не передаются третьим лицам"
+      title: "Подготовим к сеансу",
+      description: "Что сказать специалисту в твоём случае, как на первом сеансе определить, что он скорее всего тебе подходит"
     },
     {
       icon: <Star size={24} />,
-      title: "Профессиональная оценка",
-      description: "Тест основан на официальных критериях DSM-5"
+      title: "Подготовим PDF для психолога",
+      description: "Даёшь его психологу, и понимает, что делать в твоём случае"
     }
   ]
 
@@ -51,14 +51,14 @@ const SubscriptionLanding: React.FC = () => {
             Тест завершен!
           </h1>
           <p className="landing-subtitle">
-            Получите полный доступ к результатам и рекомендациям
+            Получи персональный план действий и помощь в поиске психолога
           </p>
         </div>
 
         {/* Преимущества подписки */}
         <div className="advantages-section">
           <h2 className="advantages-title">
-            Что вы получите с подпиской:
+            Что ты получишь с подпиской:
           </h2>
           
           <div className="advantages-grid">
@@ -94,19 +94,23 @@ const SubscriptionLanding: React.FC = () => {
             <div className="pricing-features">
               <div className="feature-item">
                 <Check size={16} />
-                <span>Детальный PDF отчет</span>
+                <span>Получи персональный план</span>
               </div>
               <div className="feature-item">
                 <Check size={16} />
-                <span>Отправка результатов специалисту</span>
+                <span>Подберём психолога под твой случай</span>
               </div>
               <div className="feature-item">
                 <Check size={16} />
-                <span>Персональные рекомендации</span>
+                <span>Подготовим к сеансу</span>
               </div>
               <div className="feature-item">
                 <Check size={16} />
-                <span>Пожизненный доступ к результатам</span>
+                <span>Подготовим PDF для психолога</span>
+              </div>
+              <div className="feature-item">
+                <Check size={16} />
+                <span>Обратная связь после сеанса</span>
               </div>
             </div>
 
