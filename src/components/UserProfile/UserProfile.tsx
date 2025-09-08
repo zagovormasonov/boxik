@@ -107,11 +107,6 @@ const UserProfile: React.FC = () => {
     navigate('/')
   }
 
-  const handleManualSetPaid = () => {
-    console.log('🔄 UserProfile: Ручная установка hasPaid: true')
-    forceSetPaid(true)
-    console.log('🔄 UserProfile: hasPaid установлен в true, localStorage:', localStorage.getItem('hasPaid'))
-  }
 
   const handleSendToSpecialist = async (testResult: BPDTestResultWithDetails): Promise<boolean> => {
     setIsSendingResults(true)
@@ -158,26 +153,6 @@ const UserProfile: React.FC = () => {
             Добро пожаловать, {authState.user?.name || 'Пользователь'}!
           </p>
           
-          {/* Кнопка для отладки - принудительная установка hasPaid */}
-          <div style={{ marginTop: '10px' }}>
-            <button
-              onClick={handleManualSetPaid}
-              style={{
-                padding: '8px 16px',
-                background: '#10b981',
-                color: 'white',
-                border: 'none',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '12px'
-              }}
-            >
-              🔧 Принудительно установить hasPaid: true
-            </button>
-            <p style={{ fontSize: '10px', color: '#6b7280', margin: '5px 0 0 0' }}>
-              hasPaid: {hasPaid ? 'true' : 'false'} | localStorage: {localStorage.getItem('hasPaid')}
-            </p>
-          </div>
         </div>
 
         {/* Аватар */}

@@ -58,6 +58,19 @@ export function useSubscriptions() {
     try {
       console.log('🔍 Создаем подписку в Supabase:', data)
       
+      // Проверяем текущего пользователя
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      console.log('🔍 Текущий пользователь:', user?.id, 'Ошибка:', userError)
+      
+      // Проверяем, что user_id совпадает с текущим пользователем
+      if (user?.id !== data.user_id) {
+        console.error('❌ user_id не совпадает с текущим пользователем:', { 
+          currentUser: user?.id, 
+          dataUserId: data.user_id 
+        })
+        throw new Error('user_id не совпадает с текущим пользователем')
+      }
+      
       // Сначала проверяем существование таблицы
       const tableExists = await checkTableExists()
       if (!tableExists) {
