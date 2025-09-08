@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { CreditCard, Shield, Check, ArrowLeft, TestTube } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePayment } from '../../shared/hooks/usePayment'
+import SupabaseDiagnostics from '../SupabaseDiagnostics/SupabaseDiagnostics'
 
 const PaymentPage: React.FC = () => {
   const navigate = useNavigate()
@@ -10,6 +11,7 @@ const PaymentPage: React.FC = () => {
   const { createPayment, isProcessing, error } = usePayment()
   const [isCreatingPayment, setIsCreatingPayment] = useState(false)
   const [isTestMode, setIsTestMode] = useState(false)
+  const [showDiagnostics, setShowDiagnostics] = useState(false)
 
   // Проверяем авторизацию
   useEffect(() => {
@@ -208,7 +210,26 @@ const PaymentPage: React.FC = () => {
           <p className="info-text">
             ⚡ После успешной оплаты вы сразу получите доступ ко всем функциям
           </p>
+          
+          <button
+            onClick={() => setShowDiagnostics(!showDiagnostics)}
+            style={{
+              marginTop: '15px',
+              padding: '8px 16px',
+              background: '#6b7280',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '12px'
+            }}
+          >
+            {showDiagnostics ? 'Скрыть' : 'Показать'} диагностику Supabase
+          </button>
         </div>
+
+        {/* Диагностика Supabase */}
+        {showDiagnostics && <SupabaseDiagnostics />}
       </div>
     </div>
   )

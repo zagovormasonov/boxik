@@ -28,13 +28,43 @@ export function useSubscriptions() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Проверка существования таблицы subscriptions
+  const checkTableExists = async (): Promise<boolean> => {
+    try {
+      console.log('🔍 Проверяем существование таблицы subscriptions...')
+      const { error } = await supabase
+        .from('subscriptions')
+        .select('id')
+        .limit(1)
+      
+      if (error) {
+        console.error('❌ Таблица subscriptions не существует или недоступна:', error)
+        return false
+      }
+      
+      console.log('✅ Таблица subscriptions существует и доступна')
+      return true
+    } catch (err) {
+      console.error('❌ Ошибка при проверке таблицы subscriptions:', err)
+      return false
+    }
+  }
+
   // Создание новой подписки
   const createSubscription = async (data: CreateSubscriptionData): Promise<Subscription | null> => {
     setIsLoading(true)
     setError(null)
 
     try {
-      console.log('Создаем подписку в Supabase:', data)
+      console.log('🔍 Создаем подписку в Supabase:', data)
+      
+      // Сначала проверяем существование таблицы
+      const tableExists = await checkTableExists()
+      if (!tableExists) {
+        throw new Error('Таблица subscriptions не существует. Выполните SQL скрипт create_subscriptions_table.sql в Supabase.')
+      }
+      
+      console.log('🔍 Проверяем подключение к Supabase:', supabase)
 
       const { data: subscription, error } = await supabase
         .from('subscriptions')
@@ -51,14 +81,20 @@ export function useSubscriptions() {
         .single()
 
       if (error) {
-        console.error('Ошибка при создании подписки:', error)
+        console.error('❌ Ошибка при создании подписки:', error)
+        console.error('❌ Детали ошибки:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        })
         throw error
       }
 
-      console.log('Подписка успешно создана:', subscription)
+      console.log('✅ Подписка успешно создана:', subscription)
       return subscription
     } catch (err) {
-      console.error('Ошибка при создании подписки:', err)
+      console.error('❌ Ошибка при создании подписки:', err)
       setError(err instanceof Error ? err.message : 'Не удалось создать подписку')
       return null
     } finally {
@@ -149,6 +185,7 @@ export function useSubscriptions() {
     updateSubscriptionStatus,
     getActiveSubscription,
     hasActiveSubscription,
+    checkTableExists,
     isLoading,
     error
   }
