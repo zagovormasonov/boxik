@@ -1,62 +1,84 @@
 import React, { useState, useEffect } from 'react'
-import { Check, X, AlertTriangle, Database } from 'lucide-react'
-import { useSubscriptions } from '../../shared/hooks/useSubscriptions'
+import { CheckCircle, XCircle, Loader, RefreshCcw } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
+import { useSubscriptions } from '../../shared/hooks/useSubscriptions'
+import { useTestUserMapping } from '../../shared/hooks/useTestUserMapping'
+
+interface DiagnosticsState {
+  connectionStatus: boolean | null
+  authStatus: boolean | null
+  subscriptionsTableExists: boolean | null
+  testUserMappingTableExists: boolean | null
+  error: string | null
+}
 
 const SupabaseDiagnostics: React.FC = () => {
-  const { checkTableExists, error } = useSubscriptions()
-  const [diagnostics, setDiagnostics] = useState<{
-    tableExists: boolean | null
-    connectionStatus: boolean | null
-    authStatus: boolean | null
-    error: string | null
-  }>({
-    tableExists: null,
+  const [diagnostics, setDiagnostics] = useState<DiagnosticsState>({
     connectionStatus: null,
     authStatus: null,
+    subscriptionsTableExists: null,
+    testUserMappingTableExists: null,
     error: null
   })
+  const [isLoading, setIsLoading] = useState(false)
+  const { checkTableExists: checkSubscriptionsTable } = useSubscriptions()
+  const { checkTableExists: checkTestUserMappingTable } = useTestUserMapping()
 
   const runDiagnostics = async () => {
+    setIsLoading(true)
     setDiagnostics({
-      tableExists: null,
       connectionStatus: null,
       authStatus: null,
+      subscriptionsTableExists: null,
+      testUserMappingTableExists: null,
       error: null
     })
 
     try {
-      // Проверка подключения к Supabase
+      // 1. Проверка подключения к Supabase
       console.log('🔍 Проверяем подключение к Supabase...')
       const { error: connectionError } = await supabase
         .from('users')
         .select('id')
         .limit(1)
-      
+
       setDiagnostics(prev => ({
         ...prev,
         connectionStatus: !connectionError
       }))
 
-      // Проверка авторизации
-      const { data: { user } } = await supabase.auth.getUser()
+      // 2. Проверка авторизации пользователя
+      console.log('🔍 Проверяем авторизацию пользователя...')
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
       setDiagnostics(prev => ({
         ...prev,
-        authStatus: !!user
+        authStatus: !!user && !authError
       }))
 
-      // Проверка таблицы subscriptions
-      const tableExists = await checkTableExists()
+      // 3. Проверка существования таблицы subscriptions
+      console.log('🔍 Проверяем существование таблицы subscriptions...')
+      const subsTableExists = await checkSubscriptionsTable()
       setDiagnostics(prev => ({
         ...prev,
-        tableExists
+        subscriptionsTableExists: subsTableExists
+      }))
+
+      // 4. Проверка существования таблицы test_user_mapping
+      console.log('🔍 Проверяем существование таблицы test_user_mapping...')
+      const mappingTableExists = await checkTestUserMappingTable()
+      setDiagnostics(prev => ({
+        ...prev,
+        testUserMappingTableExists: mappingTableExists
       }))
 
     } catch (err) {
+      console.error('❌ Ошибка при выполнении диагностики Supabase:', err)
       setDiagnostics(prev => ({
         ...prev,
-        error: err instanceof Error ? err.message : 'Неизвестная ошибка'
+        error: err instanceof Error ? err.message : 'Неизвестная ошибка диагностики'
       }))
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -64,122 +86,43 @@ const SupabaseDiagnostics: React.FC = () => {
     runDiagnostics()
   }, [])
 
-  const getStatusIcon = (status: boolean | null) => {
-    if (status === null) return <AlertTriangle size={20} className="text-yellow-500" />
-    return status ? <Check size={20} className="text-green-500" /> : <X size={20} className="text-red-500" />
-  }
-
-  const getStatusText = (status: boolean | null) => {
-    if (status === null) return 'Проверяется...'
-    return status ? 'OK' : 'Ошибка'
+  const renderStatus = (status: boolean | null) => {
+    if (status === null) return <Loader size={16} className="animate-spin text-gray-500" />
+    return status ? <CheckCircle size={16} className="text-green-500" /> : <XCircle size={16} className="text-red-500" />
   }
 
   return (
-    <div style={{
-      background: 'white',
-      borderRadius: '12px',
-      padding: '20px',
-      margin: '20px',
-      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)'
-    }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        marginBottom: '20px'
-      }}>
-        <Database size={24} />
-        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>
-          Диагностика Supabase
-        </h3>
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '10px',
-          background: '#f9fafb',
-          borderRadius: '8px'
-        }}>
-          <span>Подключение к Supabase:</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {getStatusIcon(diagnostics.connectionStatus)}
-            <span>{getStatusText(diagnostics.connectionStatus)}</span>
-          </div>
-        </div>
-
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '10px',
-          background: '#f9fafb',
-          borderRadius: '8px'
-        }}>
-          <span>Авторизация пользователя:</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {getStatusIcon(diagnostics.authStatus)}
-            <span>{getStatusText(diagnostics.authStatus)}</span>
-          </div>
-        </div>
-
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '10px',
-          background: '#f9fafb',
-          borderRadius: '8px'
-        }}>
-          <span>Таблица subscriptions:</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {getStatusIcon(diagnostics.tableExists)}
-            <span>{getStatusText(diagnostics.tableExists)}</span>
-          </div>
-        </div>
-
-        {diagnostics.error && (
-          <div style={{
-            padding: '15px',
-            background: '#fef2f2',
-            border: '1px solid #fecaca',
-            borderRadius: '8px',
-            color: '#dc2626'
-          }}>
-            <strong>Ошибка:</strong> {diagnostics.error}
-          </div>
-        )}
-
-        {error && (
-          <div style={{
-            padding: '15px',
-            background: '#fef2f2',
-            border: '1px solid #fecaca',
-            borderRadius: '8px',
-            color: '#dc2626'
-          }}>
-            <strong>Ошибка useSubscriptions:</strong> {error}
-          </div>
-        )}
-
-        <button
-          onClick={runDiagnostics}
-          style={{
-            padding: '10px 20px',
-            background: '#3b82f6',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: '500'
-          }}
-        >
-          Обновить диагностику
-        </button>
-      </div>
+    <div className="bg-white p-4 rounded-lg shadow-md mt-4 border border-gray-200">
+      <h3 className="text-lg font-semibold mb-3 text-gray-800">Диагностика Supabase</h3>
+      {isLoading && <p className="text-gray-600 mb-2 flex items-center gap-2"><Loader size={16} className="animate-spin" /> Выполняем диагностику...</p>}
+      <ul className="space-y-2">
+        <li className="flex items-center gap-2">
+          {renderStatus(diagnostics.connectionStatus)}
+          <span>Подключение к Supabase: {diagnostics.connectionStatus === true ? 'OK' : diagnostics.connectionStatus === false ? 'Ошибка' : 'Проверка...'}</span>
+        </li>
+        <li className="flex items-center gap-2">
+          {renderStatus(diagnostics.authStatus)}
+          <span>Авторизация пользователя: {diagnostics.authStatus === true ? 'OK' : diagnostics.authStatus === false ? 'Ошибка' : 'Проверка...'}</span>
+        </li>
+        <li className="flex items-center gap-2">
+          {renderStatus(diagnostics.subscriptionsTableExists)}
+          <span>Таблица 'subscriptions': {diagnostics.subscriptionsTableExists === true ? 'Существует' : diagnostics.subscriptionsTableExists === false ? 'Отсутствует' : 'Проверка...'}</span>
+        </li>
+        <li className="flex items-center gap-2">
+          {renderStatus(diagnostics.testUserMappingTableExists)}
+          <span>Таблица 'test_user_mapping': {diagnostics.testUserMappingTableExists === true ? 'Существует' : diagnostics.testUserMappingTableExists === false ? 'Отсутствует' : 'Проверка...'}</span>
+        </li>
+      </ul>
+      {diagnostics.error && (
+        <p className="text-red-500 mt-3">Ошибка диагностики: {diagnostics.error}</p>
+      )}
+      <button
+        onClick={runDiagnostics}
+        className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 flex items-center gap-2"
+        disabled={isLoading}
+      >
+        <RefreshCcw size={16} /> Обновить диагностику
+      </button>
     </div>
   )
 }

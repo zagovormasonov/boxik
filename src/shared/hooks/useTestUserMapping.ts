@@ -128,10 +128,32 @@ export function useTestUserMapping() {
     }
   }
 
+  const checkTableExists = async (): Promise<boolean> => {
+    try {
+      console.log('🔍 Проверяем существование таблицы test_user_mapping...')
+      const { error } = await supabase
+        .from('test_user_mapping')
+        .select('id')
+        .limit(1)
+
+      if (error) {
+        console.error('❌ Таблица test_user_mapping не существует или недоступна:', error)
+        return false
+      }
+
+      console.log('✅ Таблица test_user_mapping существует и доступна')
+      return true
+    } catch (err) {
+      console.error('❌ Ошибка при проверке таблицы test_user_mapping:', err)
+      return false
+    }
+  }
+
   return {
     createMapping,
     getTestResultsForUser,
     linkExistingTestResults,
+    checkTableExists,
     isLoading,
     error
   }
