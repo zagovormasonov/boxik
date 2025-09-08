@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import CryptoJS from 'crypto-js'
+import { useSubscriptions } from './useSubscriptions'
 
 export interface PaymentConfig {
   terminalKey: string
@@ -42,6 +43,7 @@ export interface TinkoffInitResponse {
 export function usePayment() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { createSubscription } = useSubscriptions()
 
   // Конфигурация для Тинькофф СБП
   const defaultConfig: PaymentConfig = {
@@ -169,6 +171,25 @@ export function usePayment() {
       console.log('📥 Ответ от Тинькофф:', result)
 
       if (result.Success) {
+        // Создаем запись о подписке в Supabase
+        if (paymentConfig.userId) {
+          const subscriptionData = {
+            user_id: paymentConfig.userId,
+            payment_id: result.PaymentId,
+            order_id: orderId,
+            amount: paymentConfig.amount * 100, // в копейках
+            payment_url: result.PaymentURL,
+            metadata: {
+              user_email: paymentConfig.userEmail,
+              description: paymentConfig.description,
+              created_at: new Date().toISOString()
+            }
+          }
+
+          console.log('💾 Сохраняем подписку в Supabase:', subscriptionData)
+          await createSubscription(subscriptionData)
+        }
+
         return {
           success: true,
           paymentId: result.PaymentId,

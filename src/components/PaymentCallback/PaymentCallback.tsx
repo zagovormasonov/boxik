@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Check, X, Loader } from 'lucide-react'
 import { usePaymentContext } from '../../contexts/PaymentContext'
+import { useSubscriptions } from '../../shared/hooks/useSubscriptions'
 
 const PaymentCallback: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { setHasPaid } = usePaymentContext()
+  const { updateSubscriptionStatus } = useSubscriptions()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
 
@@ -39,14 +41,38 @@ const PaymentCallback: React.FC = () => {
           setMessage('Оплата успешно завершена!')
           setHasPaid(true)
           
-          // Перенаправляем на авторизацию через 2 секунды
+          // Обновляем статус подписки в Supabase
+          if (paymentId) {
+            console.log('Обновляем статус подписки в Supabase:', paymentId)
+            await updateSubscriptionStatus(paymentId, 'confirmed', {
+              callback_status: status,
+              callback_message: message,
+              callback_order_id: orderId,
+              callback_user_id: userId,
+              completed_at: new Date().toISOString()
+            })
+          }
+          
+          // Перенаправляем в личный кабинет через 2 секунды
           setTimeout(() => {
-            navigate('/auth')
+            navigate('/profile')
           }, 2000)
         } else if (status === 'REJECTED' || status === 'CANCELLED') {
           // Платеж отклонен или отменен
           setStatus('error')
           setMessage(message || 'Платеж был отклонен или отменен')
+          
+          // Обновляем статус подписки в Supabase
+          if (paymentId) {
+            console.log('Обновляем статус подписки в Supabase (отклонено):', paymentId)
+            await updateSubscriptionStatus(paymentId, 'cancelled', {
+              callback_status: status,
+              callback_message: message,
+              callback_order_id: orderId,
+              callback_user_id: userId,
+              completed_at: new Date().toISOString()
+            })
+          }
           
           // Перенаправляем на лендинг через 3 секунды
           setTimeout(() => {
@@ -56,6 +82,18 @@ const PaymentCallback: React.FC = () => {
           // Неизвестный статус
           setStatus('error')
           setMessage('Неизвестный статус платежа')
+          
+          // Обновляем статус подписки в Supabase
+          if (paymentId) {
+            console.log('Обновляем статус подписки в Supabase (неизвестно):', paymentId)
+            await updateSubscriptionStatus(paymentId, 'failed', {
+              callback_status: status,
+              callback_message: message,
+              callback_order_id: orderId,
+              callback_user_id: userId,
+              completed_at: new Date().toISOString()
+            })
+          }
           
           setTimeout(() => {
             navigate('/subscription')
@@ -139,7 +177,7 @@ const PaymentCallback: React.FC = () => {
               Теперь вы можете получить доступ к результатам теста
             </p>
             <p style={{ color: '#9ca3af', fontSize: '14px', margin: 0 }}>
-              Перенаправляем на авторизацию...
+              Перенаправляем в личный кабинет...
             </p>
           </>
         )}

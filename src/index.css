@@ -1723,6 +1723,42 @@ body {
   margin: 0 auto;
 }
 
+/* Login and Pay Button Styles */
+.login-and-pay-button {
+  background: linear-gradient(135deg, #ff6b35, #f7931e) !important;
+  color: white !important;
+  border: none !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-and-pay-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #e55a2b, #e0841a) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+}
+
+.login-and-pay-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.login-and-pay-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.login-and-pay-button:hover::before {
+  left: 100%;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .landing-container {

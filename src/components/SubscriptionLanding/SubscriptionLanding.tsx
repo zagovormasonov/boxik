@@ -1,13 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Check, Star, Shield, FileText, Send, CreditCard } from 'lucide-react'
 import PaymentModal from '../PaymentModal/PaymentModal'
-import YandexAuth from '../YandexAuth/YandexAuth'
 import { usePaymentContext } from '../../contexts/PaymentContext'
 import { useAuth } from '../../contexts/AuthContext'
 
 const SubscriptionLanding: React.FC = () => {
   const { paymentModalOpen, setPaymentModalOpen } = usePaymentContext()
   const { authState } = useAuth()
+  const [isProcessing, setIsProcessing] = useState(false)
 
   const handlePurchaseSubscription = () => {
     if (!authState.user) {
@@ -15,6 +15,22 @@ const SubscriptionLanding: React.FC = () => {
       return
     }
     setPaymentModalOpen(true)
+  }
+
+  const handleLoginAndPay = async () => {
+    if (authState.user) {
+      // Если пользователь уже авторизован, сразу открываем оплату
+      setPaymentModalOpen(true)
+    } else {
+      // Если не авторизован, запускаем авторизацию через Яндекс
+      setIsProcessing(true)
+      
+      // Создаем URL для авторизации через Яндекс с редиректом обратно на лендинг
+      const yandexAuthUrl = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${import.meta.env.VITE_YANDEX_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/yandex/callback')}&scope=login:email+login:info&state=${encodeURIComponent(window.location.pathname)}`
+      
+      console.log('Перенаправляем на авторизацию Яндекс:', yandexAuthUrl)
+      window.location.href = yandexAuthUrl
+    }
   }
 
   const handleClosePaymentModal = () => {
@@ -121,15 +137,17 @@ const SubscriptionLanding: React.FC = () => {
                 className="purchase-button"
               >
                 <CreditCard size={20} />
-                Приобрести подписку
+                Приобрести подписку за 200₽
               </button>
             ) : (
-              <div className="auth-required-section">
-                <p className="auth-required-text">
-                  Для покупки подписки необходимо войти через Яндекс
-                </p>
-                <YandexAuth />
-              </div>
+              <button 
+                onClick={handleLoginAndPay}
+                disabled={isProcessing}
+                className="purchase-button login-and-pay-button"
+              >
+                <CreditCard size={20} />
+                {isProcessing ? 'Перенаправляем...' : 'Войти через Яндекс и оплатить 200₽'}
+              </button>
             )}
           </div>
         </div>
