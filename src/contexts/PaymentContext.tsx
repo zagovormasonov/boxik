@@ -9,6 +9,7 @@ interface PaymentContextType {
   setPaymentModalOpen: (open: boolean) => void
   showPaymentModal: () => void
   hidePaymentModal: () => void
+  refreshPaymentStatus: () => Promise<void>
 }
 
 const PaymentContext = createContext<PaymentContextType | undefined>(undefined)
@@ -52,6 +53,17 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     setPaymentModalOpen(false)
   }
 
+  // Принудительное обновление статуса оплаты
+  const refreshPaymentStatus = async () => {
+    if (authState.user?.id) {
+      console.log('🔄 Принудительно обновляем статус оплаты для пользователя:', authState.user.id)
+      const hasActive = await hasActiveSubscription(authState.user.id)
+      console.log('🔄 Новый статус оплаты:', hasActive)
+      setHasPaid(hasActive)
+      localStorage.setItem('hasPaid', hasActive.toString())
+    }
+  }
+
   return (
     <PaymentContext.Provider value={{
       hasPaid,
@@ -59,7 +71,8 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
       paymentModalOpen,
       setPaymentModalOpen,
       showPaymentModal,
-      hidePaymentModal
+      hidePaymentModal,
+      refreshPaymentStatus
     }}>
       {children}
     </PaymentContext.Provider>

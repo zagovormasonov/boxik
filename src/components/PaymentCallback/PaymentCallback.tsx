@@ -7,7 +7,7 @@ import { useSubscriptions } from '../../shared/hooks/useSubscriptions'
 const PaymentCallback: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { setHasPaid } = usePaymentContext()
+  const { setHasPaid, refreshPaymentStatus } = usePaymentContext()
   const { updateSubscriptionStatus } = useSubscriptions()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
@@ -31,7 +31,7 @@ const PaymentCallback: React.FC = () => {
         })
 
         // Извлекаем userId из OrderId если он есть
-        const userId = orderId?.startsWith('user_') ? orderId.split('_')[1] : null
+        const userId = orderId?.startsWith('u') ? orderId.substring(1, 9) : null
         console.log('Извлеченный userId из OrderId:', userId)
 
         // Проверяем статус платежа
@@ -39,18 +39,29 @@ const PaymentCallback: React.FC = () => {
           // Платеж успешен
           setStatus('success')
           setMessage('Оплата успешно завершена!')
-          setHasPaid(true)
           
           // Обновляем статус подписки в Supabase
           if (paymentId) {
             console.log('Обновляем статус подписки в Supabase:', paymentId)
-            await updateSubscriptionStatus(paymentId, 'confirmed', {
+            const updatedSubscription = await updateSubscriptionStatus(paymentId, 'confirmed', {
               callback_status: status,
               callback_message: message,
               callback_order_id: orderId,
               callback_user_id: userId,
               completed_at: new Date().toISOString()
             })
+            
+            if (updatedSubscription) {
+              console.log('✅ Подписка успешно обновлена:', updatedSubscription)
+              // Принудительно обновляем состояние оплаты
+              setHasPaid(true)
+              // Обновляем localStorage
+              localStorage.setItem('hasPaid', 'true')
+              // Принудительно обновляем статус из Supabase
+              await refreshPaymentStatus()
+            } else {
+              console.error('❌ Не удалось обновить подписку')
+            }
           }
           
           // Перенаправляем в личный кабинет через 2 секунды
