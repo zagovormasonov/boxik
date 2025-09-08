@@ -5,20 +5,13 @@ import { User, Mail, Calendar, LogOut, RotateCcw, FileText } from 'lucide-react'
 import { useBPDTestResults, BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
 import BPDTestResultCard from '../BPDTestResultCard/BPDTestResultCard'
 import MascotRecommendation from '../MascotRecommendation/MascotRecommendation'
-import EditProfile from '../EditProfile/EditProfile'
 
 const UserProfile: React.FC = () => {
-  const { authState, logout, updateUser } = useAuth()
+  const { authState, logout } = useAuth()
   const navigate = useNavigate()
   const [isSendingResults, setIsSendingResults] = useState(false)
-  const [user, setUser] = useState(authState.user)
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
-
-  // Обновляем локальное состояние пользователя при изменении authState
-  React.useEffect(() => {
-    setUser(authState.user)
-  }, [authState.user])
 
   console.log('UserProfile: Состояние результатов теста:', {
     lastTestResult,
@@ -55,17 +48,12 @@ const UserProfile: React.FC = () => {
     }
   }
 
-  const handleUserUpdate = (updatedUser: any) => {
-    setUser(updatedUser)
-    updateUser(updatedUser)
-  }
-
   if (!authState.user) {
     console.log('UserProfile: Пользователь не найден, возвращаем null')
     return null
   }
 
-  console.log('UserProfile: Рендерим личный кабинет для', user?.name)
+  console.log('UserProfile: Рендерим личный кабинет для', authState.user.name)
 
   return (
     <div className="profile-container">
@@ -76,24 +64,16 @@ const UserProfile: React.FC = () => {
             Личный кабинет
           </h1>
           <p className="profile-subtitle">
-            Добро пожаловать, {user?.name || 'Пользователь'}!
+            Добро пожаловать, {authState.user.name}!
           </p>
         </div>
-
-        {/* Редактирование профиля */}
-        {user && (
-          <EditProfile 
-            user={user} 
-            onUpdate={handleUserUpdate}
-          />
-        )}
 
         {/* Аватар */}
         <div className="profile-avatar-section">
           <div className="profile-avatar">
-            {user?.avatar ? (
+            {authState.user.avatar ? (
               <img 
-                src={user.avatar} 
+                src={authState.user.avatar} 
                 alt="Аватар" 
                 className="avatar-image"
               />
@@ -109,7 +89,7 @@ const UserProfile: React.FC = () => {
             <User size={18} className="info-icon" />
             <div className="info-content">
               <span className="info-label">Имя</span>
-              <span className="info-value">{user?.name || 'Не указано'}</span>
+              <span className="info-value">{authState.user.name}</span>
             </div>
           </div>
           
@@ -117,7 +97,7 @@ const UserProfile: React.FC = () => {
             <Mail size={18} className="info-icon" />
             <div className="info-content">
               <span className="info-label">Email</span>
-              <span className="info-value">{user?.email}</span>
+              <span className="info-value">{authState.user.email}</span>
             </div>
           </div>
           
