@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { useSubscriptions } from '../shared/hooks/useSubscriptions'
+import { useUserHasPaid } from '../shared/hooks/useUserHasPaid'
 import { useAuth } from './AuthContext'
 
 interface PaymentContextType {
@@ -12,51 +13,41 @@ interface PaymentContextType {
   refreshPaymentStatus: () => Promise<void>
   forceSetPaid: (paid: boolean) => void
   resetManualFlag: () => void
+  setUserPaid: (userId: string) => Promise<boolean>
 }
 
 const PaymentContext = createContext<PaymentContextType | undefined>(undefined)
 
 export function PaymentProvider({ children }: { children: ReactNode }) {
-  const [hasPaid, setHasPaid] = useState<boolean>(() => {
-    // Загружаем состояние оплаты из localStorage при инициализации
-    const saved = localStorage.getItem('hasPaid')
-    console.log('PaymentProvider: Инициализация с hasPaid из localStorage:', saved)
-    return saved === 'true'
-  })
+  const [hasPaid, setHasPaid] = useState<boolean>(false) // Инициализируем как false
   const [paymentModalOpen, setPaymentModalOpen] = useState(false)
   const [isManuallySet, setIsManuallySet] = useState(false) // Флаг для ручной установки
   const { hasActiveSubscription } = useSubscriptions()
+  const { getUserHasPaid, setUserPaid } = useUserHasPaid()
   const { authState } = useAuth()
 
-  // Принудительная проверка подписки при инициализации
+  // Принудительная проверка статуса оплаты при инициализации
   useEffect(() => {
     const initialCheck = async () => {
       if (authState.user?.id) {
-        console.log('PaymentProvider: Начальная проверка подписки для пользователя:', authState.user.id)
+        console.log('PaymentProvider: Начальная проверка статуса оплаты для пользователя:', authState.user.id)
         try {
-          const hasActive = await hasActiveSubscription(authState.user.id)
-          console.log('PaymentProvider: Начальная проверка - активная подписка:', hasActive)
-          setHasPaid(hasActive)
-          localStorage.setItem('hasPaid', hasActive.toString())
+          // Получаем статус оплаты из базы данных
+          const userHasPaid = await getUserHasPaid(authState.user.id)
+          console.log('PaymentProvider: Начальная проверка - статус оплаты из БД:', userHasPaid)
+          setHasPaid(userHasPaid)
         } catch (error) {
-          console.error('PaymentProvider: Ошибка при начальной проверке подписки:', error)
-          // Fallback: используем localStorage если Supabase недоступен
+          console.error('PaymentProvider: Ошибка при начальной проверке статуса оплаты:', error)
+          // Fallback: используем localStorage если БД недоступна
           const localHasPaid = localStorage.getItem('hasPaid') === 'true'
-          console.log('🔄 PaymentProvider: Supabase недоступен, используем fallback из localStorage для начальной проверки:', localHasPaid)
-          console.log('🔄 PaymentProvider: Все значения localStorage:', {
-            hasPaid: localStorage.getItem('hasPaid'),
-            test_session_id: localStorage.getItem('test_session_id'),
-            user: localStorage.getItem('user')
-          })
-          // Принудительно устанавливаем статус из localStorage
+          console.log('🔄 PaymentProvider: БД недоступна, используем fallback из localStorage:', localHasPaid)
           setHasPaid(localHasPaid)
-          console.log('🔄 PaymentProvider: Установлен hasPaid:', localHasPaid)
         }
       }
     }
     
     initialCheck()
-  }, []) // Выполняем только при инициализации
+  }, [authState.user?.id, getUserHasPaid])
 
   // Проверяем активную подписку при изменении пользователя
   useEffect(() => {
@@ -87,8 +78,10 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
           console.log('🔄 PaymentContext: Установлен hasPaid:', localHasPaid)
         }
       } else {
-        setHasPaid(false)
-        localStorage.setItem('hasPaid', 'false')
+        // Если пользователь не авторизован, НЕ сбрасываем hasPaid
+        // Пользователь мог оплатить и потом разлогиниться
+        console.log('🔄 PaymentContext: Пользователь не авторизован, сохраняем текущий hasPaid:', hasPaid)
+        // Не изменяем hasPaid, оставляем как есть
       }
     }
 
@@ -109,11 +102,22 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
   }
 
   // Принудительная установка статуса оплаты (игнорирует Supabase)
-  const forceSetPaid = (paid: boolean) => {
+  const forceSetPaid = async (paid: boolean) => {
     console.log('🔄 PaymentContext: Принудительно устанавливаем hasPaid:', paid)
     setHasPaid(paid)
     localStorage.setItem('hasPaid', paid.toString())
     setIsManuallySet(true) // Устанавливаем флаг ручной установки
+    
+    // Если есть пользователь, обновляем статус в БД
+    if (authState.user?.id && paid) {
+      try {
+        await setUserPaid(authState.user.id)
+        console.log('🔄 PaymentContext: Статус оплаты обновлен в БД для пользователя:', authState.user.id)
+      } catch (error) {
+        console.error('❌ PaymentContext: Ошибка при обновлении статуса в БД:', error)
+      }
+    }
+    
     console.log('🔄 PaymentContext: hasPaid установлен в:', paid, 'isManuallySet:', true)
   }
 
@@ -158,9 +162,8 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
         console.log('🔄 PaymentContext: Установлен hasPaid:', localHasPaid)
       }
     } else {
-      console.log('🔄 refreshPaymentStatus: Нет пользователя, устанавливаем hasPaid: false')
-      setHasPaid(false)
-      localStorage.setItem('hasPaid', 'false')
+      console.log('🔄 refreshPaymentStatus: Нет пользователя, сохраняем текущий hasPaid:', hasPaid)
+      // Не сбрасываем hasPaid, пользователь мог оплатить и потом разлогиниться
     }
   }
 
@@ -174,7 +177,8 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
       hidePaymentModal,
       refreshPaymentStatus,
       forceSetPaid,
-      resetManualFlag
+      resetManualFlag,
+      setUserPaid
     }}>
       {children}
     </PaymentContext.Provider>

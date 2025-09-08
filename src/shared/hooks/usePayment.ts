@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import CryptoJS from 'crypto-js'
 import { useSubscriptions } from './useSubscriptions'
+import { useUserHasPaid } from './useUserHasPaid'
 
 export interface PaymentConfig {
   terminalKey: string
@@ -44,6 +45,7 @@ export function usePayment() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { createSubscription } = useSubscriptions()
+  const { setUserPaid } = useUserHasPaid()
 
   // Конфигурация для Тинькофф СБП
   const defaultConfig: PaymentConfig = {
@@ -228,6 +230,16 @@ export function usePayment() {
             console.error('❌ Не удалось создать подписку в Supabase')
           } else {
             console.log('✅ Подписка успешно создана в Supabase')
+          }
+          
+          // Обновляем статус оплаты в БД
+          if (subscriptionData.user_id) {
+            try {
+              await setUserPaid(subscriptionData.user_id)
+              console.log('✅ Статус оплаты обновлен в БД для пользователя:', subscriptionData.user_id)
+            } catch (error) {
+              console.error('❌ Ошибка при обновлении статуса оплаты в БД:', error)
+            }
           }
         }
 
