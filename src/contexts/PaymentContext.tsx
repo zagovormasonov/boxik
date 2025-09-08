@@ -11,6 +11,7 @@ interface PaymentContextType {
   hidePaymentModal: () => void
   refreshPaymentStatus: () => Promise<void>
   forceSetPaid: (paid: boolean) => void
+  resetManualFlag: () => void
 }
 
 const PaymentContext = createContext<PaymentContextType | undefined>(undefined)
@@ -62,7 +63,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     const checkActiveSubscription = async () => {
       if (authState.user?.id) {
         // Если hasPaid был установлен вручную, не перезаписываем его
-        if (isManuallySet && hasPaid) {
+        if (isManuallySet) {
           console.log('🔄 PaymentContext: hasPaid был установлен вручную в checkActiveSubscription, не перезаписываем')
           return
         }
@@ -116,6 +117,12 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     console.log('🔄 PaymentContext: hasPaid установлен в:', paid, 'isManuallySet:', true)
   }
 
+  // Сброс флага ручной установки
+  const resetManualFlag = () => {
+    console.log('🔄 PaymentContext: Сбрасываем флаг isManuallySet')
+    setIsManuallySet(false)
+  }
+
   // Принудительное обновление статуса оплаты
   const refreshPaymentStatus = async () => {
     if (authState.user?.id) {
@@ -125,7 +132,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
       console.log('🔄 isManuallySet:', isManuallySet)
       
       // Если hasPaid был установлен вручную, не перезаписываем его
-      if (isManuallySet && hasPaid) {
+      if (isManuallySet) {
         console.log('🔄 PaymentContext: hasPaid был установлен вручную, не перезаписываем')
         return
       }
@@ -166,7 +173,8 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
       showPaymentModal,
       hidePaymentModal,
       refreshPaymentStatus,
-      forceSetPaid
+      forceSetPaid,
+      resetManualFlag
     }}>
       {children}
     </PaymentContext.Provider>
