@@ -26,7 +26,8 @@ const SubscriptionLanding: React.FC = () => {
       setIsProcessing(true)
       
       // Создаем URL для авторизации через Яндекс с редиректом на страницу оплаты
-      const yandexAuthUrl = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${import.meta.env.VITE_YANDEX_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/yandex/callback')}&scope=login:email+login:info&state=${encodeURIComponent('/payment')}`
+      // Добавляем force_confirm=true для обязательного выбора аккаунта
+      const yandexAuthUrl = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${import.meta.env.VITE_YANDEX_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/yandex/callback')}&scope=login:email+login:info&state=${encodeURIComponent('/payment')}&force_confirm=true`
       
       console.log('Перенаправляем на авторизацию Яндекс с редиректом на оплату:', yandexAuthUrl)
       window.location.href = yandexAuthUrl
