@@ -111,13 +111,15 @@ const BPDTestScreen: React.FC = () => {
   }
 
 
-  if (state.isCompleted) {
-    // Сразу перенаправляем на лендинг подписки
-    useEffect(() => {
+  // Обработка завершения теста
+  useEffect(() => {
+    if (state.isCompleted) {
       console.log('BPDTestScreen: Тест завершен, перенаправляем на лендинг подписки')
       navigate('/subscription')
-    }, [])
-    
+    }
+  }, [state.isCompleted, navigate])
+
+  if (state.isCompleted) {
     return (
       <div className="test-screen">
         <div className="test-container">
