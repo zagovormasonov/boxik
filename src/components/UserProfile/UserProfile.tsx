@@ -180,7 +180,7 @@ const UserProfile: React.FC = () => {
       <PaymentModal
         isOpen={paymentModalOpen}
         onClose={handleClosePaymentModal}
-        amount={200}
+        amount={1}
         description="Доступ к результатам психологического теста БПД и возможность скачивания PDF отчета"
         userId={authState.user?.id}
         userEmail={authState.user?.email}

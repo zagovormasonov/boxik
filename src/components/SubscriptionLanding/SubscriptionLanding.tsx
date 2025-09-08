@@ -86,7 +86,7 @@ const SubscriptionLanding: React.FC = () => {
             <div className="pricing-header">
               <h3 className="pricing-title">Полный доступ</h3>
               <div className="pricing-price">
-                <span className="price-amount">200</span>
+                <span className="price-amount">1</span>
                 <span className="price-currency">₽</span>
               </div>
             </div>
@@ -116,7 +116,7 @@ const SubscriptionLanding: React.FC = () => {
               className="purchase-button login-and-pay-button"
             >
               <CreditCard size={20} />
-              {isProcessing ? 'Перенаправляем...' : 'Войти через Яндекс и оплатить 200₽'}
+              {isProcessing ? 'Перенаправляем...' : 'Войти через Яндекс и оплатить 1₽'}
             </button>
           </div>
         </div>

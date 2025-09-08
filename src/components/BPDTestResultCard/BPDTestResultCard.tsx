@@ -26,28 +26,9 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
     refreshPaymentStatus()
   }, [refreshPaymentStatus])
 
-  const handleSendToSpecialist = async () => {
+  const handlePayment = () => {
     if (!hasPaid) {
       showPaymentModal()
-      return
-    }
-
-    const success = await onSendToSpecialist(testResult)
-    if (success) {
-      setIsSent(true)
-    }
-  }
-
-  const handleDownloadPDF = async () => {
-    if (!hasPaid) {
-      showPaymentModal()
-      return
-    }
-
-    // Для БПД теста создаем упрощенную версию PDF
-    const success = await generateBPDTestResultPDF(testResult)
-    if (!success) {
-      alert('Ошибка при генерации PDF')
     }
   }
 
@@ -143,30 +124,52 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
       </div>
 
       <div className="test-result-actions">
-        {isSent ? (
-          <div className="sent-indicator">
-            <CheckCircle size={20} />
-            <span>Отправлено специалисту</span>
+        {hasPaid ? (
+          <div className="paid-actions">
+            {isSent ? (
+              <div className="sent-indicator">
+                <CheckCircle size={20} />
+                <span>Отправлено специалисту</span>
+              </div>
+            ) : (
+              <button
+                onClick={async () => {
+                  const success = await onSendToSpecialist(testResult)
+                  if (success) {
+                    setIsSent(true)
+                  }
+                }}
+                disabled={isSending}
+                className="send-button"
+              >
+                <Send size={20} />
+                {isSending ? 'Отправка...' : 'Отправить специалисту'}
+              </button>
+            )}
+
+            <button
+              onClick={async () => {
+                const success = await generateBPDTestResultPDF(testResult)
+                if (!success) {
+                  alert('Ошибка при генерации PDF')
+                }
+              }}
+              disabled={isGenerating}
+              className="download-pdf-button"
+            >
+              <Download size={20} />
+              {isGenerating ? 'Генерация PDF...' : 'Скачать PDF'}
+            </button>
           </div>
         ) : (
           <button
-            onClick={handleSendToSpecialist}
-            disabled={isSending}
-            className={`send-button ${!hasPaid ? 'locked' : ''}`}
+            onClick={handlePayment}
+            className="payment-button"
           >
-            {!hasPaid ? <Lock size={20} /> : <Send size={20} />}
-            {isSending ? 'Отправка...' : !hasPaid ? 'Оплатить для отправки' : 'Отправить специалисту'}
+            <Lock size={20} />
+            Оплатить для отправки результата и скачивания
           </button>
         )}
-
-        <button
-          onClick={handleDownloadPDF}
-          disabled={isGenerating}
-          className={`download-pdf-button ${!hasPaid ? 'locked' : ''}`}
-        >
-          {!hasPaid ? <Lock size={20} /> : <Download size={20} />}
-          {isGenerating ? 'Генерация PDF...' : !hasPaid ? 'Оплатить для скачивания' : 'Скачать PDF'}
-        </button>
       </div>
     </div>
   )
