@@ -112,34 +112,20 @@ const BPDTestScreen: React.FC = () => {
 
 
   if (state.isCompleted) {
+    // Сразу перенаправляем на лендинг подписки
+    useEffect(() => {
+      console.log('BPDTestScreen: Тест завершен, перенаправляем на лендинг подписки')
+      navigate('/subscription')
+    }, [])
+    
     return (
       <div className="test-screen">
         <div className="test-container">
           <div className="test-completion">
             <h2>Тест завершен!</h2>
             <p>Спасибо за прохождение теста. Ваши ответы сохранены.</p>
-            
-            {authState.user && hasPaid ? (
-              <div className="completion-actions">
-                <p>Результаты сохранены в вашем профиле.</p>
-                <button 
-                  onClick={() => navigate('/profile')}
-                  className="btn btn-primary"
-                >
-                  Перейти в профиль
-                </button>
-              </div>
-            ) : (
-              <div className="completion-actions">
-                <p>Для просмотра результатов и скачивания PDF отчета необходимо приобрести подписку.</p>
-                <button 
-                  onClick={() => navigate('/subscription')}
-                  className="btn btn-primary"
-                >
-                  Приобрести подписку
-                </button>
-              </div>
-            )}
+            <p>Перенаправляем на страницу подписки...</p>
+            <div className="loading-spinner"></div>
           </div>
         </div>
       </div>

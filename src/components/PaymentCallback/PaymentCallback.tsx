@@ -17,17 +17,17 @@ const PaymentCallback: React.FC = () => {
       console.log('🚀 PaymentCallback: Начинаем обработку callback')
       try {
         // Получаем параметры от Тинькофф
-        const paymentId = searchParams.get('PaymentId')
-        const status = searchParams.get('Status')
-        const errorCode = searchParams.get('ErrorCode')
-        const message = searchParams.get('Message')
-        const orderId = searchParams.get('OrderId')
+        const paymentId = searchParams.get('PaymentId') || searchParams.get('payment_id') || searchParams.get('PaymentID')
+        const status = searchParams.get('Status') || searchParams.get('status')
+        const errorCode = searchParams.get('ErrorCode') || searchParams.get('error_code')
+        const message = searchParams.get('Message') || searchParams.get('message')
+        const orderId = searchParams.get('OrderId') || searchParams.get('order_id') || searchParams.get('OrderID')
         
         // Дополнительные параметры от Тинькофф
-        const success = searchParams.get('Success')
-        const result = searchParams.get('Result')
-        const state = searchParams.get('State')
-        const terminalKey = searchParams.get('TerminalKey')
+        const success = searchParams.get('Success') || searchParams.get('success')
+        const result = searchParams.get('Result') || searchParams.get('result')
+        const state = searchParams.get('State') || searchParams.get('state')
+        const terminalKey = searchParams.get('TerminalKey') || searchParams.get('terminal_key')
 
         console.log('📋 PaymentCallback: Получены параметры:', {
           paymentId,
@@ -94,6 +94,7 @@ const PaymentCallback: React.FC = () => {
         } else {
           console.log('❌ PaymentCallback: Нет PaymentId или OrderId - считаем платеж неуспешным')
           console.log('❌ PaymentCallback: PaymentId =', paymentId, 'OrderId =', orderId)
+          console.log('❌ PaymentCallback: Все параметры от Тинькофф:', Object.fromEntries(searchParams.entries()))
           setStatus('error')
           setMessage('Ошибка: отсутствуют необходимые параметры платежа')
           
