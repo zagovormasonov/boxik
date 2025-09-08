@@ -12,9 +12,17 @@ const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
   const navigate = useNavigate()
   const [isSendingResults, setIsSendingResults] = useState(false)
-  const { paymentModalOpen, setPaymentModalOpen } = usePaymentContext()
+  const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus } = usePaymentContext()
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
+
+  // Принудительно проверяем статус подписки при загрузке профиля
+  useEffect(() => {
+    if (authState.user?.id) {
+      console.log('UserProfile: Принудительно проверяем статус подписки для пользователя:', authState.user.id)
+      refreshPaymentStatus()
+    }
+  }, [authState.user?.id, refreshPaymentStatus])
 
   useEffect(() => {
     if (!authState.user) {

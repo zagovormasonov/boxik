@@ -105,10 +105,13 @@ export function usePayment() {
         
         // Создаем запись о подписке в Supabase даже в тестовом режиме
         if (paymentConfig.userId) {
+          const testPaymentId = 'test_payment_' + Date.now()
+          const testOrderId = `u${paymentConfig.userId.substring(0, 8)}test${Date.now().toString().substring(8)}`
+          
           const subscriptionData = {
             user_id: paymentConfig.userId,
-            payment_id: 'test_payment_' + Date.now(),
-            order_id: 'test_order_' + Date.now(),
+            payment_id: testPaymentId,
+            order_id: testOrderId,
             amount: paymentConfig.amount * 100, // в копейках
             payment_url: 'https://securepay.tinkoff.ru/payments/test_payment',
             metadata: {
@@ -121,6 +124,15 @@ export function usePayment() {
 
           console.log('💾 Сохраняем тестовую подписку в Supabase:', subscriptionData)
           await createSubscription(subscriptionData)
+          
+          const mockResult: PaymentResult = {
+            success: true,
+            paymentId: testPaymentId,
+            paymentUrl: `/payment/callback?PaymentId=${testPaymentId}&Status=CONFIRMED&OrderId=${testOrderId}`
+          }
+          
+          console.log('🧪 Тестовый режим: возвращаем моковый результат', mockResult)
+          return mockResult
         }
         
         const mockResult: PaymentResult = {
