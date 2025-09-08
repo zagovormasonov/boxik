@@ -67,8 +67,13 @@ export function usePayment() {
     // Добавляем пароль
     sortedParams.Password = password
 
-    // Создаем строку для хеширования
+    // Создаем строку для хеширования (только значения, без ключей)
     const tokenString = Object.values(sortedParams).join('')
+
+    console.log('🔐 Генерируем токен:', {
+      sortedParams: { ...sortedParams, Password: '[СКРЫТО]' },
+      tokenStringLength: tokenString.length
+    })
 
     // Генерируем SHA-256 хеш
     return CryptoJS.SHA256(tokenString).toString()
@@ -100,6 +105,7 @@ export function usePayment() {
           paymentUrl: 'https://securepay.tinkoff.ru/payments/test_payment'
         }
         
+        console.log('🧪 Тестовый режим: возвращаем моковый результат', mockResult)
         return mockResult
       }
 
@@ -110,18 +116,26 @@ export function usePayment() {
         apiUrl: paymentConfig.apiUrl
       })
 
-      // Генерируем уникальный ID заказа с привязкой к пользователю
+      // Генерируем уникальный ID заказа (максимум 20 символов для Тинькофф)
+      const timestamp = Date.now().toString()
+      const random = Math.random().toString(36).substr(2, 6)
       const orderId = paymentConfig.userId 
-        ? `user_${paymentConfig.userId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-        : `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        ? `u${paymentConfig.userId.substr(0, 8)}${timestamp.substr(-8)}${random}`
+        : `o${timestamp.substr(-10)}${random}`
+
+      // Очищаем описание от специальных символов
+      const cleanDescription = paymentConfig.description
+        .replace(/[^\w\s\-\.]/g, '') // Убираем все кроме букв, цифр, пробелов, дефисов и точек
+        .substring(0, 250) // Максимум 250 символов
 
       console.log('Создаем платеж для пользователя:', {
         userId: paymentConfig.userId,
         userEmail: paymentConfig.userEmail,
-        orderId
+        orderId,
+        cleanDescription
       })
 
-      // Добавляем URL для callback'а
+      // Добавляем URL для callback'а (проверяем валидность)
       const callbackUrl = `${window.location.origin}/payment/callback`
       console.log('Callback URL:', callbackUrl)
 
@@ -130,7 +144,7 @@ export function usePayment() {
         TerminalKey: paymentConfig.terminalKey,
         Amount: paymentConfig.amount * 100, // Тинькофф принимает сумму в копейках
         OrderId: orderId,
-        Description: paymentConfig.description,
+        Description: cleanDescription,
         SuccessURL: callbackUrl,
         FailURL: callbackUrl,
         Token: '' // Будет заполнен после генерации
@@ -148,9 +162,34 @@ export function usePayment() {
 
       requestData.Token = token
 
+      // Валидация параметров перед отправкой
+      if (!requestData.TerminalKey || requestData.TerminalKey.length === 0) {
+        throw new Error('TerminalKey не может быть пустым')
+      }
+      if (requestData.Amount <= 0) {
+        throw new Error('Amount должен быть больше 0')
+      }
+      if (!requestData.OrderId || requestData.OrderId.length === 0) {
+        throw new Error('OrderId не может быть пустым')
+      }
+      if (requestData.OrderId.length > 20) {
+        throw new Error('OrderId не может быть длиннее 20 символов')
+      }
+      if (!requestData.Description || requestData.Description.length === 0) {
+        throw new Error('Description не может быть пустым')
+      }
+
       console.log('📤 Отправляем запрос в Тинькофф:', {
         url: paymentConfig.apiUrl + 'Init',
-        data: { ...requestData, Token: '[СКРЫТО]' }
+        data: { 
+          TerminalKey: requestData.TerminalKey,
+          Amount: requestData.Amount,
+          OrderId: requestData.OrderId,
+          Description: requestData.Description,
+          SuccessURL: requestData.SuccessURL,
+          FailURL: requestData.FailURL,
+          Token: '[СКРЫТО]'
+        }
       })
 
       // Отправляем запрос в Тинькофф
