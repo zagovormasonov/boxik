@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBPDTest } from '../../contexts/BPDTestContext'
 import { useAuth } from '../../contexts/AuthContext'
+import { usePaymentContext } from '../../contexts/PaymentContext'
 import { useSaveBPDTestResult } from '../../shared/hooks/useSaveBPDTestResult'
 import ProgressBar from '../ProgressBar/ProgressBar'
 import BPDQuestionCard from '../BPDQuestionCard/BPDQuestionCard'
@@ -10,6 +11,7 @@ import Navigation from '../Navigation/Navigation'
 const BPDTestScreen: React.FC = () => {
   const { state, questions, dispatch, severity } = useBPDTest()
   const { authState } = useAuth()
+  const { hasPaid } = usePaymentContext()
   const navigate = useNavigate()
   const { saveBPDTestResult, error: saveError } = useSaveBPDTestResult()
 
@@ -48,12 +50,20 @@ const BPDTestScreen: React.FC = () => {
             testState: completedTestState,
             totalQuestions: questions.length
           })
-          console.log('BPDTestScreen: Результаты БПД теста сохранены, переходим в профиль')
-          navigate('/profile')
+          console.log('BPDTestScreen: Результаты БПД теста сохранены')
+          
+          // Проверяем, есть ли у пользователя активная подписка
+          if (hasPaid) {
+            console.log('BPDTestScreen: У пользователя есть подписка, переходим в профиль')
+            navigate('/profile')
+          } else {
+            console.log('BPDTestScreen: У пользователя нет подписки, переходим на лендинг')
+            navigate('/subscription')
+          }
         } catch (error) {
           console.error('BPDTestScreen: Ошибка при сохранении результатов БПД теста:', error)
-          // Продолжаем переход даже при ошибке сохранения
-          navigate('/profile')
+          // При ошибке сохранения все равно переходим на лендинг
+          navigate('/subscription')
         }
       } else {
         // Если пользователь не авторизован, переходим на лендинг подписки
@@ -78,7 +88,7 @@ const BPDTestScreen: React.FC = () => {
             <h2>Тест завершен!</h2>
             <p>Спасибо за прохождение теста. Ваши ответы сохранены.</p>
             
-            {authState.user ? (
+            {authState.user && hasPaid ? (
               <div className="completion-actions">
                 <p>Результаты сохранены в вашем профиле.</p>
                 <button 
