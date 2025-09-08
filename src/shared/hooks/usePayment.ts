@@ -221,7 +221,14 @@ export function usePayment() {
           }
 
           console.log('💾 Сохраняем подписку в Supabase:', subscriptionData)
-          await createSubscription(subscriptionData)
+          const subscriptionResult = await createSubscription(subscriptionData)
+          console.log('💾 Результат создания подписки:', subscriptionResult)
+          
+          if (!subscriptionResult) {
+            console.error('❌ Не удалось создать подписку в Supabase')
+          } else {
+            console.log('✅ Подписка успешно создана в Supabase')
+          }
         }
 
         // Принудительно устанавливаем hasPaid в localStorage после создания платежа

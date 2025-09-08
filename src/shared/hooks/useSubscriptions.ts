@@ -32,17 +32,24 @@ export function useSubscriptions() {
   const checkTableExists = async (): Promise<boolean> => {
     try {
       console.log('🔍 Проверяем существование таблицы subscriptions...')
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('subscriptions')
         .select('id')
         .limit(1)
       
       if (error) {
         console.error('❌ Таблица subscriptions не существует или недоступна:', error)
+        console.error('❌ Детали ошибки:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        })
         return false
       }
       
       console.log('✅ Таблица subscriptions существует и доступна')
+      console.log('✅ Данные из таблицы:', data)
       return true
     } catch (err) {
       console.error('❌ Ошибка при проверке таблицы subscriptions:', err)

@@ -1,12 +1,15 @@
--- Временное отключение RLS для таблицы subscriptions
--- Это позволит работать с подписками без авторизации в Supabase
+-- Временно отключаем RLS для таблицы subscriptions для тестирования
+-- ВНИМАНИЕ: Это только для тестирования! В продакшене RLS должен быть включен!
 
--- Отключаем RLS для таблицы subscriptions
+-- Отключаем RLS
 ALTER TABLE subscriptions DISABLE ROW LEVEL SECURITY;
 
--- Альтернативно, можно создать политику для анонимного доступа:
--- CREATE POLICY "Allow anonymous access to subscriptions" ON subscriptions
---   FOR ALL USING (true);
+-- Проверяем статус RLS
+SELECT schemaname, tablename, rowsecurity 
+FROM pg_tables 
+WHERE tablename = 'subscriptions';
 
--- Комментарий: RLS отключен для упрощения работы с Yandex OAuth
-COMMENT ON TABLE subscriptions IS 'Таблица подписок с отключенным RLS для работы с Yandex OAuth';
+-- Проверяем существующие политики
+SELECT schemaname, tablename, policyname, permissive, roles, cmd, qual, with_check
+FROM pg_policies 
+WHERE tablename = 'subscriptions';
