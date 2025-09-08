@@ -5,7 +5,6 @@ import { usePayment } from '../../shared/hooks/usePayment'
 interface PaymentModalProps {
   isOpen: boolean
   onClose: () => void
-  onPaymentSuccess: () => void
   amount: number
   description: string
 }
@@ -13,7 +12,6 @@ interface PaymentModalProps {
 const PaymentModal: React.FC<PaymentModalProps> = ({
   isOpen,
   onClose,
-  onPaymentSuccess,
   amount,
   description
 }) => {
@@ -31,17 +29,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         description
       })
 
-      if (result.success) {
-        console.log('Платеж успешно создан:', result)
+      if (result.success && result.paymentUrl) {
+        console.log('Платеж успешно создан, перенаправляем на оплату:', result)
         
-        // В реальной реализации здесь будет:
-        // 1. Перенаправление на result.paymentUrl
-        // 2. Обработка callback'а об успешной оплате
-        // 3. Проверка статуса платежа
-        
-        // Пока что симулируем успешную оплату
-        onPaymentSuccess()
-        onClose()
+        // Перенаправляем пользователя на страницу оплаты Тинькофф
+        window.location.href = result.paymentUrl
       } else {
         console.error('Ошибка при создании платежа:', result.error)
       }

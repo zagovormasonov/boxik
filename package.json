@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
+    "@types/crypto-js": "^4.2.2",
+    "crypto-js": "^4.2.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^3.0.2",
     "lucide-react": "^0.294.0",

@@ -1,28 +1,13 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React from 'react'
 import { Check, Star, Shield, FileText, Send, CreditCard } from 'lucide-react'
 import PaymentModal from '../PaymentModal/PaymentModal'
 import { usePaymentContext } from '../../contexts/PaymentContext'
 
 const SubscriptionLanding: React.FC = () => {
-  const navigate = useNavigate()
-  const { paymentModalOpen, setPaymentModalOpen, setHasPaid } = usePaymentContext()
-  const [isProcessing, setIsProcessing] = useState(false)
+  const { paymentModalOpen, setPaymentModalOpen } = usePaymentContext()
 
   const handlePurchaseSubscription = () => {
     setPaymentModalOpen(true)
-  }
-
-  const handlePaymentSuccess = () => {
-    setHasPaid(true)
-    setIsProcessing(true)
-    
-    // Небольшая задержка для показа успешной оплаты
-    setTimeout(() => {
-      // Если пользователь не авторизован, перенаправляем на авторизацию
-      // После авторизации он попадет в профиль с активными кнопками
-      navigate('/auth')
-    }, 1500)
   }
 
   const handleClosePaymentModal = () => {
@@ -125,11 +110,10 @@ const SubscriptionLanding: React.FC = () => {
 
             <button 
               onClick={handlePurchaseSubscription}
-              disabled={isProcessing}
               className="purchase-button"
             >
               <CreditCard size={20} />
-              {isProcessing ? 'Обработка...' : 'Приобрести подписку'}
+              Приобрести подписку
             </button>
           </div>
         </div>
@@ -149,7 +133,6 @@ const SubscriptionLanding: React.FC = () => {
       <PaymentModal
         isOpen={paymentModalOpen}
         onClose={handleClosePaymentModal}
-        onPaymentSuccess={handlePaymentSuccess}
         amount={500}
         description="Полный доступ к результатам психологического теста БПД"
       />

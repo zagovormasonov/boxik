@@ -12,7 +12,7 @@ const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
   const navigate = useNavigate()
   const [isSendingResults, setIsSendingResults] = useState(false)
-  const { paymentModalOpen, setPaymentModalOpen, setHasPaid } = usePaymentContext()
+  const { paymentModalOpen, setPaymentModalOpen } = usePaymentContext()
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
 
@@ -38,11 +38,6 @@ const UserProfile: React.FC = () => {
     } finally {
       setIsSendingResults(false)
     }
-  }
-
-  const handlePaymentSuccess = () => {
-    setHasPaid(true)
-    console.log('Оплата успешно завершена')
   }
 
   const handleClosePaymentModal = () => {
@@ -158,7 +153,6 @@ const UserProfile: React.FC = () => {
       <PaymentModal
         isOpen={paymentModalOpen}
         onClose={handleClosePaymentModal}
-        onPaymentSuccess={handlePaymentSuccess}
         amount={500}
         description="Доступ к результатам психологического теста БПД и возможность скачивания PDF отчета"
       />
