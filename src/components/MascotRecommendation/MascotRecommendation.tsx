@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { RefreshCw, AlertCircle, X } from 'lucide-react'
+import { RefreshCw, AlertCircle } from 'lucide-react'
 import { BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
 import { useChatGPTRecommendation } from '../../shared/hooks/useChatGPTRecommendation'
 
@@ -10,7 +10,6 @@ interface MascotRecommendationProps {
 const MascotRecommendation: React.FC<MascotRecommendationProps> = ({ testResult }) => {
   const [recommendation, setRecommendation] = useState<string | null>(null)
   const [hasGenerated, setHasGenerated] = useState(false)
-  const [isVisible, setIsVisible] = useState(false)
   const { generateRecommendation, isLoading, error } = useChatGPTRecommendation()
 
   const handleGenerateRecommendation = async () => {
@@ -27,94 +26,52 @@ const MascotRecommendation: React.FC<MascotRecommendationProps> = ({ testResult 
     await handleGenerateRecommendation()
   }
 
-  const handleOpenModal = async () => {
-    setIsVisible(true)
-    // Автоматически генерируем рекомендацию при открытии модального окна
-    if (!hasGenerated && !isLoading) {
-      await handleGenerateRecommendation()
-    }
-  }
-
-  const handleClose = () => {
-    setIsVisible(false)
-  }
-
-  if (!isVisible) {
-    return (
+  return (
+    <div className="mascot-recommendation-container">
       <div className="mascot-button-container">
         <button
-          onClick={handleOpenModal}
+          onClick={handleGenerateRecommendation}
+          disabled={isLoading}
           className="mascot-button"
           title="Получить рекомендацию от маскота"
         >
           <img src="/mascot.png" alt="Маскот" className="mascot-button-image" />
-          <span className="mascot-button-text">Получить рекомендацию</span>
+          <span className="mascot-button-text">
+            {isLoading ? 'Генерирую...' : hasGenerated ? 'Обновить рекомендацию' : 'Получить рекомендацию'}
+          </span>
         </button>
       </div>
-    )
-  }
 
-  return (
-    <div className="mascot-recommendation-modal">
-      <div className="mascot-modal-overlay" onClick={handleClose}></div>
-      
-      <div className="mascot-recommendation-container">
-        <div className="mascot-speech-bubble">
-          <button
-            onClick={handleClose}
-            className="close-button"
-            title="Закрыть"
-          >
-            <X size={16} />
-          </button>
+      {error && (
+        <div className="recommendation-error">
+          <AlertCircle size={16} />
+          <span>Ошибка: {error}</span>
+        </div>
+      )}
 
-          <div className="speech-bubble-content">
-            {error && (
-              <div className="recommendation-error">
-                <AlertCircle size={16} />
-                <span>Ошибка: {error}</span>
-              </div>
-            )}
+      {isLoading && (
+        <div className="recommendation-loading">
+          <div className="loading-spinner"></div>
+          <span>Анализирую результаты теста...</span>
+        </div>
+      )}
 
-            {isLoading && (
-              <div className="recommendation-loading">
-                <div className="loading-spinner"></div>
-                <span>Генерирую рекомендацию...</span>
-              </div>
-            )}
-
-            {recommendation && (
-              <div className="recommendation-content">
-                <p>{recommendation}</p>
-                <button
-                  onClick={handleRegenerate}
-                  disabled={isLoading}
-                  className="regenerate-button"
-                >
-                  <RefreshCw size={14} />
-                  Обновить
-                </button>
-              </div>
-            )}
-
-            {!hasGenerated && !isLoading && !error && (
-              <div className="recommendation-prompt">
-                <p>Привет! Генерирую персональную рекомендацию на основе результатов твоего теста...</p>
-                <div className="recommendation-loading">
-                  <div className="loading-spinner"></div>
-                  <span>Анализирую результаты...</span>
-                </div>
-              </div>
-            )}
+      {recommendation && (
+        <div className="recommendation-content">
+          <div className="recommendation-header">
+            <h3>Рекомендация от маскота</h3>
+            <button
+              onClick={handleRegenerate}
+              disabled={isLoading}
+              className="regenerate-button"
+            >
+              <RefreshCw size={14} />
+              Обновить
+            </button>
           </div>
-
-          <div className="speech-bubble-tail"></div>
+          <p>{recommendation}</p>
         </div>
-
-        <div className="mascot-character">
-          <img src="/mascot.png" alt="Маскот-советчик" className="mascot-image" />
-        </div>
-      </div>
+      )}
     </div>
   )
 }
