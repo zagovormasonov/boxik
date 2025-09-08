@@ -56,9 +56,9 @@ const BPDTestScreen: React.FC = () => {
           navigate('/profile')
         }
       } else {
-        // Если пользователь не авторизован, переходим на авторизацию
-        console.log('BPDTestScreen: Пользователь не авторизован, переходим на авторизацию')
-        navigate('/auth')
+        // Если пользователь не авторизован, переходим на лендинг подписки
+        console.log('BPDTestScreen: Пользователь не авторизован, переходим на лендинг подписки')
+        navigate('/subscription')
       }
     } else {
       dispatch({ type: 'NEXT_QUESTION' })
@@ -90,12 +90,12 @@ const BPDTestScreen: React.FC = () => {
               </div>
             ) : (
               <div className="completion-actions">
-                <p>Для просмотра результатов и скачивания PDF отчета необходимо авторизоваться.</p>
+                <p>Для просмотра результатов и скачивания PDF отчета необходимо приобрести подписку.</p>
                 <button 
-                  onClick={() => navigate('/auth')}
+                  onClick={() => navigate('/subscription')}
                   className="btn btn-primary"
                 >
-                  Авторизоваться
+                  Приобрести подписку
                 </button>
               </div>
             )}

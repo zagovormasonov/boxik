@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 
 interface PaymentContextType {
   hasPaid: boolean
@@ -12,8 +12,17 @@ interface PaymentContextType {
 const PaymentContext = createContext<PaymentContextType | undefined>(undefined)
 
 export function PaymentProvider({ children }: { children: ReactNode }) {
-  const [hasPaid, setHasPaid] = useState(false)
+  const [hasPaid, setHasPaid] = useState(() => {
+    // Загружаем состояние оплаты из localStorage при инициализации
+    const saved = localStorage.getItem('hasPaid')
+    return saved === 'true'
+  })
   const [paymentModalOpen, setPaymentModalOpen] = useState(false)
+
+  // Сохраняем состояние оплаты в localStorage при изменении
+  useEffect(() => {
+    localStorage.setItem('hasPaid', hasPaid.toString())
+  }, [hasPaid])
 
   const showPaymentModal = () => {
     setPaymentModalOpen(true)
