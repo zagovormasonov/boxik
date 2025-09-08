@@ -1,6 +1,13 @@
 import React, { useState } from 'react'
 import { Check, Star, Shield, FileText, Send, CreditCard } from 'lucide-react'
 
+interface Advantage {
+  icon: React.ReactNode
+  title: string
+  description: string
+  subpoints?: string[]
+}
+
 const SubscriptionLanding: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false)
 
@@ -16,68 +23,88 @@ const SubscriptionLanding: React.FC = () => {
     window.location.href = yandexAuthUrl
   }
 
-  const advantages = [
+  const advantages: Advantage[] = [
     {
       icon: <FileText size={24} />,
       title: "Получи персональный план",
-      description: "Конкретные действия, какие тесты ещё пройти в твоём случае, какой метод терапии использовать, какой нужен психолог"
+      description: "Что делать именно в твоём случае",
+      subpoints: [
+        "Конкретные действия",
+        "Какие тесты ещё пройти в твоём случае",
+        "Какой метод терапии использовать?",
+        "Какой нужен психолог"
+      ]
     },
     {
       icon: <Send size={24} />,
       title: "Подберём психолога под твой случай",
-      description: "Найдём специалиста, который лучше всего подходит именно для твоей ситуации"
+      description: "Найдём специалиста, который лучше всего подходит именно тебе"
     },
     {
       icon: <Shield size={24} />,
       title: "Подготовим к сеансу",
-      description: "Что сказать специалисту в твоём случае, как на первом сеансе определить, что он скорее всего тебе подходит"
+      description: "Всё необходимое для эффективной работы с психологом",
+      subpoints: [
+        "Что сказать специалисту в твоём случае",
+        "Как на первом сеансе определить, что он скорее всего тебе подходит?"
+      ]
     },
     {
       icon: <Star size={24} />,
       title: "Подготовим PDF для психолога",
       description: "Даёшь его психологу, и понимает, что делать в твоём случае"
+    },
+    {
+      icon: <Check size={24} />,
+      title: "Обратная связь после сеанса",
+      description: "Ты сможешь поделиться с нами, как прошёл сеанс у психолога, и мы дадим обратную связь"
     }
   ]
 
   return (
-    <div className="page-with-bg">
-      <div className="page-content">
+    <div className="subscription-landing">
+      <div className="landing-container">
         {/* Заголовок */}
-        <div className="text-center mb-lg">
-          <div className="flex-center mb-md">
-            <div className="w-20 h-20 bg-success rounded-full flex-center text-white">
-              <Check size={48} />
-            </div>
+        <div className="landing-header">
+          <div className="success-icon">
+            <Check size={48} />
           </div>
-          <h1 className="title-lg text-center">
+          <h1 className="landing-title">
             Тест завершен!
           </h1>
-          <p className="subtitle text-center">
-            Получи персональный план действий и помощь в поиске психолога
+          <p className="landing-subtitle">
+            Получите полный доступ к результатам и рекомендациям
           </p>
         </div>
 
         {/* Преимущества подписки */}
-        <div className="mb-xl">
-          <h2 className="title text-center mb-lg">
-            Что ты получишь с подпиской:
+        <div className="advantages-section">
+          <h2 className="advantages-title">
+            Что вы получите с подпиской:
           </h2>
           
-          <div className="grid grid-auto gap-md">
+          <div className="advantages-grid">
             {advantages.map((advantage, index) => (
-              <div key={index} className="card card-compact">
-                <div className="flex gap">
-                  <div className="w-12 h-12 bg-accent-color rounded-md flex-center text-white flex-shrink-0">
-                    {advantage.icon}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="title-sm mb-sm">
-                      {advantage.title}
-                    </h3>
-                    <p className="text-sm text-gray-600">
-                      {advantage.description}
-                    </p>
-                  </div>
+              <div key={index} className="advantage-card">
+                <div className="advantage-icon">
+                  {advantage.icon}
+                </div>
+                <div className="advantage-content">
+                  <h3 className="advantage-title">
+                    {advantage.title}
+                  </h3>
+                  <p className="advantage-description">
+                    {advantage.description}
+                  </p>
+                  {advantage.subpoints && (
+                    <ul className="advantage-subpoints">
+                      {advantage.subpoints.map((subpoint, subIndex) => (
+                        <li key={subIndex} className="subpoint-item">
+                          {subpoint}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             ))}
@@ -85,54 +112,52 @@ const SubscriptionLanding: React.FC = () => {
         </div>
 
         {/* Цена и кнопка */}
-        <div className="card-elevated">
-          <div className="text-center mb-lg">
-            <h3 className="title mb-sm">Полный доступ</h3>
-            <div className="flex-center gap-sm">
-              <span className="text-3xl font-bold">1</span>
-              <span className="text-xl font-medium">₽</span>
+        <div className="pricing-section">
+          <div className="pricing-card">
+            <div className="pricing-header">
+              <h3 className="pricing-title">Полный доступ</h3>
+              <div className="pricing-price">
+                <span className="price-amount">1</span>
+                <span className="price-currency">₽</span>
+              </div>
             </div>
-          </div>
-          
-          <div className="space-y-sm mb-lg">
-            <div className="flex-center gap-sm">
-              <Check size={16} />
-              <span>Получи персональный план</span>
+            
+            <div className="pricing-features">
+              <div className="feature-item">
+                <Check size={16} />
+                <span>Детальный PDF отчет</span>
+              </div>
+              <div className="feature-item">
+                <Check size={16} />
+                <span>Отправка результатов специалисту</span>
+              </div>
+              <div className="feature-item">
+                <Check size={16} />
+                <span>Персональные рекомендации</span>
+              </div>
+              <div className="feature-item">
+                <Check size={16} />
+                <span>Пожизненный доступ к результатам</span>
+              </div>
             </div>
-            <div className="flex-center gap-sm">
-              <Check size={16} />
-              <span>Подберём психолога под твой случай</span>
-            </div>
-            <div className="flex-center gap-sm">
-              <Check size={16} />
-              <span>Подготовим к сеансу</span>
-            </div>
-            <div className="flex-center gap-sm">
-              <Check size={16} />
-              <span>Подготовим PDF для психолога</span>
-            </div>
-            <div className="flex-center gap-sm">
-              <Check size={16} />
-              <span>Обратная связь после сеанса</span>
-            </div>
-          </div>
 
-          <button 
-            onClick={handleLoginAndPay}
-            disabled={isProcessing}
-            className="btn btn-primary btn-full btn-lg"
-          >
-            <CreditCard size={20} />
-            {isProcessing ? 'Перенаправляем...' : 'Войти через Яндекс и оплатить 1₽'}
-          </button>
+            <button 
+              onClick={handleLoginAndPay}
+              disabled={isProcessing}
+              className="purchase-button login-and-pay-button"
+            >
+              <CreditCard size={20} />
+              {isProcessing ? 'Перенаправляем...' : 'Войти через Яндекс и оплатить 1₽'}
+            </button>
+          </div>
         </div>
 
         {/* Дополнительная информация */}
-        <div className="text-center space-y-sm">
-          <p className="text-sm text-gray-500">
+        <div className="additional-info">
+          <p className="info-text">
             💳 Безопасная оплата через СБП Тинькофф
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="info-text">
             🔒 Ваши данные защищены и конфиденциальны
           </p>
         </div>

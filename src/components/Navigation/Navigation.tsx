@@ -20,7 +20,13 @@ const Navigation: React.FC<NavigationProps> = ({
   const isLastQuestion = currentQuestion === totalQuestions - 1
 
   return (
-    <div className="flex flex-between flex-center mt-md px">
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'space-between', 
+      alignItems: 'center',
+      marginTop: '20px',
+      padding: '0 20px'
+    }}>
       <button
         onClick={onPrevious}
         disabled={isFirstQuestion}
@@ -36,7 +42,11 @@ const Navigation: React.FC<NavigationProps> = ({
         Назад
       </button>
 
-      <span className="text-sm text-gray-500 font-medium">
+      <span style={{ 
+        fontSize: '14px', 
+        color: '#6b7280',
+        fontWeight: '500'
+      }}>
         {currentQuestion + 1} из {totalQuestions}
       </span>
 
