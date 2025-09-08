@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
+import { useTestUserMapping } from '../../shared/hooks/useTestUserMapping'
 
 const YandexCallback: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { linkExistingTestResults } = useTestUserMapping()
 
   useEffect(() => {
     const handleYandexCallback = async () => {
@@ -213,6 +215,21 @@ const YandexCallback: React.FC = () => {
         localStorage.setItem('yandex_auth_success', 'true')
         
         console.log('YandexCallback: Пользователь успешно создан в localStorage', realUser)
+        
+        // Связываем существующие результаты теста с пользователем
+        const sessionId = localStorage.getItem('test_session_id') || 'anonymous'
+        console.log('YandexCallback: Связываем результаты теста с пользователем:', { userId: realUser.id, sessionId })
+        
+        try {
+          const linked = await linkExistingTestResults(realUser.id, sessionId)
+          if (linked) {
+            console.log('✅ YandexCallback: Результаты теста успешно связаны с пользователем')
+          } else {
+            console.log('ℹ️ YandexCallback: Результаты теста для связывания не найдены')
+          }
+        } catch (linkError) {
+          console.error('❌ YandexCallback: Ошибка при связывании результатов теста:', linkError)
+        }
         
         // Очищаем состояние
         localStorage.removeItem('yandex_auth_pending')

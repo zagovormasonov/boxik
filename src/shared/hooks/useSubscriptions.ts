@@ -147,7 +147,7 @@ export function useSubscriptions() {
     setError(null)
 
     try {
-      console.log('Получаем активную подписку для пользователя:', userId)
+      console.log('🔍 useSubscriptions: Получаем активную подписку для пользователя:', userId)
 
       const { data: subscription, error } = await supabase
         .from('subscriptions')
@@ -159,14 +159,25 @@ export function useSubscriptions() {
         .single()
 
       if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
-        console.error('Ошибка при получении подписки:', error)
+        console.error('❌ useSubscriptions: Ошибка при получении подписки:', error)
+        console.error('❌ useSubscriptions: Детали ошибки:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        })
         throw error
       }
 
-      console.log('Активная подписка:', subscription)
+      if (error && error.code === 'PGRST116') {
+        console.log('ℹ️ useSubscriptions: Активная подписка не найдена для пользователя:', userId)
+        return null
+      }
+
+      console.log('✅ useSubscriptions: Активная подписка найдена:', subscription)
       return subscription
     } catch (err) {
-      console.error('Ошибка при получении подписки:', err)
+      console.error('❌ useSubscriptions: Ошибка при получении подписки:', err)
       setError(err instanceof Error ? err.message : 'Не удалось получить подписку')
       return null
     } finally {

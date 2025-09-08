@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
 import { BPDTestResult, BPDSeverity } from '../../types'
+import { useTestUserMapping } from './useTestUserMapping'
 
 export interface BPDTestResultWithDetails extends BPDTestResult {
   id: string
@@ -13,6 +14,7 @@ export function useBPDTestResults(userId: string | null) {
   const [lastTestResult, setLastTestResult] = useState<BPDTestResultWithDetails | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { getTestResultsForUser } = useTestUserMapping()
 
   useEffect(() => {
     if (!userId) {
@@ -27,29 +29,55 @@ export function useBPDTestResults(userId: string | null) {
       try {
         console.log('useBPDTestResults: Загружаем результаты БПД теста для пользователя:', userId)
 
-        // Сначала попробуем найти результаты БПД теста
-        let { data, error: fetchError } = await supabase
-          .from('test_results')
-          .select('*')
-          .eq('user_id', userId)
-          .eq('test_type', 'bpd')
-          .order('completed_at', { ascending: false })
-          .limit(1)
-          .single()
+        // Получаем ID результатов теста через таблицу связей
+        const testResultIds = await getTestResultsForUser(userId)
+        console.log('useBPDTestResults: Найдены ID результатов теста:', testResultIds)
 
-        // Если не найдены результаты БПД, попробуем найти любые результаты
-        if (fetchError && fetchError.code === 'PGRST116') {
-          console.log('useBPDTestResults: Результаты БПД не найдены, ищем любые результаты')
-          const { data: anyData, error: anyError } = await supabase
+        let data = null
+        let fetchError = null
+
+        if (testResultIds.length > 0) {
+          // Ищем результаты БПД теста среди связанных результатов
+          const { data: bpdData, error: bpdError } = await supabase
             .from('test_results')
             .select('*')
-            .eq('user_id', userId)
+            .in('id', testResultIds)
+            .eq('test_type', 'bpd')
             .order('completed_at', { ascending: false })
             .limit(1)
             .single()
-          
-          data = anyData
-          fetchError = anyError
+
+          if (!bpdError) {
+            data = bpdData
+          } else if (bpdError.code === 'PGRST116') {
+            // Если БПД тест не найден, берем последний результат любого типа
+            const { data: anyData, error: anyError } = await supabase
+              .from('test_results')
+              .select('*')
+              .in('id', testResultIds)
+              .order('completed_at', { ascending: false })
+              .limit(1)
+              .single()
+            
+            data = anyData
+            fetchError = anyError
+          } else {
+            fetchError = bpdError
+          }
+        } else {
+          // Если связей нет, ищем результаты напрямую по userId (для обратной совместимости)
+          console.log('useBPDTestResults: Связи не найдены, ищем результаты напрямую')
+          const { data: directData, error: directError } = await supabase
+            .from('test_results')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('test_type', 'bpd')
+            .order('completed_at', { ascending: false })
+            .limit(1)
+            .single()
+
+          data = directData
+          fetchError = directError
         }
 
         if (fetchError) {

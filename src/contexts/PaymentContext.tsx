@@ -28,12 +28,21 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkActiveSubscription = async () => {
       if (authState.user?.id) {
-        console.log('Проверяем активную подписку для пользователя:', authState.user.id)
-        const hasActive = await hasActiveSubscription(authState.user.id)
-        console.log('Активная подписка найдена:', hasActive)
-        setHasPaid(hasActive)
+        console.log('🔄 PaymentContext: Проверяем активную подписку для пользователя:', authState.user.id)
+        try {
+          const hasActive = await hasActiveSubscription(authState.user.id)
+          console.log('🔄 PaymentContext: Активная подписка найдена:', hasActive)
+          setHasPaid(hasActive)
+          localStorage.setItem('hasPaid', hasActive.toString())
+        } catch (error) {
+          console.error('❌ PaymentContext: Ошибка при проверке подписки:', error)
+          setHasPaid(false)
+          localStorage.setItem('hasPaid', 'false')
+        }
       } else {
+        console.log('🔄 PaymentContext: Пользователь не авторизован, сбрасываем статус оплаты')
         setHasPaid(false)
+        localStorage.setItem('hasPaid', 'false')
       }
     }
 

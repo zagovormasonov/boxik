@@ -21,6 +21,16 @@ const BPDTestScreen: React.FC = () => {
   useEffect(() => {
     console.log('BPDTestScreen: Компонент загружен')
     console.log('BPDTestScreen: Состояние авторизации:', authState.user ? 'авторизован' : 'не авторизован')
+    
+    // Создаем session_id для неавторизованных пользователей
+    if (!authState.user) {
+      let sessionId = localStorage.getItem('test_session_id')
+      if (!sessionId) {
+        sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8)
+        localStorage.setItem('test_session_id', sessionId)
+        console.log('BPDTestScreen: Создан session_id для неавторизованного пользователя:', sessionId)
+      }
+    }
   }, [authState.user])
 
   const handleAnswerSelect = (answer: number) => {
@@ -66,7 +76,28 @@ const BPDTestScreen: React.FC = () => {
           navigate('/subscription')
         }
       } else {
-        // Если пользователь не авторизован, переходим на лендинг подписки
+        // Если пользователь не авторизован, сохраняем результаты с session_id
+        try {
+          console.log('BPDTestScreen: Сохраняем результаты теста БПД для неавторизованного пользователя')
+          
+          const sessionId = localStorage.getItem('test_session_id') || 'anonymous'
+          
+          const completedTestState = {
+            ...state,
+            isCompleted: true
+          }
+
+          await saveBPDTestResult({
+            userId: sessionId, // Используем session_id как userId для неавторизованных пользователей
+            testState: completedTestState,
+            totalQuestions: questions.length
+          })
+          console.log('BPDTestScreen: Результаты БПД теста сохранены с session_id:', sessionId)
+        } catch (error) {
+          console.error('BPDTestScreen: Ошибка при сохранении результатов БПД теста для неавторизованного пользователя:', error)
+        }
+        
+        // Переходим на лендинг подписки
         console.log('BPDTestScreen: Пользователь не авторизован, переходим на лендинг подписки')
         navigate('/subscription')
       }
