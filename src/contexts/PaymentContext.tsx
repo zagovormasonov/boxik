@@ -23,6 +23,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     return saved === 'true'
   })
   const [paymentModalOpen, setPaymentModalOpen] = useState(false)
+  const [isManuallySet, setIsManuallySet] = useState(false) // Флаг для ручной установки
   const { hasActiveSubscription } = useSubscriptions()
   const { authState } = useAuth()
 
@@ -60,6 +61,12 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const checkActiveSubscription = async () => {
       if (authState.user?.id) {
+        // Если hasPaid был установлен вручную, не перезаписываем его
+        if (isManuallySet && hasPaid) {
+          console.log('🔄 PaymentContext: hasPaid был установлен вручную в checkActiveSubscription, не перезаписываем')
+          return
+        }
+        
         try {
           const hasActive = await hasActiveSubscription(authState.user.id)
           setHasPaid(hasActive)
@@ -85,7 +92,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     }
 
     checkActiveSubscription()
-  }, [authState.user?.id, hasActiveSubscription])
+  }, [authState.user?.id, hasActiveSubscription, isManuallySet, hasPaid])
 
   // Сохраняем состояние оплаты в localStorage при изменении
   useEffect(() => {
@@ -105,7 +112,8 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     console.log('🔄 PaymentContext: Принудительно устанавливаем hasPaid:', paid)
     setHasPaid(paid)
     localStorage.setItem('hasPaid', paid.toString())
-    console.log('🔄 PaymentContext: hasPaid установлен в:', paid)
+    setIsManuallySet(true) // Устанавливаем флаг ручной установки
+    console.log('🔄 PaymentContext: hasPaid установлен в:', paid, 'isManuallySet:', true)
   }
 
   // Принудительное обновление статуса оплаты
@@ -114,6 +122,13 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
       console.log('🔄 Принудительно обновляем статус оплаты для пользователя:', authState.user.id)
       console.log('🔄 Текущий hasPaid перед обновлением:', hasPaid)
       console.log('🔄 localStorage hasPaid перед обновлением:', localStorage.getItem('hasPaid'))
+      console.log('🔄 isManuallySet:', isManuallySet)
+      
+      // Если hasPaid был установлен вручную, не перезаписываем его
+      if (isManuallySet && hasPaid) {
+        console.log('🔄 PaymentContext: hasPaid был установлен вручную, не перезаписываем')
+        return
+      }
       
       try {
         const hasActive = await hasActiveSubscription(authState.user.id)
