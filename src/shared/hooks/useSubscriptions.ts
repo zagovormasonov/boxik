@@ -148,17 +148,24 @@ export function useSubscriptions() {
 
     try {
       console.log('🔍 useSubscriptions: Получаем активную подписку для пользователя:', userId)
+      
+      // Проверяем авторизацию в Supabase
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      if (authError) {
+        console.error('❌ useSubscriptions: Ошибка авторизации:', authError)
+        throw authError
+      }
+      console.log('🔍 useSubscriptions: Авторизованный пользователь:', user?.id)
 
-      const { data: subscription, error } = await supabase
+      const { data: subscriptions, error } = await supabase
         .from('subscriptions')
         .select('*')
         .eq('user_id', userId)
         .eq('status', 'confirmed')
         .order('created_at', { ascending: false })
         .limit(1)
-        .single()
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+      if (error) {
         console.error('❌ useSubscriptions: Ошибка при получении подписки:', error)
         console.error('❌ useSubscriptions: Детали ошибки:', {
           code: error.code,
@@ -169,13 +176,13 @@ export function useSubscriptions() {
         throw error
       }
 
-      if (error && error.code === 'PGRST116') {
+      if (!subscriptions || subscriptions.length === 0) {
         console.log('ℹ️ useSubscriptions: Активная подписка не найдена для пользователя:', userId)
         return null
       }
 
-      console.log('✅ useSubscriptions: Активная подписка найдена:', subscription)
-      return subscription
+      console.log('✅ useSubscriptions: Активная подписка найдена:', subscriptions[0])
+      return subscriptions[0]
     } catch (err) {
       console.error('❌ useSubscriptions: Ошибка при получении подписки:', err)
       setError(err instanceof Error ? err.message : 'Не удалось получить подписку')
@@ -187,8 +194,16 @@ export function useSubscriptions() {
 
   // Проверка наличия активной подписки
   const hasActiveSubscription = async (userId: string): Promise<boolean> => {
-    const subscription = await getActiveSubscription(userId)
-    return subscription !== null
+    console.log('🔍 hasActiveSubscription: Проверяем активную подписку для пользователя:', userId)
+    try {
+      const subscription = await getActiveSubscription(userId)
+      const hasActive = subscription !== null
+      console.log('🔍 hasActiveSubscription: Результат проверки:', hasActive)
+      return hasActive
+    } catch (error) {
+      console.error('❌ hasActiveSubscription: Ошибка при проверке подписки:', error)
+      return false
+    }
   }
 
   return {
