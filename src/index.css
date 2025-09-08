@@ -1627,6 +1627,28 @@ body {
   line-height: 1.4;
 }
 
+.advantage-subpoints {
+  margin: 12px 0 0 0;
+  padding-left: 20px;
+  list-style: none;
+}
+
+.subpoint-item {
+  font-size: 13px;
+  color: #4b5563;
+  margin: 6px 0;
+  position: relative;
+  line-height: 1.4;
+}
+
+.subpoint-item::before {
+  content: "•";
+  color: #6b7280;
+  font-weight: bold;
+  position: absolute;
+  left: -15px;
+}
+
 .pricing-section {
   margin-bottom: 30px;
 }
