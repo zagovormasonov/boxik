@@ -112,25 +112,33 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
   const refreshPaymentStatus = async () => {
     if (authState.user?.id) {
       console.log('🔄 Принудительно обновляем статус оплаты для пользователя:', authState.user.id)
+      console.log('🔄 Текущий hasPaid перед обновлением:', hasPaid)
+      console.log('🔄 localStorage hasPaid перед обновлением:', localStorage.getItem('hasPaid'))
+      
       try {
         const hasActive = await hasActiveSubscription(authState.user.id)
-        console.log('🔄 Новый статус оплаты:', hasActive)
+        console.log('🔄 Новый статус оплаты из Supabase:', hasActive)
         setHasPaid(hasActive)
         localStorage.setItem('hasPaid', hasActive.toString())
-        } catch (error) {
-          console.error('❌ PaymentContext: Ошибка при обновлении статуса оплаты:', error)
-          // Fallback: используем localStorage если Supabase недоступен
-          const localHasPaid = localStorage.getItem('hasPaid') === 'true'
-          console.log('🔄 PaymentContext: Supabase недоступен, используем fallback из localStorage для обновления:', localHasPaid)
-          console.log('🔄 PaymentContext: Все значения localStorage:', {
-            hasPaid: localStorage.getItem('hasPaid'),
-            test_session_id: localStorage.getItem('test_session_id'),
-            user: localStorage.getItem('user')
-          })
-          // Принудительно устанавливаем статус из localStorage
-          setHasPaid(localHasPaid)
-          console.log('🔄 PaymentContext: Установлен hasPaid:', localHasPaid)
-        }
+        console.log('🔄 hasPaid установлен в:', hasActive)
+      } catch (error) {
+        console.error('❌ PaymentContext: Ошибка при обновлении статуса оплаты:', error)
+        // Fallback: используем localStorage если Supabase недоступен
+        const localHasPaid = localStorage.getItem('hasPaid') === 'true'
+        console.log('🔄 PaymentContext: Supabase недоступен, используем fallback из localStorage для обновления:', localHasPaid)
+        console.log('🔄 PaymentContext: Все значения localStorage:', {
+          hasPaid: localStorage.getItem('hasPaid'),
+          test_session_id: localStorage.getItem('test_session_id'),
+          user: localStorage.getItem('user')
+        })
+        // Принудительно устанавливаем статус из localStorage
+        setHasPaid(localHasPaid)
+        console.log('🔄 PaymentContext: Установлен hasPaid:', localHasPaid)
+      }
+    } else {
+      console.log('🔄 refreshPaymentStatus: Нет пользователя, устанавливаем hasPaid: false')
+      setHasPaid(false)
+      localStorage.setItem('hasPaid', 'false')
     }
   }
 

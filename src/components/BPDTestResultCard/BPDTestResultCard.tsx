@@ -23,8 +23,15 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
   // Принудительно проверяем статус подписки при загрузке компонента
   useEffect(() => {
     console.log('BPDTestResultCard: Принудительно проверяем статус подписки')
+    console.log('BPDTestResultCard: Текущий hasPaid:', hasPaid)
+    console.log('BPDTestResultCard: localStorage hasPaid:', localStorage.getItem('hasPaid'))
     refreshPaymentStatus()
   }, [refreshPaymentStatus])
+
+  // Логируем изменения hasPaid
+  useEffect(() => {
+    console.log('BPDTestResultCard: hasPaid изменился на:', hasPaid)
+  }, [hasPaid])
 
   const handlePayment = () => {
     if (!hasPaid) {

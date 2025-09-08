@@ -12,7 +12,7 @@ const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
   const navigate = useNavigate()
   const [isSendingResults, setIsSendingResults] = useState(false)
-  const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus } = usePaymentContext()
+  const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, hasPaid, forceSetPaid } = usePaymentContext()
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
 
@@ -20,9 +20,24 @@ const UserProfile: React.FC = () => {
   useEffect(() => {
     if (authState.user?.id) {
       console.log('UserProfile: Принудительно проверяем статус подписки для пользователя:', authState.user.id)
+      console.log('UserProfile: Текущий hasPaid:', hasPaid)
+      console.log('UserProfile: localStorage hasPaid:', localStorage.getItem('hasPaid'))
+      
+      // Принудительно проверяем localStorage и устанавливаем hasPaid если нужно
+      const localHasPaid = localStorage.getItem('hasPaid') === 'true'
+      if (localHasPaid && !hasPaid) {
+        console.log('UserProfile: Принудительно устанавливаем hasPaid: true из localStorage')
+        forceSetPaid(true)
+      }
+      
       refreshPaymentStatus()
     }
-  }, [authState.user?.id, refreshPaymentStatus])
+  }, [authState.user?.id, refreshPaymentStatus, hasPaid, forceSetPaid])
+
+  // Логируем изменения hasPaid
+  useEffect(() => {
+    console.log('UserProfile: hasPaid изменился на:', hasPaid)
+  }, [hasPaid])
 
   useEffect(() => {
     // Добавляем небольшую задержку для восстановления пользователя из localStorage
