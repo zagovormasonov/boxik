@@ -229,6 +229,10 @@ export function usePayment() {
         console.log('🔄 Принудительно устанавливаем hasPaid: true в localStorage после создания платежа')
         localStorage.setItem('hasPaid', 'true')
         
+        // Сохраняем время создания платежа для альтернативной проверки
+        localStorage.setItem('paymentCreatedAt', Date.now().toString())
+        console.log('🔄 Сохранено время создания платежа:', new Date().toISOString())
+        
         return {
           success: true,
           paymentId: result.PaymentId,

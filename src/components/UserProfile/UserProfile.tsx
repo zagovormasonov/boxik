@@ -45,16 +45,20 @@ const UserProfile: React.FC = () => {
     const paymentId = searchParams.get('PaymentId') || searchParams.get('payment_id') || searchParams.get('PaymentID')
     const orderId = searchParams.get('OrderId') || searchParams.get('order_id') || searchParams.get('OrderID')
     const status = searchParams.get('Status') || searchParams.get('status')
+    const success = searchParams.get('Success') || searchParams.get('success')
+    const result = searchParams.get('Result') || searchParams.get('result')
     
-    console.log('UserProfile: Проверяем параметры оплаты в URL:', {
-      paymentId,
-      orderId,
-      status,
-      allParams: Object.fromEntries(searchParams.entries())
-    })
+    console.log('UserProfile: Проверяем параметры оплаты в URL:')
+    console.log('- paymentId:', paymentId)
+    console.log('- orderId:', orderId)
+    console.log('- status:', status)
+    console.log('- success:', success)
+    console.log('- result:', result)
+    console.log('- allParams:', Object.fromEntries(searchParams.entries()))
+    console.log('- current URL:', window.location.href)
     
     // Если есть параметры оплаты, автоматически устанавливаем hasPaid: true
-    if (paymentId || orderId) {
+    if (paymentId || orderId || success === 'true' || result === 'true') {
       console.log('UserProfile: Обнаружены параметры оплаты, автоматически устанавливаем hasPaid: true')
       forceSetPaid(true)
       
@@ -63,6 +67,27 @@ const UserProfile: React.FC = () => {
       newUrl.search = ''
       window.history.replaceState({}, '', newUrl.toString())
       console.log('UserProfile: URL очищен от параметров оплаты')
+    } else {
+      console.log('UserProfile: Параметры оплаты не обнаружены')
+      
+      // Альтернативный способ: проверяем, не пришел ли пользователь вскоре после создания платежа
+      const paymentTime = localStorage.getItem('paymentCreatedAt')
+      if (paymentTime) {
+        const timeDiff = Date.now() - parseInt(paymentTime)
+        const fiveMinutes = 5 * 60 * 1000 // 5 минут в миллисекундах
+        
+        console.log('UserProfile: Проверяем время создания платежа:', {
+          paymentTime: new Date(parseInt(paymentTime)).toISOString(),
+          timeDiff: timeDiff,
+          fiveMinutes: fiveMinutes,
+          isRecent: timeDiff < fiveMinutes
+        })
+        
+        if (timeDiff < fiveMinutes) {
+          console.log('UserProfile: Платеж был создан недавно, автоматически устанавливаем hasPaid: true')
+          forceSetPaid(true)
+        }
+      }
     }
   }, [searchParams, forceSetPaid])
 
