@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { CheckCircle, Send, Download } from 'lucide-react'
 import { usePDFGenerator } from '../../shared/hooks/usePDFGenerator'
 import { BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
+import { bpdQuestions } from '../../contexts/BPDTestContext'
 
 interface BPDTestResultCardProps {
   testResult: BPDTestResultWithDetails
@@ -34,9 +35,15 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
 
   const generateBPDTestResultPDF = async (testResult: BPDTestResultWithDetails): Promise<boolean> => {
     try {
-      // Создаем упрощенную версию PDF для БПД теста
-      const mockQuestions: any[] = [] // БПД тест не требует детальных вопросов в PDF
-      const mockAnswers = testResult.answers
+      // Используем реальные вопросы БПД теста
+      const questions = bpdQuestions.map(q => ({
+        id: q.id,
+        text: q.text,
+        options: q.options,
+        correctAnswer: -1 // БПД тест не имеет правильных ответов
+      }))
+      
+      const answers = testResult.answers
       
       // Создаем объект совместимый с существующим генератором
       const mockTestResult = {
@@ -51,7 +58,7 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
         completed_at: testResult.completedAt
       }
 
-      return await generateTestResultPDF(mockTestResult, mockQuestions, mockAnswers)
+      return await generateTestResultPDF(mockTestResult, questions, answers)
     } catch (error) {
       console.error('Ошибка при генерации PDF БПД теста:', error)
       return false

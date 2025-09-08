@@ -122,8 +122,9 @@ export function usePDFGenerator() {
               <div style="margin-left: 20px;">
                 ${userAnswers.map((answer, index) => {
                   const answerText = answer >= 0 ? ['Никогда', 'Редко', 'Иногда', 'Часто', 'Всегда'][answer] : 'Не отвечено'
+                  const questionText = questions.length > index ? questions[index].text : `Вопрос ${index + 1}`
                   return `<p style="margin: 6px 0; padding: 6px; background-color: #f8fafc; border-radius: 4px; border: 1px solid #e5e7eb;">
-                    <strong>Вопрос ${index + 1}:</strong> ${answerText}
+                    <strong>${questionText}:</strong> ${answerText}
                   </p>`
                 }).join('')}
               </div>
