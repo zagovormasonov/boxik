@@ -14,24 +14,19 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 }) => {
   return (
     <div className="card">
-      <h2 style={{ marginBottom: '20px', fontSize: '20px', fontWeight: '600', color: '#1f2937' }}>
+      <h2 className="title mb-md">
         {question.text}
       </h2>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div className="flex flex-col gap">
         {question.options.map((option, index) => (
           <button
             key={index}
             onClick={() => onAnswerSelect(index)}
+            className={`btn btn-secondary text-left ${selectedAnswer === index ? 'selected' : ''}`}
             style={{
-              padding: '12px 16px',
-              border: selectedAnswer === index ? '2px solid #4f46e5' : '2px solid #e5e7eb',
-              borderRadius: '8px',
-              background: selectedAnswer === index ? '#f0f0ff' : 'white',
-              cursor: 'pointer',
-              textAlign: 'left',
-              fontSize: '16px',
-              color: '#1f2937',
-              transition: 'all 0.2s ease'
+              border: selectedAnswer === index ? '2px solid var(--accent-color)' : '2px solid var(--gray-200)',
+              background: selectedAnswer === index ? 'var(--accent-light)' : 'var(--white)',
+              color: selectedAnswer === index ? 'var(--accent-dark)' : 'var(--gray-800)'
             }}
           >
             {option}

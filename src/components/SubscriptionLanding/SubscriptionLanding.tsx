@@ -40,40 +40,44 @@ const SubscriptionLanding: React.FC = () => {
   ]
 
   return (
-    <div className="subscription-landing">
-      <div className="landing-container">
+    <div className="page-with-bg">
+      <div className="page-content">
         {/* Заголовок */}
-        <div className="landing-header">
-          <div className="success-icon">
-            <Check size={48} />
+        <div className="text-center mb-lg">
+          <div className="flex-center mb-md">
+            <div className="w-20 h-20 bg-success rounded-full flex-center text-white">
+              <Check size={48} />
+            </div>
           </div>
-          <h1 className="landing-title">
+          <h1 className="title-lg text-center">
             Тест завершен!
           </h1>
-          <p className="landing-subtitle">
+          <p className="subtitle text-center">
             Получи персональный план действий и помощь в поиске психолога
           </p>
         </div>
 
         {/* Преимущества подписки */}
-        <div className="advantages-section">
-          <h2 className="advantages-title">
+        <div className="mb-xl">
+          <h2 className="title text-center mb-lg">
             Что ты получишь с подпиской:
           </h2>
           
-          <div className="advantages-grid">
+          <div className="grid grid-auto gap-md">
             {advantages.map((advantage, index) => (
-              <div key={index} className="advantage-card">
-                <div className="advantage-icon">
-                  {advantage.icon}
-                </div>
-                <div className="advantage-content">
-                  <h3 className="advantage-title">
-                    {advantage.title}
-                  </h3>
-                  <p className="advantage-description">
-                    {advantage.description}
-                  </p>
+              <div key={index} className="card card-compact">
+                <div className="flex gap">
+                  <div className="w-12 h-12 bg-accent-color rounded-md flex-center text-white flex-shrink-0">
+                    {advantage.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="title-sm mb-sm">
+                      {advantage.title}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {advantage.description}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -81,56 +85,54 @@ const SubscriptionLanding: React.FC = () => {
         </div>
 
         {/* Цена и кнопка */}
-        <div className="pricing-section">
-          <div className="pricing-card">
-            <div className="pricing-header">
-              <h3 className="pricing-title">Полный доступ</h3>
-              <div className="pricing-price">
-                <span className="price-amount">1</span>
-                <span className="price-currency">₽</span>
-              </div>
+        <div className="card-elevated">
+          <div className="text-center mb-lg">
+            <h3 className="title mb-sm">Полный доступ</h3>
+            <div className="flex-center gap-sm">
+              <span className="text-3xl font-bold">1</span>
+              <span className="text-xl font-medium">₽</span>
             </div>
-            
-            <div className="pricing-features">
-              <div className="feature-item">
-                <Check size={16} />
-                <span>Получи персональный план</span>
-              </div>
-              <div className="feature-item">
-                <Check size={16} />
-                <span>Подберём психолога под твой случай</span>
-              </div>
-              <div className="feature-item">
-                <Check size={16} />
-                <span>Подготовим к сеансу</span>
-              </div>
-              <div className="feature-item">
-                <Check size={16} />
-                <span>Подготовим PDF для психолога</span>
-              </div>
-              <div className="feature-item">
-                <Check size={16} />
-                <span>Обратная связь после сеанса</span>
-              </div>
-            </div>
-
-            <button 
-              onClick={handleLoginAndPay}
-              disabled={isProcessing}
-              className="purchase-button login-and-pay-button"
-            >
-              <CreditCard size={20} />
-              {isProcessing ? 'Перенаправляем...' : 'Войти через Яндекс и оплатить 1₽'}
-            </button>
           </div>
+          
+          <div className="space-y-sm mb-lg">
+            <div className="flex-center gap-sm">
+              <Check size={16} />
+              <span>Получи персональный план</span>
+            </div>
+            <div className="flex-center gap-sm">
+              <Check size={16} />
+              <span>Подберём психолога под твой случай</span>
+            </div>
+            <div className="flex-center gap-sm">
+              <Check size={16} />
+              <span>Подготовим к сеансу</span>
+            </div>
+            <div className="flex-center gap-sm">
+              <Check size={16} />
+              <span>Подготовим PDF для психолога</span>
+            </div>
+            <div className="flex-center gap-sm">
+              <Check size={16} />
+              <span>Обратная связь после сеанса</span>
+            </div>
+          </div>
+
+          <button 
+            onClick={handleLoginAndPay}
+            disabled={isProcessing}
+            className="btn btn-primary btn-full btn-lg"
+          >
+            <CreditCard size={20} />
+            {isProcessing ? 'Перенаправляем...' : 'Войти через Яндекс и оплатить 1₽'}
+          </button>
         </div>
 
         {/* Дополнительная информация */}
-        <div className="additional-info">
-          <p className="info-text">
+        <div className="text-center space-y-sm">
+          <p className="text-sm text-gray-500">
             💳 Безопасная оплата через СБП Тинькофф
           </p>
-          <p className="info-text">
+          <p className="text-sm text-gray-500">
             🔒 Ваши данные защищены и конфиденциальны
           </p>
         </div>

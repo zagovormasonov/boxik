@@ -125,20 +125,9 @@ const TestScreen: React.FC = () => {
   }
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      height: '100vh',
-      padding: '20px 0'
-    }}>
-      <div style={{ padding: '0 20px' }}>
-        <h1 style={{ 
-          textAlign: 'center', 
-          marginBottom: '20px',
-          color: '#1f2937',
-          fontSize: '24px',
-          fontWeight: '600'
-        }}>
+    <div className="screen-container py">
+      <div className="px">
+        <h1 className="title text-center mb-md">
           Психологический тест
         </h1>
         <ProgressBar 
@@ -147,7 +136,7 @@ const TestScreen: React.FC = () => {
         />
       </div>
 
-      <div style={{ flex: 1, padding: '0 20px' }}>
+      <div className="flex-1 px">
         {currentQuestion && (
           <QuestionCard
             question={currentQuestion}

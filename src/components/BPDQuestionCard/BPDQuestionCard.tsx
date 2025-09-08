@@ -38,7 +38,7 @@ const BPDQuestionCard: React.FC<BPDQuestionCardProps> = ({
   }
 
   return (
-    <div className="bpd-question-card">
+    <div className="question-card">
       <div className="question-category">
         <span className="category-badge">
           {getCategoryText(question.category)}
