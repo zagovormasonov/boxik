@@ -1706,6 +1706,23 @@ body {
   margin: 0;
 }
 
+/* Auth Required Section Styles */
+.auth-required-section {
+  text-align: center;
+  padding: 20px 0;
+}
+
+.auth-required-text {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 20px 0;
+  line-height: 1.4;
+}
+
+.auth-required-section .yandex-auth-button {
+  margin: 0 auto;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .landing-container {

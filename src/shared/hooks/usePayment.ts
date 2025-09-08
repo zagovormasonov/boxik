@@ -7,6 +7,8 @@ export interface PaymentConfig {
   apiUrl: string
   amount: number
   description: string
+  userId?: string
+  userEmail?: string
 }
 
 export interface PaymentResult {
@@ -46,7 +48,7 @@ export function usePayment() {
     terminalKey: import.meta.env.VITE_TINKOFF_TERMINAL_KEY || process.env.VITE_TINKOFF_TERMINAL_KEY || 'your_terminal_key',
     password: import.meta.env.VITE_TINKOFF_PASSWORD || process.env.VITE_TINKOFF_PASSWORD || 'your_password',
     apiUrl: import.meta.env.VITE_TINKOFF_API_URL || process.env.VITE_TINKOFF_API_URL || 'https://securepay.tinkoff.ru/v2/',
-    amount: 500, // 500 рублей за доступ к результатам
+    amount: 200, // 200 рублей за доступ к результатам
     description: 'Доступ к результатам психологического теста БПД'
   }
 
@@ -106,8 +108,16 @@ export function usePayment() {
         apiUrl: paymentConfig.apiUrl
       })
 
-      // Генерируем уникальный ID заказа
-      const orderId = 'order_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9)
+      // Генерируем уникальный ID заказа с привязкой к пользователю
+      const orderId = paymentConfig.userId 
+        ? `user_${paymentConfig.userId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        : `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+      console.log('Создаем платеж для пользователя:', {
+        userId: paymentConfig.userId,
+        userEmail: paymentConfig.userEmail,
+        orderId
+      })
 
       // Добавляем URL для callback'а
       const callbackUrl = `${window.location.origin}/payment/callback`

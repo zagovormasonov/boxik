@@ -18,13 +18,19 @@ const PaymentCallback: React.FC = () => {
         const status = searchParams.get('Status')
         const errorCode = searchParams.get('ErrorCode')
         const message = searchParams.get('Message')
+        const orderId = searchParams.get('OrderId')
 
         console.log('Обрабатываем callback от Тинькофф:', {
           paymentId,
           status,
           errorCode,
-          message
+          message,
+          orderId
         })
+
+        // Извлекаем userId из OrderId если он есть
+        const userId = orderId?.startsWith('user_') ? orderId.split('_')[1] : null
+        console.log('Извлеченный userId из OrderId:', userId)
 
         // Проверяем статус платежа
         if (status === 'CONFIRMED' || status === 'AUTHORIZED') {

@@ -7,13 +7,17 @@ interface PaymentModalProps {
   onClose: () => void
   amount: number
   description: string
+  userId?: string
+  userEmail?: string
 }
 
 const PaymentModal: React.FC<PaymentModalProps> = ({
   isOpen,
   onClose,
   amount,
-  description
+  description,
+  userId,
+  userEmail
 }) => {
   const { createPayment, isProcessing, error } = usePayment()
 
@@ -21,12 +25,16 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     try {
       console.log('Инициируем оплату через Тинькофф СБП:', {
         amount,
-        description
+        description,
+        userId,
+        userEmail
       })
 
       const result = await createPayment({
         amount,
-        description
+        description,
+        userId,
+        userEmail
       })
 
       if (result.success && result.paymentUrl) {

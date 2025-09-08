@@ -1,12 +1,19 @@
 import React from 'react'
 import { Check, Star, Shield, FileText, Send, CreditCard } from 'lucide-react'
 import PaymentModal from '../PaymentModal/PaymentModal'
+import YandexAuth from '../YandexAuth/YandexAuth'
 import { usePaymentContext } from '../../contexts/PaymentContext'
+import { useAuth } from '../../contexts/AuthContext'
 
 const SubscriptionLanding: React.FC = () => {
   const { paymentModalOpen, setPaymentModalOpen } = usePaymentContext()
+  const { authState } = useAuth()
 
   const handlePurchaseSubscription = () => {
+    if (!authState.user) {
+      console.log('Пользователь не авторизован, необходимо войти через Яндекс')
+      return
+    }
     setPaymentModalOpen(true)
   }
 
@@ -84,7 +91,7 @@ const SubscriptionLanding: React.FC = () => {
             <div className="pricing-header">
               <h3 className="pricing-title">Полный доступ</h3>
               <div className="pricing-price">
-                <span className="price-amount">500</span>
+                <span className="price-amount">200</span>
                 <span className="price-currency">₽</span>
               </div>
             </div>
@@ -108,13 +115,22 @@ const SubscriptionLanding: React.FC = () => {
               </div>
             </div>
 
-            <button 
-              onClick={handlePurchaseSubscription}
-              className="purchase-button"
-            >
-              <CreditCard size={20} />
-              Приобрести подписку
-            </button>
+            {authState.user ? (
+              <button 
+                onClick={handlePurchaseSubscription}
+                className="purchase-button"
+              >
+                <CreditCard size={20} />
+                Приобрести подписку
+              </button>
+            ) : (
+              <div className="auth-required-section">
+                <p className="auth-required-text">
+                  Для покупки подписки необходимо войти через Яндекс
+                </p>
+                <YandexAuth />
+              </div>
+            )}
           </div>
         </div>
 
@@ -133,8 +149,10 @@ const SubscriptionLanding: React.FC = () => {
       <PaymentModal
         isOpen={paymentModalOpen}
         onClose={handleClosePaymentModal}
-        amount={500}
+        amount={200}
         description="Полный доступ к результатам психологического теста БПД"
+        userId={authState.user?.id}
+        userEmail={authState.user?.email}
       />
     </div>
   )
