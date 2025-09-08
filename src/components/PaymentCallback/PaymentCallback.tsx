@@ -7,7 +7,7 @@ import { useSubscriptions } from '../../shared/hooks/useSubscriptions'
 const PaymentCallback: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { setHasPaid, refreshPaymentStatus } = usePaymentContext()
+  const { setHasPaid, refreshPaymentStatus, forceSetPaid } = usePaymentContext()
   const { updateSubscriptionStatus } = useSubscriptions()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
@@ -79,22 +79,22 @@ const PaymentCallback: React.FC = () => {
             
             if (updatedSubscription) {
               console.log('✅ PaymentCallback: Подписка успешно обновлена:', updatedSubscription)
-              setHasPaid(true)
-              localStorage.setItem('hasPaid', 'true')
+              forceSetPaid(true)
+              // Принудительно обновляем статус
               await refreshPaymentStatus()
             } else {
               console.error('❌ PaymentCallback: Не удалось обновить подписку - updateSubscriptionStatus вернул null')
               // Принудительно устанавливаем статус оплаты даже если обновление не удалось
               console.log('🔄 PaymentCallback: Принудительно устанавливаем статус оплаты')
-              setHasPaid(true)
-              localStorage.setItem('hasPaid', 'true')
+              forceSetPaid(true)
+              // Принудительно обновляем статус
+              await refreshPaymentStatus()
             }
           } catch (updateError) {
             console.error('❌ PaymentCallback: Ошибка при обновлении подписки:', updateError)
             // Принудительно устанавливаем статус оплаты даже при ошибке обновления
             console.log('🔄 PaymentCallback: Принудительно устанавливаем статус оплаты после ошибки')
-            setHasPaid(true)
-            localStorage.setItem('hasPaid', 'true')
+            forceSetPaid(true)
           }
           
           // Перенаправляем в личный кабинет
@@ -113,8 +113,7 @@ const PaymentCallback: React.FC = () => {
             console.log('🔄 PaymentCallback: Нет параметров, перенаправляем в личный кабинет')
             // Принудительно устанавливаем статус оплаты для пользователей без параметров
             console.log('🔄 PaymentCallback: Принудительно устанавливаем статус оплаты для пользователя без параметров')
-            setHasPaid(true)
-            localStorage.setItem('hasPaid', 'true')
+            forceSetPaid(true)
             setStatus('success')
             setMessage('Перенаправляем в личный кабинет...')
             setTimeout(() => {

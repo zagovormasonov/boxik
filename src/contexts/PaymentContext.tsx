@@ -10,6 +10,7 @@ interface PaymentContextType {
   showPaymentModal: () => void
   hidePaymentModal: () => void
   refreshPaymentStatus: () => Promise<void>
+  forceSetPaid: (paid: boolean) => void
 }
 
 const PaymentContext = createContext<PaymentContextType | undefined>(undefined)
@@ -45,7 +46,9 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
             test_session_id: localStorage.getItem('test_session_id'),
             user: localStorage.getItem('user')
           })
+          // Принудительно устанавливаем статус из localStorage
           setHasPaid(localHasPaid)
+          console.log('🔄 PaymentProvider: Установлен hasPaid:', localHasPaid)
         }
       }
     }
@@ -71,7 +74,9 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
             test_session_id: localStorage.getItem('test_session_id'),
             user: localStorage.getItem('user')
           })
+          // Принудительно устанавливаем статус из localStorage
           setHasPaid(localHasPaid)
+          console.log('🔄 PaymentContext: Установлен hasPaid:', localHasPaid)
         }
       } else {
         setHasPaid(false)
@@ -95,6 +100,14 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     setPaymentModalOpen(false)
   }
 
+  // Принудительная установка статуса оплаты (игнорирует Supabase)
+  const forceSetPaid = (paid: boolean) => {
+    console.log('🔄 PaymentContext: Принудительно устанавливаем hasPaid:', paid)
+    setHasPaid(paid)
+    localStorage.setItem('hasPaid', paid.toString())
+    console.log('🔄 PaymentContext: hasPaid установлен в:', paid)
+  }
+
   // Принудительное обновление статуса оплаты
   const refreshPaymentStatus = async () => {
     if (authState.user?.id) {
@@ -104,18 +117,20 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
         console.log('🔄 Новый статус оплаты:', hasActive)
         setHasPaid(hasActive)
         localStorage.setItem('hasPaid', hasActive.toString())
-      } catch (error) {
-        console.error('❌ PaymentContext: Ошибка при обновлении статуса оплаты:', error)
-        // Fallback: используем localStorage если Supabase недоступен
-        const localHasPaid = localStorage.getItem('hasPaid') === 'true'
-        console.log('🔄 PaymentContext: Supabase недоступен, используем fallback из localStorage для обновления:', localHasPaid)
-        console.log('🔄 PaymentContext: Все значения localStorage:', {
-          hasPaid: localStorage.getItem('hasPaid'),
-          test_session_id: localStorage.getItem('test_session_id'),
-          user: localStorage.getItem('user')
-        })
-        setHasPaid(localHasPaid)
-      }
+        } catch (error) {
+          console.error('❌ PaymentContext: Ошибка при обновлении статуса оплаты:', error)
+          // Fallback: используем localStorage если Supabase недоступен
+          const localHasPaid = localStorage.getItem('hasPaid') === 'true'
+          console.log('🔄 PaymentContext: Supabase недоступен, используем fallback из localStorage для обновления:', localHasPaid)
+          console.log('🔄 PaymentContext: Все значения localStorage:', {
+            hasPaid: localStorage.getItem('hasPaid'),
+            test_session_id: localStorage.getItem('test_session_id'),
+            user: localStorage.getItem('user')
+          })
+          // Принудительно устанавливаем статус из localStorage
+          setHasPaid(localHasPaid)
+          console.log('🔄 PaymentContext: Установлен hasPaid:', localHasPaid)
+        }
     }
   }
 
@@ -127,7 +142,8 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
       setPaymentModalOpen,
       showPaymentModal,
       hidePaymentModal,
-      refreshPaymentStatus
+      refreshPaymentStatus,
+      forceSetPaid
     }}>
       {children}
     </PaymentContext.Provider>
