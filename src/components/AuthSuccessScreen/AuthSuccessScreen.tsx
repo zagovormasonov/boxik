@@ -45,6 +45,10 @@ const AuthSuccessScreen: React.FC = () => {
             if (updateResult) {
               console.log('AuthSuccessScreen: Статус успешно обновлен, перенаправляем в ЛК')
               navigate('/profile')
+            } else {
+              console.log('AuthSuccessScreen: Не удалось обновить статус в БД, но пользователь пришел от Тинькофф - перенаправляем в ЛК')
+              // Если пользователь пришел от Тинькофф, считаем оплату успешной и перенаправляем в ЛК
+              navigate('/profile')
             }
           } else {
             console.log('AuthSuccessScreen: Статус уже обновлен, перенаправляем в ЛК')
@@ -52,6 +56,9 @@ const AuthSuccessScreen: React.FC = () => {
           }
         } catch (error) {
           console.error('AuthSuccessScreen: Ошибка при проверке статуса после Тинькофф:', error)
+          // Если произошла ошибка, но пользователь пришел от Тинькофф, перенаправляем в ЛК
+          console.log('AuthSuccessScreen: Ошибка при проверке, но пользователь пришел от Тинькофф - перенаправляем в ЛК')
+          navigate('/profile')
         }
       }
     }

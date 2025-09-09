@@ -71,6 +71,13 @@ export function useUserHasPaid() {
           details: error.details,
           hint: error.hint
         })
+        
+        // Для ошибок RLS (406, PGRST116) не выбрасываем исключение, а возвращаем false
+        if (error.code === 'PGRST116' || error.message?.includes('406')) {
+          console.warn('⚠️ Проблемы с RLS, но продолжаем работу')
+          return false
+        }
+        
         throw error
       }
 
