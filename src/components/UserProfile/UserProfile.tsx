@@ -38,6 +38,22 @@ const UserProfile: React.FC = () => {
     }
   }, [authState.user?.id, refreshPaymentStatus])
 
+  // Принудительная проверка результатов теста
+  useEffect(() => {
+    if (authState.user?.id && hasPaid && !lastTestResult && !isLoadingResults) {
+      console.log('UserProfile: Принудительно проверяем результаты теста для оплатившего пользователя')
+      
+      // Небольшая задержка для повторной проверки
+      const timeoutId = setTimeout(() => {
+        console.log('UserProfile: Повторная проверка результатов теста')
+        // Здесь можно добавить принудительное обновление результатов
+        window.location.reload()
+      }, 2000)
+      
+      return () => clearTimeout(timeoutId)
+    }
+  }, [authState.user?.id, hasPaid, lastTestResult, isLoadingResults])
+
   // Проверяем, должен ли пользователь быть перенаправлен на оплату
   useEffect(() => {
     const checkPaymentStatus = async () => {

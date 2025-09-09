@@ -12,11 +12,21 @@ export interface BPDTestResultWithDetails extends BPDTestResult {
 
 export function useBPDTestResults(userId: string | null) {
   console.log('useBPDTestResults: Хук вызван с userId:', userId)
+  console.log('useBPDTestResults: Тип userId:', typeof userId)
+  console.log('useBPDTestResults: userId валиден:', !!userId)
+  
   const [lastTestResult, setLastTestResult] = useState<BPDTestResultWithDetails | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [hasLoaded, setHasLoaded] = useState(false)
   const { getTestResultsForUser, checkTableExists } = useTestUserMapping()
+  
+  console.log('useBPDTestResults: Текущее состояние хука:', { 
+    lastTestResult: lastTestResult ? 'есть' : 'нет', 
+    isLoading, 
+    hasLoaded, 
+    error 
+  })
   
 
   useEffect(() => {
@@ -222,6 +232,92 @@ export function useBPDTestResults(userId: string | null) {
     console.log('useBPDTestResults: Текущее состояние:', { isLoading, hasLoaded, lastTestResult: lastTestResult ? 'есть' : 'нет' })
     fetchLastTestResult()
   }, [userId])
+
+  // Дополнительная проверка: если результаты не загружены, но userId есть, принудительно загружаем
+  useEffect(() => {
+    if (userId && !isLoading && !hasLoaded && !lastTestResult) {
+      console.log('useBPDTestResults: Дополнительная проверка - принудительно загружаем результаты')
+      const fetchLastTestResult = async () => {
+        setIsLoading(true)
+        setError(null)
+
+        try {
+          console.log('useBPDTestResults: Дополнительная загрузка для пользователя:', userId)
+          
+          // Прямой поиск по user_id
+          const { data: directData, error: directError } = await supabase
+            .from('test_results')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('test_type', 'bpd')
+            .order('completed_at', { ascending: false })
+            .limit(1)
+            .single()
+
+          console.log('useBPDTestResults: Результат дополнительного поиска БПД:', { data: directData, error: directError })
+          
+          if (directData) {
+            console.log('useBPDTestResults: Найден результат БПД:', directData)
+            const result: BPDTestResultWithDetails = {
+              id: directData.id,
+              userId: directData.user_id,
+              totalScore: directData.score,
+              categoryScores: directData.category_scores || {},
+              severity: directData.grade as BPDSeverity,
+              completedAt: directData.completed_at,
+              answers: directData.answers || [],
+              percentage: directData.percentage || 0,
+              grade: directData.grade || 'none',
+              completed_date: directData.completed_at
+            }
+            setLastTestResult(result)
+          } else if (directError && directError.code === 'PGRST116') {
+            console.log('useBPDTestResults: БПД тест не найден, ищем любой тест')
+            const { data: anyData, error: anyError } = await supabase
+              .from('test_results')
+              .select('*')
+              .eq('user_id', userId)
+              .order('completed_at', { ascending: false })
+              .limit(1)
+              .single()
+
+            console.log('useBPDTestResults: Результат поиска любого теста:', { data: anyData, error: anyError })
+            
+            if (anyData) {
+              console.log('useBPDTestResults: Найден любой тест:', anyData)
+              const result: BPDTestResultWithDetails = {
+                id: anyData.id,
+                userId: anyData.user_id,
+                totalScore: anyData.score,
+                categoryScores: anyData.category_scores || {},
+                severity: anyData.grade as BPDSeverity,
+                completedAt: anyData.completed_at,
+                answers: anyData.answers || [],
+                percentage: anyData.percentage || 0,
+                grade: anyData.grade || 'none',
+                completed_date: anyData.completed_at
+              }
+              setLastTestResult(result)
+            } else {
+              console.log('useBPDTestResults: Результаты теста не найдены')
+              setLastTestResult(null)
+            }
+          } else {
+            console.log('useBPDTestResults: Ошибка при дополнительном поиске:', directError)
+            setError(directError?.message || 'Ошибка загрузки результатов')
+          }
+        } catch (err) {
+          console.error('useBPDTestResults: Ошибка при дополнительной загрузке:', err)
+          setError(err instanceof Error ? err.message : 'Ошибка загрузки результатов')
+        } finally {
+          setIsLoading(false)
+          setHasLoaded(true)
+        }
+      }
+      
+      fetchLastTestResult()
+    }
+  }, [userId, isLoading, hasLoaded, lastTestResult])
 
   const sendToSpecialist = async (testResult: BPDTestResultWithDetails): Promise<boolean> => {
     try {
