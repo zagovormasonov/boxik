@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { User, Mail, Calendar, LogOut, RotateCcw, FileText } from 'lucide-react'
 import { useBPDTestResults, BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
-import { useUserHasPaid } from '../../shared/hooks/useUserHasPaid'
+// import { useUserHasPaid } from '../../shared/hooks/useUserHasPaid' // Убрано, так как больше не используется
 import BPDTestResultCard from '../BPDTestResultCard/BPDTestResultCard'
 import MascotRecommendation from '../MascotRecommendation/MascotRecommendation'
 import PaymentModal from '../PaymentModal/PaymentModal'
@@ -15,7 +15,7 @@ const UserProfile: React.FC = () => {
   const [searchParams] = useSearchParams()
   const [isSendingResults, setIsSendingResults] = useState(false)
   const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, hasPaid, forceSetPaid } = usePaymentContext()
-  const { setUserPaid } = useUserHasPaid()
+  // const { setUserPaid } = useUserHasPaid() // Убрано, так как больше не используется
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
 
@@ -24,7 +24,6 @@ const UserProfile: React.FC = () => {
     if (authState.user?.id) {
       console.log('UserProfile: Принудительно проверяем статус подписки для пользователя:', authState.user.id)
       console.log('UserProfile: Текущий hasPaid:', hasPaid)
-      console.log('UserProfile: localStorage hasPaid:', localStorage.getItem('hasPaid'))
       
       refreshPaymentStatus()
     }
@@ -66,35 +65,6 @@ const UserProfile: React.FC = () => {
       } else {
         console.log('UserProfile: Параметры оплаты не обнаружены')
         
-        // Альтернативный способ: проверяем, не пришел ли пользователь вскоре после создания платежа
-        const paymentTime = localStorage.getItem('paymentCreatedAt')
-        if (paymentTime) {
-          const timeDiff = Date.now() - parseInt(paymentTime)
-          const fiveMinutes = 5 * 60 * 1000 // 5 минут в миллисекундах
-          
-          console.log('UserProfile: Проверяем время создания платежа:', {
-            paymentTime: new Date(parseInt(paymentTime)).toISOString(),
-            timeDiff: timeDiff,
-            fiveMinutes: fiveMinutes,
-            isRecent: timeDiff < fiveMinutes
-          })
-          
-          if (timeDiff < fiveMinutes) {
-            console.log('UserProfile: Платеж был создан недавно, автоматически устанавливаем hasPaid: true')
-            forceSetPaid(true)
-            
-            // Также обновляем статус в БД
-            if (authState.user?.id) {
-              try {
-                console.log('UserProfile: Обновляем статус в БД для пользователя:', authState.user.id)
-                await setUserPaid(authState.user.id)
-                console.log('✅ UserProfile: Статус успешно обновлен в БД')
-    } catch (error) {
-                console.error('❌ UserProfile: Ошибка при обновлении статуса в БД:', error)
-              }
-            }
-          }
-        }
       }
     }
     

@@ -22,8 +22,8 @@ export function useUserHasPaid() {
       // Проверяем сессию перед запросом
       const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       if (sessionError || !session) {
-        console.warn('⚠️ Нет активной сессии, используем fallback')
-        return localStorage.getItem('hasPaid') === 'true'
+        console.warn('⚠️ Нет активной сессии, возвращаем false')
+        return false
       }
       
       const { data, error } = await supabase
@@ -43,8 +43,8 @@ export function useUserHasPaid() {
     } catch (err) {
       console.error('❌ Ошибка при получении статуса оплаты:', err)
       setError(err instanceof Error ? err.message : 'Не удалось получить статус оплаты')
-      // Fallback: используем localStorage
-      return localStorage.getItem('hasPaid') === 'true'
+      // При ошибке возвращаем false (не оплачено)
+      return false
     } finally {
       setIsLoading(false)
     }
@@ -61,9 +61,8 @@ export function useUserHasPaid() {
       // Проверяем сессию перед запросом
       const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       if (sessionError || !session) {
-        console.warn('⚠️ Нет активной сессии, используем localStorage fallback')
-        localStorage.setItem('hasPaid', hasPaid.toString())
-        return true
+        console.warn('⚠️ Нет активной сессии, не можем обновить статус')
+        return false
       }
       
       // Проверяем текущего пользователя
@@ -89,14 +88,10 @@ export function useUserHasPaid() {
       }
 
       console.log('✅ Статус оплаты успешно обновлен:', data)
-      // Также сохраняем в localStorage как fallback
-      localStorage.setItem('hasPaid', hasPaid.toString())
       return true
     } catch (err) {
       console.error('❌ Ошибка при обновлении статуса оплаты:', err)
       setError(err instanceof Error ? err.message : 'Не удалось обновить статус оплаты')
-      // Fallback: сохраняем в localStorage
-      localStorage.setItem('hasPaid', hasPaid.toString())
       return false
     } finally {
       setIsLoading(false)

@@ -26,7 +26,7 @@ const PaymentCallback: React.FC = () => {
       // независимо от параметров или состояния Supabase
       console.log('🔄 PaymentCallback: ПРИНУДИТЕЛЬНО устанавливаем hasPaid: true в начале callback')
       forceSetPaid(true)
-      console.log('🔄 PaymentCallback: hasPaid установлен в true, localStorage:', localStorage.getItem('hasPaid'))
+      console.log('🔄 PaymentCallback: hasPaid установлен в true')
       
       // ПРИНУДИТЕЛЬНО обновляем статус в БД
       if (authState.user?.id) {

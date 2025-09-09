@@ -24,7 +24,6 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
   useEffect(() => {
     console.log('BPDTestResultCard: Принудительно проверяем статус подписки')
     console.log('BPDTestResultCard: Текущий hasPaid:', hasPaid)
-    console.log('BPDTestResultCard: localStorage hasPaid:', localStorage.getItem('hasPaid'))
     refreshPaymentStatus()
   }, [refreshPaymentStatus])
 

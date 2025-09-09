@@ -17,11 +17,7 @@ interface PaymentContextType {
 const PaymentContext = createContext<PaymentContextType | undefined>(undefined)
 
 export function PaymentProvider({ children }: { children: ReactNode }) {
-  const [hasPaid, setHasPaid] = useState<boolean>(() => {
-    // Инициализируем из localStorage как fallback
-    const saved = localStorage.getItem('hasPaid')
-    return saved === 'true'
-  })
+  const [hasPaid, setHasPaid] = useState<boolean>(false) // Всегда начинаем с false, проверяем БД
   const [paymentModalOpen, setPaymentModalOpen] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false) // Флаг инициализации
   const { getUserHasPaid, setUserPaid } = useUserHasPaid()
@@ -42,10 +38,9 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
           setHasPaid(userHasPaid)
         } catch (error) {
           console.error('PaymentProvider: Ошибка при начальной проверке статуса оплаты:', error)
-          // Fallback: используем localStorage если БД недоступна
-          const localHasPaid = localStorage.getItem('hasPaid') === 'true'
-          console.log('🔄 PaymentProvider: БД недоступна, используем fallback из localStorage:', localHasPaid)
-          setHasPaid(localHasPaid)
+          // При ошибке БД оставляем hasPaid = false (не оплачено)
+          console.log('🔄 PaymentProvider: БД недоступна, оставляем hasPaid = false')
+          setHasPaid(false)
         }
       }
     }
@@ -53,10 +48,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     initialCheck()
   }, [authState.user?.id, isInitialized, getUserHasPaid])
 
-  // Сохраняем состояние оплаты в localStorage при изменении (fallback)
-  useEffect(() => {
-    localStorage.setItem('hasPaid', hasPaid.toString())
-  }, [hasPaid])
+  // Убрано автоматическое сохранение в localStorage - проверяем только БД
 
   const showPaymentModal = () => {
     setPaymentModalOpen(true)
@@ -70,15 +62,16 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
   const forceSetPaid = async (paid: boolean) => {
     console.log('🔄 PaymentContext: Принудительно устанавливаем hasPaid:', paid)
     setHasPaid(paid)
-    localStorage.setItem('hasPaid', paid.toString())
     
-    // Если есть пользователь, обновляем статус в БД
+    // Если есть пользователь и устанавливаем true, обновляем статус в БД
     if (authState.user?.id && paid) {
       try {
         await setUserPaid(authState.user.id)
         console.log('🔄 PaymentContext: Статус оплаты обновлен в БД для пользователя:', authState.user.id)
       } catch (error) {
         console.error('❌ PaymentContext: Ошибка при обновлении статуса в БД:', error)
+        // При ошибке БД возвращаем false
+        setHasPaid(false)
       }
     }
     
@@ -96,10 +89,9 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
         setHasPaid(userHasPaid)
       } catch (error) {
         console.error('❌ PaymentContext: Ошибка при обновлении статуса оплаты:', error)
-        // Fallback: используем localStorage если БД недоступна
-        const localHasPaid = localStorage.getItem('hasPaid') === 'true'
-        console.log('🔄 PaymentContext: БД недоступна, используем fallback из localStorage:', localHasPaid)
-        setHasPaid(localHasPaid)
+        // При ошибке БД оставляем hasPaid = false (не оплачено)
+        console.log('🔄 PaymentContext: БД недоступна, оставляем hasPaid = false')
+        setHasPaid(false)
       }
     } else {
       console.log('🔄 refreshPaymentStatus: Нет пользователя, сохраняем текущий hasPaid:', hasPaid)
