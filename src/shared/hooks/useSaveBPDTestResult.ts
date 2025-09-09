@@ -55,6 +55,19 @@ export function useSaveBPDTestResult() {
 
       if (insertError) {
         console.error('useSaveBPDTestResult: Ошибка при вставке в БД:', insertError)
+        console.error('useSaveBPDTestResult: Детали ошибки:', {
+          code: insertError.code,
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint
+        })
+        
+        // Для ошибок RLS (406, PGRST301) не выбрасываем исключение, а возвращаем false
+        if (insertError.code === 'PGRST301' || insertError.message?.includes('406')) {
+          console.warn('⚠️ useSaveBPDTestResult: Проблемы с RLS, но продолжаем работу')
+          return false
+        }
+        
         throw insertError
       }
 

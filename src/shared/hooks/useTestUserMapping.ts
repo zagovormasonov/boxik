@@ -108,6 +108,19 @@ export function useTestUserMapping() {
 
       if (testError) {
         console.error('❌ useTestUserMapping: Ошибка при поиске результатов теста:', testError)
+        console.error('❌ useTestUserMapping: Детали ошибки:', {
+          code: testError.code,
+          message: testError.message,
+          details: testError.details,
+          hint: testError.hint
+        })
+        
+        // Для ошибок RLS (406, PGRST301) не выбрасываем исключение, а возвращаем false
+        if (testError.code === 'PGRST301' || testError.message?.includes('406')) {
+          console.warn('⚠️ useTestUserMapping: Проблемы с RLS, но продолжаем работу')
+          return false
+        }
+        
         throw testError
       }
 
@@ -127,6 +140,19 @@ export function useTestUserMapping() {
 
         if (updateError) {
           console.error('❌ useTestUserMapping: Ошибка при обновлении user_id:', updateError)
+          console.error('❌ useTestUserMapping: Детали ошибки обновления:', {
+            code: updateError.code,
+            message: updateError.message,
+            details: updateError.details,
+            hint: updateError.hint
+          })
+          
+          // Для ошибок RLS (406, PGRST301) не выбрасываем исключение, а продолжаем
+          if (updateError.code === 'PGRST301' || updateError.message?.includes('406')) {
+            console.warn('⚠️ useTestUserMapping: Проблемы с RLS при обновлении, пропускаем этот результат')
+            continue
+          }
+          
           throw updateError
         }
 

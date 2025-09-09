@@ -55,12 +55,18 @@ const BPDTestScreen: React.FC = () => {
             isCompleted: true
           }
 
-          await saveBPDTestResult({
+          const saveResult = await saveBPDTestResult({
             userId: authState.user.id,
             testState: completedTestState,
             totalQuestions: questions.length
           })
-          console.log('BPDTestScreen: Результаты БПД теста сохранены')
+          console.log('BPDTestScreen: Результат сохранения БПД теста:', saveResult)
+          
+          if (saveResult) {
+            console.log('BPDTestScreen: Результаты БПД теста успешно сохранены')
+          } else {
+            console.warn('BPDTestScreen: Не удалось сохранить результаты БПД теста')
+          }
           
           // После завершения теста всегда переходим на лендинг оплаты
           console.log('BPDTestScreen: Тест завершен, переходим на лендинг оплаты')
@@ -82,12 +88,18 @@ const BPDTestScreen: React.FC = () => {
             isCompleted: true
           }
 
-          await saveBPDTestResult({
+          const saveResult = await saveBPDTestResult({
             userId: sessionId, // Используем session_id как userId для неавторизованных пользователей
             testState: completedTestState,
             totalQuestions: questions.length
           })
-          console.log('BPDTestScreen: Результаты БПД теста сохранены с session_id:', sessionId)
+          console.log('BPDTestScreen: Результат сохранения БПД теста с session_id:', saveResult)
+          
+          if (saveResult) {
+            console.log('BPDTestScreen: Результаты БПД теста успешно сохранены с session_id:', sessionId)
+          } else {
+            console.warn('BPDTestScreen: Не удалось сохранить результаты БПД теста с session_id:', sessionId)
+          }
         } catch (error) {
           console.error('BPDTestScreen: Ошибка при сохранении результатов БПД теста для неавторизованного пользователя:', error)
         }
