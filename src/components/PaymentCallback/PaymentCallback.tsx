@@ -3,12 +3,16 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Check, X, Loader } from 'lucide-react'
 import { usePaymentContext } from '../../contexts/PaymentContext'
 import { useSubscriptions } from '../../shared/hooks/useSubscriptions'
+import { useUserHasPaid } from '../../shared/hooks/useUserHasPaid'
+import { useAuth } from '../../contexts/AuthContext'
 
 const PaymentCallback: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { setHasPaid, refreshPaymentStatus, forceSetPaid } = usePaymentContext()
   const { updateSubscriptionStatus } = useSubscriptions()
+  const { setUserPaid } = useUserHasPaid()
+  const { authState } = useAuth()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
 
@@ -23,6 +27,20 @@ const PaymentCallback: React.FC = () => {
       console.log('🔄 PaymentCallback: ПРИНУДИТЕЛЬНО устанавливаем hasPaid: true в начале callback')
       forceSetPaid(true)
       console.log('🔄 PaymentCallback: hasPaid установлен в true, localStorage:', localStorage.getItem('hasPaid'))
+      
+      // ПРИНУДИТЕЛЬНО обновляем статус в БД
+      if (authState.user?.id) {
+        try {
+          console.log('🔄 PaymentCallback: Принудительно обновляем статус в БД для пользователя:', authState.user.id)
+          await setUserPaid(authState.user.id)
+          console.log('✅ PaymentCallback: Статус успешно обновлен в БД')
+        } catch (error) {
+          console.error('❌ PaymentCallback: Ошибка при обновлении статуса в БД:', error)
+          // Продолжаем выполнение даже если БД недоступна
+        }
+      } else {
+        console.warn('⚠️ PaymentCallback: Нет пользователя для обновления БД')
+      }
       
       // Устанавливаем статус успеха сразу
       setStatus('success')
