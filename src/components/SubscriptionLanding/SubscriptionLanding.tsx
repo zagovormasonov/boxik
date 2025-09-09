@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 import { Check, Star, Shield, FileText, Send, CreditCard } from 'lucide-react'
-import { useAuth } from '../../contexts/AuthContext'
-import { usePayment } from '../../shared/hooks/usePayment'
 
 interface Advantage {
   icon: React.ReactNode
@@ -12,8 +10,6 @@ interface Advantage {
 
 const SubscriptionLanding: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false)
-  const { authState } = useAuth()
-  const { createPayment } = usePayment()
 
   // Убираем автоматическую проверку hasPaid - пользователь должен сам нажать кнопку оплаты
 
@@ -36,38 +32,6 @@ const SubscriptionLanding: React.FC = () => {
     }
   }
 
-  const handlePay = async () => {
-    if (!authState.user?.id) {
-      console.error('Пользователь не авторизован')
-      alert('Сначала необходимо авторизоваться')
-      return
-    }
-
-    setIsProcessing(true)
-    
-    try {
-      console.log('Создаем платеж для авторизованного пользователя:', authState.user.id)
-      
-      const paymentResult = await createPayment({
-        amount: 100, // 1 рубль в копейках
-        description: 'Полный доступ к результатам теста БПД',
-        userId: authState.user.id
-      })
-      
-      if (paymentResult.success && paymentResult.paymentUrl) {
-        console.log('Перенаправляем на оплату:', paymentResult.paymentUrl)
-        window.location.href = paymentResult.paymentUrl
-      } else {
-        console.error('Ошибка при создании платежа:', paymentResult.error)
-        alert('Ошибка при создании платежа. Попробуйте еще раз.')
-      }
-    } catch (error) {
-      console.error('Ошибка при создании платежа:', error)
-      alert('Произошла ошибка при создании платежа. Попробуйте еще раз.')
-    } finally {
-      setIsProcessing(false)
-    }
-  }
 
   const advantages: Advantage[] = [
     {
@@ -187,25 +151,14 @@ const SubscriptionLanding: React.FC = () => {
               </div>
             </div>
 
-            {authState.user ? (
-              <button
-                onClick={handlePay}
-                disabled={isProcessing}
-                className="purchase-button"
-              >
-                <CreditCard size={20} />
-                {isProcessing ? 'Обрабатываем...' : 'Оплатить 1₽'}
-              </button>
-            ) : (
-              <button 
-                onClick={handleLoginAndPay}
-                disabled={isProcessing}
-                className="purchase-button login-and-pay-button"
-              >
-                <CreditCard size={20} />
-                {isProcessing ? 'Перенаправляем...' : 'Войти через Яндекс и оплатить 1₽'}
-              </button>
-            )}
+            <button 
+              onClick={handleLoginAndPay}
+              disabled={isProcessing}
+              className="purchase-button login-and-pay-button"
+            >
+              <CreditCard size={20} />
+              {isProcessing ? 'Перенаправляем...' : 'Войти через Яндекс и оплатить 1₽'}
+            </button>
           </div>
         </div>
 

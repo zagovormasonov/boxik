@@ -14,7 +14,7 @@ const UserProfile: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [isSendingResults, setIsSendingResults] = useState(false)
-  const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, forceSetPaid } = usePaymentContext()
+  const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus } = usePaymentContext()
   // const { setUserPaid } = useUserHasPaid() // Убрано, так как больше не используется
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
@@ -45,20 +45,8 @@ const UserProfile: React.FC = () => {
       console.log('- allParams:', Object.fromEntries(searchParams.entries()))
       console.log('- current URL:', window.location.href)
       
-      // Если есть параметры оплаты, автоматически устанавливаем hasPaid: true
-      if (paymentId || orderId || success === 'true' || result === 'true') {
-        console.log('UserProfile: Обнаружены параметры оплаты, автоматически устанавливаем hasPaid: true')
-        forceSetPaid(true)
-        
-        // Очищаем URL от параметров оплаты
-        const newUrl = new URL(window.location.href)
-        newUrl.search = ''
-        window.history.replaceState({}, '', newUrl.toString())
-        console.log('UserProfile: URL очищен от параметров оплаты')
-      } else {
-        console.log('UserProfile: Параметры оплаты не обнаружены')
-        
-      }
+      // Убираем автоматическую установку hasPaid - статус должен устанавливаться только в PaymentCallback
+      console.log('UserProfile: Параметры оплаты обнаружены, но не устанавливаем hasPaid автоматически')
     }
     
     checkPaymentStatus()
