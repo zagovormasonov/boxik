@@ -14,7 +14,7 @@ const PaymentCallback: React.FC = () => {
   const { updateSubscriptionStatus } = useSubscriptions()
   const { setUserPaid, getUserHasPaid } = useUserHasPaid()
   const { authState } = useAuth()
-  const { linkExistingTestResults } = useTestUserMapping()
+  const { linkExistingTestResults, findAllTestResults } = useTestUserMapping()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
 
@@ -188,12 +188,38 @@ const PaymentCallback: React.FC = () => {
               console.log('🔗 PaymentCallback: Связываем результаты теста с пользователем после оплаты:', authState.user.id)
               const sessionId = localStorage.getItem('test_session_id') || 'anonymous'
               console.log('🔗 PaymentCallback: Session ID для связывания:', sessionId)
+              console.log('🔗 PaymentCallback: Все данные localStorage:', {
+                test_session_id: localStorage.getItem('test_session_id'),
+                yandex_user: localStorage.getItem('yandex_user'),
+                yandex_auth_success: localStorage.getItem('yandex_auth_success')
+              })
               
               const linked = await linkExistingTestResults(authState.user.id, sessionId)
               if (linked) {
                 console.log('✅ PaymentCallback: Результаты теста успешно связаны с пользователем после оплаты')
               } else {
                 console.log('ℹ️ PaymentCallback: Результаты теста для связывания не найдены')
+                console.log('ℹ️ PaymentCallback: Попробуем найти результаты по другим session_id')
+                
+                // Сначала покажем все результаты теста для диагностики
+                const allResults = await findAllTestResults()
+                console.log('🔍 PaymentCallback: Все результаты теста в БД:', allResults)
+                
+                // Попробуем найти результаты по другим возможным session_id
+                const possibleSessionIds = [
+                  'anonymous',
+                  'session_' + authState.user.id,
+                  authState.user.id
+                ]
+                
+                for (const possibleSessionId of possibleSessionIds) {
+                  console.log('🔍 PaymentCallback: Проверяем session_id:', possibleSessionId)
+                  const linkedAlternative = await linkExistingTestResults(authState.user.id, possibleSessionId)
+                  if (linkedAlternative) {
+                    console.log('✅ PaymentCallback: Найдены результаты с альтернативным session_id:', possibleSessionId)
+                    break
+                  }
+                }
               }
             } catch (linkError) {
               console.error('❌ PaymentCallback: Ошибка при связывании результатов теста после оплаты:', linkError)

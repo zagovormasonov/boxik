@@ -101,9 +101,10 @@ export function useTestUserMapping() {
       console.log('🔗 useTestUserMapping: Связываем существующие результаты с пользователем:', { userId, sessionId })
 
       // Находим результаты теста по session_id
+      console.log('🔍 useTestUserMapping: Ищем результаты теста с user_id =', sessionId)
       const { data: testResults, error: testError } = await supabase
         .from('test_results')
-        .select('id')
+        .select('id, user_id, test_type, completed_at')
         .eq('user_id', sessionId) // session_id используется как user_id для неавторизованных пользователей
 
       if (testError) {
@@ -122,6 +123,11 @@ export function useTestUserMapping() {
         }
         
         throw testError
+      }
+
+      console.log('🔍 useTestUserMapping: Найдено результатов теста:', testResults?.length || 0)
+      if (testResults && testResults.length > 0) {
+        console.log('🔍 useTestUserMapping: Детали найденных результатов:', testResults)
       }
 
       if (!testResults || testResults.length === 0) {
@@ -191,11 +197,39 @@ export function useTestUserMapping() {
     }
   }
 
+  // Диагностическая функция для поиска всех результатов теста
+  const findAllTestResults = async (): Promise<any[]> => {
+    try {
+      console.log('🔍 useTestUserMapping: Ищем все результаты теста в таблице test_results')
+      const { data: allResults, error } = await supabase
+        .from('test_results')
+        .select('id, user_id, test_type, completed_at, score')
+        .order('completed_at', { ascending: false })
+        .limit(10)
+
+      if (error) {
+        console.error('❌ useTestUserMapping: Ошибка при поиске всех результатов:', error)
+        return []
+      }
+
+      console.log('🔍 useTestUserMapping: Найдено результатов теста:', allResults?.length || 0)
+      if (allResults && allResults.length > 0) {
+        console.log('🔍 useTestUserMapping: Последние результаты теста:', allResults)
+      }
+
+      return allResults || []
+    } catch (err) {
+      console.error('❌ useTestUserMapping: Ошибка при поиске всех результатов:', err)
+      return []
+    }
+  }
+
   return {
     createMapping,
     getTestResultsForUser,
     linkExistingTestResults,
     checkTableExists,
+    findAllTestResults,
     isLoading,
     error
   }
