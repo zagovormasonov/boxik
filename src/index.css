@@ -36,9 +36,6 @@ body {
 }
 
 .container {
-  max-width: none; /* Убираем ограничение ширины */
-  margin: 0;
-  padding: 0;
   width: 100%;
 }
 
@@ -2220,7 +2217,6 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  padding: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2255,19 +2251,13 @@ body {
 }
 
 .test-container {
-  max-width: 800px;
   width: 100%;
   background: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
 }
 
 .test-header {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 32px; 
 }
 
 .test-header h1 {
