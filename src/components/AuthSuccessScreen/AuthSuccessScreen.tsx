@@ -8,6 +8,8 @@ const AuthSuccessScreen: React.FC = () => {
   const { authState } = useAuth()
   const { createPayment } = usePayment()
 
+  console.log('AuthSuccessScreen: Компонент загружен, authState.user:', authState.user?.id)
+
   const handlePay = async () => {
     if (!authState.user?.id) {
       console.error('Пользователь не авторизован')

@@ -13,6 +13,8 @@ import { AuthProvider } from './contexts/AuthContext'
 import { PaymentProvider } from './contexts/PaymentContext'
 
 function App() {
+  console.log('App: Текущий URL:', window.location.pathname)
+  
   return (
     <BPDTestProvider>
       <AuthProvider>
