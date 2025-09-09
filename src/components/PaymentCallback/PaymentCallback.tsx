@@ -12,7 +12,7 @@ const PaymentCallback: React.FC = () => {
   const [searchParams] = useSearchParams()
   const { setHasPaid, refreshPaymentStatus, forceSetPaid } = usePaymentContext()
   const { updateSubscriptionStatus } = useSubscriptions()
-  const { setUserPaid } = useUserHasPaid()
+  const { setUserPaid, getUserHasPaid } = useUserHasPaid()
   const { authState } = useAuth()
   const { linkExistingTestResults } = useTestUserMapping()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
@@ -25,6 +25,29 @@ const PaymentCallback: React.FC = () => {
       console.log('🚀 PaymentCallback: Search params:', Object.fromEntries(searchParams.entries()))
       
       try {
+        // Сначала проверяем, не оплатил ли пользователь уже ранее
+        if (authState.user?.id) {
+          try {
+            console.log('🔍 PaymentCallback: Проверяем текущий статус оплаты в БД для пользователя:', authState.user.id)
+            const currentHasPaid = await getUserHasPaid(authState.user.id)
+            console.log('🔍 PaymentCallback: Текущий статус оплаты в БД:', currentHasPaid)
+            
+            if (currentHasPaid) {
+              console.log('✅ PaymentCallback: Пользователь уже оплатил, перенаправляем в ЛК')
+              forceSetPaid(true)
+              setStatus('success')
+              setMessage('Оплата уже была завершена!')
+              setTimeout(() => {
+                console.log('🔄 PaymentCallback: Перенаправляем в профиль (пользователь уже оплатил)')
+                navigate('/profile')
+              }, 2000)
+              return
+            }
+          } catch (error) {
+            console.error('❌ PaymentCallback: Ошибка при проверке текущего статуса оплаты:', error)
+            // Продолжаем обработку callback
+          }
+        }
         // Получаем параметры от Тинькофф
         const paymentId = searchParams.get('PaymentId') || searchParams.get('payment_id') || searchParams.get('PaymentID')
         const status = searchParams.get('Status') || searchParams.get('status')
@@ -105,11 +128,18 @@ const PaymentCallback: React.FC = () => {
           if (authState.user?.id) {
             try {
               console.log('🔄 PaymentCallback: Обновляем статус в БД для пользователя:', authState.user.id)
-              await setUserPaid(authState.user.id)
-              console.log('✅ PaymentCallback: Статус успешно обновлен в БД')
+              const updateResult = await setUserPaid(authState.user.id)
+              console.log('✅ PaymentCallback: Результат обновления БД:', updateResult)
+              if (updateResult) {
+                console.log('✅ PaymentCallback: Статус успешно обновлен в БД')
+              } else {
+                console.error('❌ PaymentCallback: Не удалось обновить статус в БД')
+              }
             } catch (error) {
               console.error('❌ PaymentCallback: Ошибка при обновлении статуса в БД:', error)
             }
+          } else {
+            console.error('❌ PaymentCallback: Нет authState.user.id для обновления БД')
           }
           
           setStatus('success')
@@ -186,11 +216,18 @@ const PaymentCallback: React.FC = () => {
             if (authState.user?.id) {
               try {
                 console.log('🔄 PaymentCallback: Обновляем статус в БД для пользователя:', authState.user.id)
-                await setUserPaid(authState.user.id)
-                console.log('✅ PaymentCallback: Статус успешно обновлен в БД')
+                const updateResult = await setUserPaid(authState.user.id)
+                console.log('✅ PaymentCallback: Результат обновления БД (PaymentId fallback):', updateResult)
+                if (updateResult) {
+                  console.log('✅ PaymentCallback: Статус успешно обновлен в БД (PaymentId fallback)')
+                } else {
+                  console.error('❌ PaymentCallback: Не удалось обновить статус в БД (PaymentId fallback)')
+                }
               } catch (error) {
-                console.error('❌ PaymentCallback: Ошибка при обновлении статуса в БД:', error)
+                console.error('❌ PaymentCallback: Ошибка при обновлении статуса в БД (PaymentId fallback):', error)
               }
+            } else {
+              console.error('❌ PaymentCallback: Нет authState.user.id для обновления БД (PaymentId fallback)')
             }
             
             setStatus('success')
@@ -227,11 +264,18 @@ const PaymentCallback: React.FC = () => {
                 if (authState.user?.id) {
                   try {
                     console.log('🔄 PaymentCallback: Обновляем статус в БД для пользователя:', authState.user.id)
-                    await setUserPaid(authState.user.id)
-                    console.log('✅ PaymentCallback: Статус успешно обновлен в БД')
+                    const updateResult = await setUserPaid(authState.user.id)
+                    console.log('✅ PaymentCallback: Результат обновления БД (fallback):', updateResult)
+                    if (updateResult) {
+                      console.log('✅ PaymentCallback: Статус успешно обновлен в БД (fallback)')
+                    } else {
+                      console.error('❌ PaymentCallback: Не удалось обновить статус в БД (fallback)')
+                    }
                   } catch (error) {
-                    console.error('❌ PaymentCallback: Ошибка при обновлении статуса в БД:', error)
+                    console.error('❌ PaymentCallback: Ошибка при обновлении статуса в БД (fallback):', error)
                   }
+                } else {
+                  console.error('❌ PaymentCallback: Нет authState.user.id для обновления БД (fallback)')
                 }
                 
                 setStatus('success')
