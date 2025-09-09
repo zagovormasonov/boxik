@@ -109,6 +109,48 @@ export function useTestUserMapping() {
     try {
       console.log('🔗 useTestUserMapping: Связываем существующие результаты с пользователем:', { userId, sessionId })
 
+      // Проверяем localStorage для поиска anonymousUserId
+      const anonymousUserId = localStorage.getItem('anonymous_user_id')
+      console.log('🔍 useTestUserMapping: Ищем anonymousUserId в localStorage:', anonymousUserId)
+
+      // Если есть anonymousUserId, ищем результаты по нему
+      if (anonymousUserId) {
+        console.log('🔍 useTestUserMapping: Ищем результаты по anonymousUserId:', anonymousUserId)
+        const { data: testResults, error: testError } = await supabase
+          .from('test_results')
+          .select('id, user_id, test_type, completed_at')
+          .eq('user_id', anonymousUserId)
+
+        if (testError) {
+          console.error('❌ useTestUserMapping: Ошибка при поиске результатов по anonymousUserId:', testError)
+          return false
+        }
+
+        if (testResults && testResults.length > 0) {
+          console.log('🔍 useTestUserMapping: Найдены результаты по anonymousUserId:', testResults.length)
+          
+          // Обновляем user_id в таблице test_results для каждого результата теста
+          for (const testResult of testResults) {
+            console.log('🔄 useTestUserMapping: Обновляем user_id для результата теста:', testResult.id)
+            
+            const { error: updateError } = await supabase
+              .from('test_results')
+              .update({ user_id: userId })
+              .eq('id', testResult.id)
+
+            if (updateError) {
+              console.error('❌ useTestUserMapping: Ошибка при обновлении user_id:', updateError)
+              continue
+            }
+
+            console.log('✅ useTestUserMapping: user_id обновлен для результата:', testResult.id)
+          }
+
+          console.log('✅ useTestUserMapping: Все результаты теста связаны с пользователем и обновлены')
+          return true
+        }
+      }
+
       // Проверяем, является ли sessionId валидным UUID
       const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)
       console.log('🔍 useTestUserMapping: sessionId является валидным UUID:', isUUID, 'sessionId:', sessionId)

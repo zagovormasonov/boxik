@@ -88,17 +88,25 @@ const BPDTestScreen: React.FC = () => {
             isCompleted: true
           }
 
+          // Создаем валидный UUID для неавторизованных пользователей
+          const anonymousUserId = `anonymous_${sessionId.replace(/[^a-zA-Z0-9]/g, '')}_${Date.now()}`
+          console.log('BPDTestScreen: Создаем анонимный user_id:', anonymousUserId, 'из session_id:', sessionId)
+          
           const saveResult = await saveBPDTestResult({
-            userId: sessionId, // Используем session_id как userId для неавторизованных пользователей
+            userId: anonymousUserId, // Используем созданный UUID для неавторизованных пользователей
             testState: completedTestState,
             totalQuestions: questions.length
           })
-          console.log('BPDTestScreen: Результат сохранения БПД теста с session_id:', saveResult)
+          console.log('BPDTestScreen: Результат сохранения БПД теста с анонимным user_id:', saveResult)
           
           if (saveResult) {
-            console.log('BPDTestScreen: Результаты БПД теста успешно сохранены с session_id:', sessionId)
+            console.log('BPDTestScreen: Результаты БПД теста успешно сохранены с анонимным user_id:', anonymousUserId)
+            // Сохраняем связь между sessionId и anonymousUserId в localStorage
+            localStorage.setItem('anonymous_user_id', anonymousUserId)
+            localStorage.setItem('session_id', sessionId)
+            console.log('BPDTestScreen: Связь сохранена в localStorage:', { sessionId, anonymousUserId })
           } else {
-            console.warn('BPDTestScreen: Не удалось сохранить результаты БПД теста с session_id:', sessionId)
+            console.warn('BPDTestScreen: Не удалось сохранить результаты БПД теста с анонимным user_id:', anonymousUserId)
           }
         } catch (error) {
           console.error('BPDTestScreen: Ошибка при сохранении результатов БПД теста для неавторизованного пользователя:', error)

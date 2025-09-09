@@ -15,6 +15,7 @@ const UserProfile: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [isSendingResults, setIsSendingResults] = useState(false)
+  const [hasTriedForceReload, setHasTriedForceReload] = useState(false)
   const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, hasPaid, forceSetPaid } = usePaymentContext()
   const { getUserHasPaid } = useUserHasPaid()
   
@@ -40,13 +41,14 @@ const UserProfile: React.FC = () => {
 
   // Принудительная проверка результатов теста (только один раз)
   useEffect(() => {
-    if (authState.user?.id && hasPaid && !lastTestResult && !isLoadingResults) {
+    if (authState.user?.id && hasPaid && !lastTestResult && !isLoadingResults && !hasTriedForceReload) {
       console.log('UserProfile: Принудительно проверяем результаты теста для оплатившего пользователя')
       console.log('UserProfile: Состояние для принудительной проверки:', { 
         userId: authState.user.id, 
         hasPaid, 
         lastTestResult: lastTestResult ? 'есть' : 'нет', 
-        isLoadingResults 
+        isLoadingResults,
+        hasTriedForceReload
       })
       
       // Показываем сообщение пользователю вместо перезагрузки
@@ -54,11 +56,12 @@ const UserProfile: React.FC = () => {
       
       // Принудительно сбрасываем флаг hasLoaded для повторной загрузки (только один раз)
       console.log('UserProfile: Принудительно сбрасываем флаг hasLoaded для повторной загрузки')
+      setHasTriedForceReload(true)
       setTimeout(() => {
         forceReload()
       }, 1000) // Задержка в 1 секунду
     }
-  }, [authState.user?.id, hasPaid]) // Убираем lastTestResult и isLoadingResults из зависимостей
+  }, [authState.user?.id, hasPaid, lastTestResult, isLoadingResults, hasTriedForceReload]) // Добавляем hasTriedForceReload в зависимости
 
   // Проверяем, должен ли пользователь быть перенаправлен на оплату (только один раз)
   useEffect(() => {
@@ -295,7 +298,10 @@ const UserProfile: React.FC = () => {
                   Пройти тест заново
                 </button>
                 <button 
-                  onClick={forceReload} 
+                  onClick={() => {
+                    setHasTriedForceReload(false)
+                    forceReload()
+                  }} 
                   className="action-button action-button-secondary"
                 >
                   Обновить результаты
