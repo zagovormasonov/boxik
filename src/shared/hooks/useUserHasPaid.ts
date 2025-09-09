@@ -24,7 +24,7 @@ export function useUserHasPaid() {
       
       const { data, error } = await supabase
         .from('users')
-        .select('hasPaid')
+        .select('haspaid')
         .eq('id', userId)
         .single()
 
@@ -33,7 +33,7 @@ export function useUserHasPaid() {
         throw error
       }
 
-      const hasPaid = data?.hasPaid || false
+      const hasPaid = data?.haspaid || false
       console.log('✅ Статус оплаты пользователя:', hasPaid)
       return hasPaid
     } catch (err) {
@@ -63,7 +63,7 @@ export function useUserHasPaid() {
       
       const { data, error } = await supabase
         .from('users')
-        .update({ hasPaid })
+        .update({ haspaid: hasPaid })
         .eq('id', userId)
         .select()
         .single()
