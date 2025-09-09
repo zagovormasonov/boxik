@@ -15,7 +15,7 @@ const UserProfile: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [isSendingResults, setIsSendingResults] = useState(false)
-  const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, hasPaid } = usePaymentContext()
+  const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, hasPaid, forceSetPaid } = usePaymentContext()
   const { getUserHasPaid } = useUserHasPaid()
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
@@ -31,13 +31,20 @@ const UserProfile: React.FC = () => {
   // Проверяем, должен ли пользователь быть перенаправлен на оплату
   useEffect(() => {
     const checkPaymentStatus = async () => {
-      if (authState.user?.id && !hasPaid) {
-        console.log('UserProfile: Пользователь не оплатил, проверяем статус в БД')
+      if (authState.user?.id) {
+        console.log('UserProfile: Проверяем статус оплаты для пользователя:', authState.user.id)
         try {
           const dbHasPaid = await getUserHasPaid(authState.user.id)
           console.log('UserProfile: Статус оплаты в БД:', dbHasPaid)
+          console.log('UserProfile: Статус оплаты в контексте:', hasPaid)
           
-          if (!dbHasPaid) {
+          if (dbHasPaid && !hasPaid) {
+            console.log('UserProfile: БД показывает оплату, но контекст нет - обновляем контекст')
+            forceSetPaid(true)
+            return // Не перенаправляем, остаемся в ЛК
+          }
+          
+          if (!dbHasPaid && !hasPaid) {
             console.log('UserProfile: Пользователь не оплатил, перенаправляем на AuthSuccessScreen')
             navigate('/auth-success')
           }
@@ -50,7 +57,7 @@ const UserProfile: React.FC = () => {
     }
 
     checkPaymentStatus()
-  }, [authState.user?.id, hasPaid, getUserHasPaid, navigate])
+  }, [authState.user?.id, hasPaid, getUserHasPaid, navigate, forceSetPaid])
 
   // Проверяем параметры оплаты в URL
   useEffect(() => {
