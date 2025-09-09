@@ -17,7 +17,9 @@ export function useBPDTestResults(userId: string | null) {
   const { getTestResultsForUser, checkTableExists } = useTestUserMapping()
 
   useEffect(() => {
+    console.log('useBPDTestResults: useEffect вызван с userId:', userId)
     if (!userId) {
+      console.log('useBPDTestResults: userId отсутствует, очищаем результат')
       setLastTestResult(null)
       return
     }

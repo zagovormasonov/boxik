@@ -22,6 +22,11 @@ const UserProfile: React.FC = () => {
 
   console.log('UserProfile: Компонент загружен, hasPaid:', hasPaid, 'authState.user:', authState.user?.id)
   console.log('UserProfile: Referrer:', document.referrer)
+  console.log('UserProfile: Состояние результатов теста:', { 
+    lastTestResult: lastTestResult ? 'есть' : 'нет', 
+    isLoading: isLoadingResults, 
+    error: testError 
+  })
 
   // Проверяем статус подписки только при первой загрузке
   useEffect(() => {
