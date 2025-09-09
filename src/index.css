@@ -86,7 +86,7 @@ body {
 }
 
 .progress-bar {
-  width: 100%;
+  width: 90%;
   height: 8px;
   background: #e5e7eb;
   border-radius: 4px;
@@ -97,7 +97,6 @@ body {
 /* Progress bar на экране теста с отступами */
 .test-screen .progress-bar {
   margin-left: 20px;
-  margin-right: 20px;
 }
 
 .progress-fill {
