@@ -239,42 +239,11 @@ const YandexCallback: React.FC = () => {
           detail: { user: realUser } 
         }))
         
-        // Проверяем статус оплаты пользователя в БД
-        console.log('YandexCallback: Проверяем статус оплаты для пользователя:', realUser.id)
-        
-        try {
-          const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('haspaid')
-            .eq('id', realUser.id)
-            .single()
-          
-          if (userError) {
-            console.warn('YandexCallback: Ошибка получения статуса оплаты:', userError)
-          }
-          
-          const hasPaid = userData?.haspaid === true
-          console.log('YandexCallback: Статус оплаты пользователя:', hasPaid)
-          
-          // Небольшая задержка для обновления состояния
-          setTimeout(() => {
-            if (hasPaid) {
-              console.log('YandexCallback: Пользователь уже оплатил, перенаправляем в ЛК')
-              navigate('/profile')
-            } else {
-              console.log('YandexCallback: Пользователь не оплатил, перенаправляем на лендинг оплаты')
-              navigate('/subscription')
-            }
-          }, 100)
-          
-        } catch (checkError) {
-          console.error('YandexCallback: Ошибка проверки статуса оплаты:', checkError)
-          // В случае ошибки перенаправляем на лендинг оплаты
-          setTimeout(() => {
-            console.log('YandexCallback: Ошибка проверки оплаты, перенаправляем на лендинг')
-            navigate('/subscription')
-          }, 100)
-        }
+        // Небольшая задержка для обновления состояния
+        setTimeout(() => {
+          console.log('YandexCallback: Авторизация успешна, перенаправляем на лендинг оплаты')
+          navigate('/subscription')
+        }, 100)
         
       } catch (error) {
         console.error('YandexCallback: Неожиданная ошибка', error)
