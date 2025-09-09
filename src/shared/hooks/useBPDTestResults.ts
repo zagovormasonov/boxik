@@ -52,13 +52,13 @@ export function useBPDTestResults(userId: string | null) {
     }
     
     // Если результаты уже загружены, не перезагружаем
-    if (hasLoaded && lastTestResult) {
+    if (hasLoaded) {
       console.log('useBPDTestResults: Результаты уже загружены, пропускаем повторную загрузку')
       return
     }
     
     // Если результаты не загружены, принудительно запускаем загрузку
-    if (!hasLoaded && !lastTestResult) {
+    if (!hasLoaded) {
       console.log('useBPDTestResults: Результаты не загружены, принудительно запускаем загрузку')
     }
     
@@ -356,12 +356,7 @@ export function useBPDTestResults(userId: string | null) {
     console.log('useBPDTestResults: Принудительный сброс состояния и повторная загрузка')
     console.log('useBPDTestResults: Текущее состояние перед сбросом:', { hasLoaded, lastTestResult: lastTestResult ? 'есть' : 'нет' })
     
-    // Если результаты уже есть, не сбрасываем их
-    if (lastTestResult) {
-      console.log('useBPDTestResults: Результаты уже есть, не сбрасываем их')
-      return
-    }
-    
+    // Всегда сбрасываем состояние для принудительной перезагрузки
     setHasLoaded(false)
     setLastTestResult(null)
     setError(null)

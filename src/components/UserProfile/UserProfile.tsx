@@ -62,7 +62,7 @@ const UserProfile: React.FC = () => {
           forceReload()
         }, 1000) // Задержка в 1 секунду
     }
-  }, [authState.user?.id, hasPaid, lastTestResult, isLoadingResults, hasTriedForceReload]) // Добавляем hasTriedForceReload в зависимости
+  }, [authState.user?.id, hasPaid, isLoadingResults, hasTriedForceReload]) // Убираем lastTestResult из зависимостей
 
   // Проверяем, должен ли пользователь быть перенаправлен на оплату (только один раз)
   useEffect(() => {
