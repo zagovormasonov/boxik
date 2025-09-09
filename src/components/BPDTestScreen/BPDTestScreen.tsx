@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useBPDTest } from '../../contexts/BPDTestContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { usePaymentContext } from '../../contexts/PaymentContext'
+// import { usePaymentContext } from '../../contexts/PaymentContext' // Убрано, так как теперь всегда переходим на лендинг
 import { useSaveBPDTestResult } from '../../shared/hooks/useSaveBPDTestResult'
 import ProgressBar from '../ProgressBar/ProgressBar'
 import BPDQuestionCard from '../BPDQuestionCard/BPDQuestionCard'
@@ -11,7 +11,7 @@ import Navigation from '../Navigation/Navigation'
 const BPDTestScreen: React.FC = () => {
   const { state, questions, dispatch, severity } = useBPDTest()
   const { authState } = useAuth()
-  const { hasPaid } = usePaymentContext()
+  // const { hasPaid } = usePaymentContext() // Убрано, так как теперь всегда переходим на лендинг
   const navigate = useNavigate()
   const { saveBPDTestResult, error: saveError } = useSaveBPDTestResult()
 
@@ -62,14 +62,9 @@ const BPDTestScreen: React.FC = () => {
           })
           console.log('BPDTestScreen: Результаты БПД теста сохранены')
           
-          // Проверяем, есть ли у пользователя активная подписка
-          if (hasPaid) {
-            console.log('BPDTestScreen: У пользователя есть подписка, переходим в профиль')
-            navigate('/profile')
-          } else {
-            console.log('BPDTestScreen: У пользователя нет подписки, переходим на лендинг')
-            navigate('/subscription')
-          }
+          // После завершения теста всегда переходим на лендинг оплаты
+          console.log('BPDTestScreen: Тест завершен, переходим на лендинг оплаты')
+          navigate('/subscription')
         } catch (error) {
           console.error('BPDTestScreen: Ошибка при сохранении результатов БПД теста:', error)
           // При ошибке сохранения все равно переходим на лендинг
