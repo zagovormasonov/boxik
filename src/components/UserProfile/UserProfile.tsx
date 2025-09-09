@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
-import { User, Mail, Calendar, LogOut, RotateCcw, FileText } from 'lucide-react'
+import { User, LogOut, RotateCcw, FileText } from 'lucide-react'
 import { useBPDTestResults, BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
 // import { useUserHasPaid } from '../../shared/hooks/useUserHasPaid' // Убрано, так как больше не используется
 import BPDTestResultCard from '../BPDTestResultCard/BPDTestResultCard'
@@ -171,21 +171,6 @@ const UserProfile: React.FC = () => {
             </div>
           </div>
           
-          <div className="info-item">
-            <Mail size={18} className="info-icon" />
-            <div className="info-content">
-              <span className="info-label">Email</span>
-              <span className="info-value">{authState.user?.email || 'Не указан'}</span>
-            </div>
-          </div>
-          
-          <div className="info-item">
-            <Calendar size={18} className="info-icon" />
-            <div className="info-content">
-              <span className="info-label">Дата регистрации</span>
-              <span className="info-value">{authState.user?.created_at ? new Date(authState.user.created_at).toLocaleDateString('ru-RU') : 'Неизвестно'}</span>
-            </div>
-          </div>
         </div>
 
         {/* Результаты теста */}
