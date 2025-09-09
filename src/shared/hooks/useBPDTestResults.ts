@@ -51,6 +51,12 @@ export function useBPDTestResults(userId: string | null) {
       return
     }
     
+    // Если результаты уже загружены, не перезагружаем
+    if (hasLoaded && lastTestResult) {
+      console.log('useBPDTestResults: Результаты уже загружены, пропускаем повторную загрузку')
+      return
+    }
+    
     // Если результаты не загружены, принудительно запускаем загрузку
     if (!hasLoaded && !lastTestResult) {
       console.log('useBPDTestResults: Результаты не загружены, принудительно запускаем загрузку')
@@ -239,6 +245,10 @@ export function useBPDTestResults(userId: string | null) {
 
   // Дополнительная проверка: если результаты не загружены, но userId есть, принудительно загружаем
   useEffect(() => {
+    // ВРЕМЕННО ОТКЛЮЧАЕМ ДОПОЛНИТЕЛЬНУЮ ЗАГРУЗКУ ДЛЯ ПРЕДОТВРАЩЕНИЯ ПЕРЕЗАГРУЗКИ
+    console.log('useBPDTestResults: Дополнительная проверка ОТКЛЮЧЕНА для предотвращения перезагрузки')
+    return
+    
     if (userId && !isLoading && !lastTestResult && !hasLoaded) {
       console.log('useBPDTestResults: Дополнительная проверка - принудительно загружаем результаты')
       console.log('useBPDTestResults: Состояние для принудительной загрузки:', { userId, isLoading, hasLoaded, lastTestResult })
@@ -344,6 +354,14 @@ export function useBPDTestResults(userId: string | null) {
   // Функция для принудительного сброса состояния и повторной загрузки
   const forceReload = () => {
     console.log('useBPDTestResults: Принудительный сброс состояния и повторная загрузка')
+    console.log('useBPDTestResults: Текущее состояние перед сбросом:', { hasLoaded, lastTestResult: lastTestResult ? 'есть' : 'нет' })
+    
+    // Если результаты уже есть, не сбрасываем их
+    if (lastTestResult) {
+      console.log('useBPDTestResults: Результаты уже есть, не сбрасываем их')
+      return
+    }
+    
     setHasLoaded(false)
     setLastTestResult(null)
     setError(null)
