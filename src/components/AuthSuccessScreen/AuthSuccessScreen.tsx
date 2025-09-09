@@ -74,7 +74,7 @@ const AuthSuccessScreen: React.FC = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: '#f8fafc',
       padding: '20px',
       display: 'flex',
       alignItems: 'center',
@@ -174,38 +174,28 @@ const AuthSuccessScreen: React.FC = () => {
 
         {/* Информация о подписке */}
         <div style={{
-          background: '#fef3c7',
-          borderRadius: '12px',
-          padding: '20px',
-          margin: '0 0 30px 0',
-          border: '1px solid #f59e0b'
+          background: '#f1f5f9',
+          borderRadius: '8px',
+          padding: '16px',
+          margin: '0 0 24px 0',
+          border: '1px solid #e2e8f0'
         }}>
           <h3 style={{ 
-            margin: '0 0 10px 0', 
-            color: '#92400e',
-            fontSize: '18px'
+            margin: '0 0 8px 0', 
+            color: '#334155',
+            fontSize: '16px',
+            fontWeight: '500'
           }}>
             Получите полный доступ
           </h3>
           <p style={{ 
-            margin: '0 0 15px 0', 
-            color: '#92400e',
-            fontSize: '14px'
-          }}>
-            После оплаты вы получите:
-          </p>
-          <ul style={{
-            margin: '0',
-            padding: '0 0 0 20px',
-            color: '#92400e',
+            margin: '0', 
+            color: '#64748b',
             fontSize: '14px',
-            textAlign: 'left'
+            lineHeight: '1.4'
           }}>
-            <li>Персональный план действий</li>
-            <li>Рекомендации специалистов</li>
-            <li>PDF-отчет для психолога</li>
-            <li>Пожизненный доступ к результатам</li>
-          </ul>
+            Персональный план • Рекомендации специалистов • PDF-отчет • Пожизненный доступ
+          </p>
         </div>
 
         {/* Кнопка оплаты */}
