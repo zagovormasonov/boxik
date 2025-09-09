@@ -2210,6 +2210,99 @@ body {
   }
 }
 
+/* Test Screen Styles */
+.test-screen {
+  min-height: 100vh;
+  background-image: url('./img/forest.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.test-container {
+  max-width: 800px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.test-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.test-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937; /* Черный цвет заголовка */
+  margin: 0 0 16px 0;
+  line-height: 1.3;
+}
+
+.test-description {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.test-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.question-counter {
+  text-align: center;
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.test-completion {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.test-completion h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+}
+
+.test-completion p {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0 0 8px 0;
+}
+
+/* Subscription Landing - Remove shadow */
+.subscription-landing .landing-container {
+  box-shadow: none; /* Убираем тень */
+}
+
+/* Auth Success Screen - Remove gradient */
+.auth-success-screen {
+  background: #f8fafc !important; /* Убираем градиент */
+}
+
+/* User Profile - Smaller severity text */
+.severity-text {
+  font-size: 14px !important; /* Уменьшаем размер текста уровня выраженности */
+  line-height: 1.4 !important;
+  margin-bottom: 8px !important;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

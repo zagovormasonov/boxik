@@ -111,7 +111,7 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
         <div className="score-item">
           <span className="score-label">Уровень выраженности:</span>
           <span 
-            className="score-value" 
+            className="score-value severity-text" 
             style={{ color: getSeverityColor(testResult.severity) }}
           >
             {getSeverityText(testResult.severity)}

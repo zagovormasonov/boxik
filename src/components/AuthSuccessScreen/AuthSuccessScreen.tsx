@@ -127,7 +127,7 @@ const AuthSuccessScreen: React.FC = () => {
   }
 
   return (
-    <div style={{
+    <div className="auth-success-screen" style={{
       minHeight: '100vh',
       background: '#f8fafc',
       padding: '20px',
