@@ -50,6 +50,10 @@ export function useUserHasPaid() {
     try {
       console.log('🔍 Обновляем статус оплаты для пользователя:', userId, 'hasPaid:', hasPaid)
       
+      // Проверяем текущего пользователя
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      console.log('🔍 Текущий пользователь при обновлении:', user?.id, 'Ошибка:', userError)
+      
       const { data, error } = await supabase
         .from('users')
         .update({ hasPaid })
@@ -59,6 +63,12 @@ export function useUserHasPaid() {
 
       if (error) {
         console.error('❌ Ошибка при обновлении статуса оплаты:', error)
+        console.error('❌ Детали ошибки:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        })
         throw error
       }
 
