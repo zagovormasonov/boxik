@@ -1,14 +1,26 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { CreditCard, User, Mail, Check } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePayment } from '../../shared/hooks/usePayment'
+import { usePaymentContext } from '../../contexts/PaymentContext'
+import { useNavigate } from 'react-router-dom'
 
 const AuthSuccessScreen: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false)
   const { authState } = useAuth()
   const { createPayment } = usePayment()
+  const { hasPaid } = usePaymentContext()
+  const navigate = useNavigate()
 
-  console.log('AuthSuccessScreen: Компонент загружен, authState.user:', authState.user?.id)
+  console.log('AuthSuccessScreen: Компонент загружен, authState.user:', authState.user?.id, 'hasPaid:', hasPaid)
+
+  // Проверяем, не оплатил ли пользователь уже
+  useEffect(() => {
+    if (hasPaid) {
+      console.log('AuthSuccessScreen: Пользователь уже оплатил, перенаправляем в ЛК')
+      navigate('/profile')
+    }
+  }, [hasPaid, navigate])
 
   const handlePay = async () => {
     if (!authState.user?.id) {
