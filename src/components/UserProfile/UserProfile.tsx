@@ -30,13 +30,13 @@ const UserProfile: React.FC = () => {
     error: testError 
   })
 
-  // Проверяем статус подписки только при первой загрузке
+  // Проверяем статус подписки только при первой загрузке (один раз)
   useEffect(() => {
     if (authState.user?.id) {
       console.log('UserProfile: Проверяем статус подписки для пользователя:', authState.user.id)
       refreshPaymentStatus()
     }
-  }, [authState.user?.id, refreshPaymentStatus])
+  }, [authState.user?.id]) // Убираем refreshPaymentStatus из зависимостей
 
   // Принудительная проверка результатов теста (только один раз)
   useEffect(() => {
@@ -60,7 +60,7 @@ const UserProfile: React.FC = () => {
     }
   }, [authState.user?.id, hasPaid]) // Убираем lastTestResult и isLoadingResults из зависимостей
 
-  // Проверяем, должен ли пользователь быть перенаправлен на оплату
+  // Проверяем, должен ли пользователь быть перенаправлен на оплату (только один раз)
   useEffect(() => {
     const checkPaymentStatus = async () => {
       if (authState.user?.id) {
@@ -121,7 +121,7 @@ const UserProfile: React.FC = () => {
     const timeoutId = setTimeout(checkPaymentStatus, 100)
     
     return () => clearTimeout(timeoutId)
-  }, [authState.user?.id, hasPaid, getUserHasPaid, navigate, forceSetPaid])
+  }, [authState.user?.id]) // Убираем hasPaid и другие зависимости
 
   // Проверяем параметры оплаты в URL
   useEffect(() => {

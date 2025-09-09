@@ -319,7 +319,7 @@ export function useBPDTestResults(userId: string | null) {
       
       fetchLastTestResult()
     }
-  }, [userId, isLoading, hasLoaded, lastTestResult])
+  }, [userId]) // Убираем лишние зависимости
 
   const sendToSpecialist = async (testResult: BPDTestResultWithDetails): Promise<boolean> => {
     try {
