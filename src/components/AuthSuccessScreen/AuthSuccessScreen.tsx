@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { usePayment } from '../../shared/hooks/usePayment'
 import { usePaymentContext } from '../../contexts/PaymentContext'
 import { useNavigate } from 'react-router-dom'
+import { useUserHasPaid } from '../../shared/hooks/useUserHasPaid'
 
 const AuthSuccessScreen: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false)
@@ -11,6 +12,7 @@ const AuthSuccessScreen: React.FC = () => {
   const { createPayment } = usePayment()
   const { hasPaid } = usePaymentContext()
   const navigate = useNavigate()
+  const { getUserHasPaid, setUserPaid } = useUserHasPaid()
 
   console.log('AuthSuccessScreen: Компонент загружен, authState.user:', authState.user?.id, 'hasPaid:', hasPaid)
 
@@ -21,6 +23,41 @@ const AuthSuccessScreen: React.FC = () => {
       navigate('/profile')
     }
   }, [hasPaid, navigate])
+
+  // Проверяем, не пришел ли пользователь после оплаты от Тинькофф
+  useEffect(() => {
+    const checkPaymentAfterRedirect = async () => {
+      const isFromTinkoff = document.referrer.includes('tinkoff.ru') || document.referrer.includes('securepay.tinkoff.ru')
+      console.log('AuthSuccessScreen: Referrer:', document.referrer)
+      console.log('AuthSuccessScreen: Пришел от Тинькофф:', isFromTinkoff)
+      
+      if (isFromTinkoff && authState.user?.id) {
+        console.log('AuthSuccessScreen: Пользователь пришел от Тинькофф, проверяем статус оплаты')
+        try {
+          const dbHasPaid = await getUserHasPaid(authState.user.id)
+          console.log('AuthSuccessScreen: Статус оплаты в БД после Тинькофф:', dbHasPaid)
+          
+          if (!dbHasPaid) {
+            console.log('AuthSuccessScreen: Статус не обновился, принудительно устанавливаем оплату')
+            const updateResult = await setUserPaid(authState.user.id)
+            console.log('AuthSuccessScreen: Результат принудительного обновления:', updateResult)
+            
+            if (updateResult) {
+              console.log('AuthSuccessScreen: Статус успешно обновлен, перенаправляем в ЛК')
+              navigate('/profile')
+            }
+          } else {
+            console.log('AuthSuccessScreen: Статус уже обновлен, перенаправляем в ЛК')
+            navigate('/profile')
+          }
+        } catch (error) {
+          console.error('AuthSuccessScreen: Ошибка при проверке статуса после Тинькофф:', error)
+        }
+      }
+    }
+    
+    checkPaymentAfterRedirect()
+  }, [authState.user?.id, navigate, getUserHasPaid, setUserPaid])
 
   const handlePay = async () => {
     if (!authState.user?.id) {
