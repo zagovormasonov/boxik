@@ -33,10 +33,17 @@ const UserProfile: React.FC = () => {
     const checkPaymentStatus = async () => {
       if (authState.user?.id) {
         console.log('UserProfile: Проверяем статус оплаты для пользователя:', authState.user.id)
+        console.log('UserProfile: Статус оплаты в контексте:', hasPaid)
+        
+        // Если контекст уже показывает оплату, остаемся в ЛК
+        if (hasPaid) {
+          console.log('UserProfile: Контекст показывает оплату, остаемся в ЛК')
+          return
+        }
+        
         try {
           const dbHasPaid = await getUserHasPaid(authState.user.id)
           console.log('UserProfile: Статус оплаты в БД:', dbHasPaid)
-          console.log('UserProfile: Статус оплаты в контексте:', hasPaid)
           
           if (dbHasPaid && !hasPaid) {
             console.log('UserProfile: БД показывает оплату, но контекст нет - обновляем контекст')
@@ -56,7 +63,10 @@ const UserProfile: React.FC = () => {
       }
     }
 
-    checkPaymentStatus()
+    // Добавляем небольшую задержку, чтобы PaymentProvider успел инициализироваться
+    const timeoutId = setTimeout(checkPaymentStatus, 100)
+    
+    return () => clearTimeout(timeoutId)
   }, [authState.user?.id, hasPaid, getUserHasPaid, navigate, forceSetPaid])
 
   // Проверяем параметры оплаты в URL
