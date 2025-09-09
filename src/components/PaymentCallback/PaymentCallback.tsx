@@ -24,30 +24,6 @@ const PaymentCallback: React.FC = () => {
       console.log('🚀 PaymentCallback: URL:', window.location.href)
       console.log('🚀 PaymentCallback: Search params:', Object.fromEntries(searchParams.entries()))
       
-      // ПРИНУДИТЕЛЬНО устанавливаем hasPaid: true в самом начале
-      // независимо от параметров или состояния Supabase
-      console.log('🔄 PaymentCallback: ПРИНУДИТЕЛЬНО устанавливаем hasPaid: true в начале callback')
-      forceSetPaid(true)
-      console.log('🔄 PaymentCallback: hasPaid установлен в true')
-      
-      // ПРИНУДИТЕЛЬНО обновляем статус в БД
-      if (authState.user?.id) {
-        try {
-          console.log('🔄 PaymentCallback: Принудительно обновляем статус в БД для пользователя:', authState.user.id)
-          await setUserPaid(authState.user.id)
-          console.log('✅ PaymentCallback: Статус успешно обновлен в БД')
-        } catch (error) {
-          console.error('❌ PaymentCallback: Ошибка при обновлении статуса в БД:', error)
-          // Продолжаем выполнение даже если БД недоступна
-        }
-      } else {
-        console.warn('⚠️ PaymentCallback: Нет пользователя для обновления БД')
-      }
-      
-      // Устанавливаем статус успеха сразу
-      setStatus('success')
-      setMessage('Оплата успешно завершена!')
-      
       try {
         // Получаем параметры от Тинькофф
         const paymentId = searchParams.get('PaymentId') || searchParams.get('payment_id') || searchParams.get('PaymentID')
@@ -87,12 +63,30 @@ const PaymentCallback: React.FC = () => {
           console.log('OrderId не начинается с "u", возможно это не наш платеж:', orderId)
         }
 
-        // УПРОЩЕННАЯ ЛОГИКА: Если есть PaymentId и OrderId, считаем платеж успешным
-        console.log('🎯 PaymentCallback: Упрощенная логика - проверяем PaymentId и OrderId')
+        // ПРОВЕРЯЕМ РЕАЛЬНЫЕ ПАРАМЕТРЫ ОПЛАТЫ
+        console.log('🎯 PaymentCallback: Проверяем реальные параметры оплаты')
         console.log('🎯 PaymentCallback: PaymentId =', paymentId, 'OrderId =', orderId)
+        console.log('🎯 PaymentCallback: Status =', status, 'Success =', success)
         
+        // Устанавливаем hasPaid: true только при наличии реальных параметров оплаты
         if (paymentId && orderId) {
           console.log('✅ PaymentCallback: Есть PaymentId и OrderId - считаем платеж успешным!')
+          
+          // Устанавливаем hasPaid: true только для реальной оплаты
+          console.log('🔄 PaymentCallback: Устанавливаем hasPaid: true для реальной оплаты')
+          forceSetPaid(true)
+          
+          // Обновляем статус в БД только для реальной оплаты
+          if (authState.user?.id) {
+            try {
+              console.log('🔄 PaymentCallback: Обновляем статус в БД для пользователя:', authState.user.id)
+              await setUserPaid(authState.user.id)
+              console.log('✅ PaymentCallback: Статус успешно обновлен в БД')
+            } catch (error) {
+              console.error('❌ PaymentCallback: Ошибка при обновлении статуса в БД:', error)
+            }
+          }
+          
           setStatus('success')
           setMessage('Оплата успешно завершена!')
           
@@ -158,15 +152,14 @@ const PaymentCallback: React.FC = () => {
           // Если нет параметров вообще, возможно пользователь попал по прямой ссылке
           const allParams = Object.fromEntries(searchParams.entries())
           if (Object.keys(allParams).length === 0) {
-            console.log('🔄 PaymentCallback: Нет параметров, перенаправляем в личный кабинет')
-            // Принудительно устанавливаем статус оплаты для пользователей без параметров
-            console.log('🔄 PaymentCallback: Принудительно устанавливаем статус оплаты для пользователя без параметров')
-            forceSetPaid(true)
-            setStatus('success')
-            setMessage('Перенаправляем в личный кабинет...')
+            console.log('🔄 PaymentCallback: Нет параметров, перенаправляем на лендинг оплаты')
+            // НЕ устанавливаем hasPaid: true для пользователей без параметров
+            console.log('🔄 PaymentCallback: НЕ устанавливаем hasPaid для пользователя без параметров оплаты')
+            setStatus('error')
+            setMessage('Нет данных об оплате. Перенаправляем на страницу оплаты...')
             setTimeout(() => {
-              navigate('/profile')
-            }, 1000) // Уменьшили время ожидания
+              navigate('/subscription')
+            }, 2000)
           } else {
             console.log('❌ PaymentCallback: Есть параметры, но нет PaymentId/OrderId')
             setStatus('error')
