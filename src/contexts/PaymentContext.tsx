@@ -17,16 +17,24 @@ interface PaymentContextType {
 const PaymentContext = createContext<PaymentContextType | undefined>(undefined)
 
 export function PaymentProvider({ children }: { children: ReactNode }) {
-  const [hasPaid, setHasPaid] = useState<boolean>(false) // Инициализируем как false
+  const [hasPaid, setHasPaid] = useState<boolean>(() => {
+    // Инициализируем из localStorage как fallback
+    const saved = localStorage.getItem('hasPaid')
+    return saved === 'true'
+  })
   const [paymentModalOpen, setPaymentModalOpen] = useState(false)
+  const [isInitialized, setIsInitialized] = useState(false) // Флаг инициализации
   const { getUserHasPaid, setUserPaid } = useUserHasPaid()
   const { authState } = useAuth()
 
-  // Принудительная проверка статуса оплаты при инициализации
+  // Принудительная проверка статуса оплаты при инициализации (только один раз)
   useEffect(() => {
     const initialCheck = async () => {
-      if (authState.user?.id) {
+      // Проверяем, что пользователь авторизован и мы еще не инициализировались
+      if (authState.user?.id && !isInitialized) {
         console.log('PaymentProvider: Начальная проверка статуса оплаты для пользователя:', authState.user.id)
+        setIsInitialized(true) // Помечаем как инициализированный
+        
         try {
           // Получаем статус оплаты из базы данных
           const userHasPaid = await getUserHasPaid(authState.user.id)
@@ -43,7 +51,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     }
     
     initialCheck()
-  }, [authState.user?.id, getUserHasPaid])
+  }, [authState.user?.id, isInitialized, getUserHasPaid])
 
   // Сохраняем состояние оплаты в localStorage при изменении (fallback)
   useEffect(() => {
