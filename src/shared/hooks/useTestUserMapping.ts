@@ -67,8 +67,16 @@ export function useTestUserMapping() {
         .select('test_result_id')
         .eq('user_id', userId)
 
+      console.log('🔍 useTestUserMapping: Результат запроса:', { mappings, error })
+
       if (error) {
         console.error('❌ useTestUserMapping: Ошибка при получении связей:', error)
+        console.error('❌ useTestUserMapping: Детали ошибки:', {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint
+        })
         throw error
       }
 

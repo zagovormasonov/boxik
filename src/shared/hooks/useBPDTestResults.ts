@@ -76,8 +76,31 @@ export function useBPDTestResults(userId: string | null) {
             .limit(1)
             .single()
 
-          data = directData
-          fetchError = directError
+          console.log('useBPDTestResults: Результат прямого поиска БПД:', { data: directData, error: directError })
+          
+          if (!directError) {
+            data = directData
+          } else if (directError.code === 'PGRST116') {
+            // Если БПД тест не найден, ищем любой тест
+            console.log('useBPDTestResults: БПД тест не найден, ищем любой тест')
+            const { data: anyDirectData, error: anyDirectError } = await supabase
+              .from('test_results')
+              .select('*')
+              .eq('user_id', userId)
+              .order('completed_at', { ascending: false })
+              .limit(1)
+              .single()
+
+            console.log('useBPDTestResults: Результат поиска любого теста:', { data: anyDirectData, error: anyDirectError })
+            
+            if (!anyDirectError) {
+              data = anyDirectData
+            } else {
+              fetchError = anyDirectError
+            }
+          } else {
+            fetchError = directError
+          }
         }
 
         if (fetchError) {
