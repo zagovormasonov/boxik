@@ -43,14 +43,8 @@ const UserProfile: React.FC = () => {
     if (authState.user?.id && hasPaid && !lastTestResult && !isLoadingResults) {
       console.log('UserProfile: Принудительно проверяем результаты теста для оплатившего пользователя')
       
-      // Небольшая задержка для повторной проверки
-      const timeoutId = setTimeout(() => {
-        console.log('UserProfile: Повторная проверка результатов теста')
-        // Здесь можно добавить принудительное обновление результатов
-        window.location.reload()
-      }, 2000)
-      
-      return () => clearTimeout(timeoutId)
+      // Показываем сообщение пользователю вместо перезагрузки
+      console.log('UserProfile: Результаты теста не найдены для оплатившего пользователя')
     }
   }, [authState.user?.id, hasPaid, lastTestResult, isLoadingResults])
 
@@ -273,8 +267,22 @@ const UserProfile: React.FC = () => {
         ) : (
           <div className="no-test-message">
             <FileText size={48} style={{ margin: '0 auto 16px', color: '#94a3b8' }} />
-            <h3>Тесты не пройдены</h3>
-            <p>Пройдите тест, чтобы увидеть результаты здесь</p>
+            <h3>Результаты теста не найдены</h3>
+            <p>
+              {hasPaid 
+                ? 'Возможно, результаты теста еще не загружены. Попробуйте пройти тест заново.'
+                : 'Пройдите тест, чтобы увидеть результаты здесь'
+              }
+            </p>
+            {hasPaid && (
+              <button 
+                onClick={() => navigate('/test')} 
+                className="action-button action-button-primary"
+                style={{ marginTop: '16px' }}
+              >
+                Пройти тест заново
+              </button>
+            )}
           </div>
         )}
 

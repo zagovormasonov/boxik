@@ -94,7 +94,7 @@ export function useBPDTestResults(userId: string | null) {
             console.log('useBPDTestResults: Получены данные БПД:', bpdData)
             data = bpdData
             fetchError = bpdError
-          } else if (bpdError && bpdError.code === 'PGRST116') {
+          } else if (bpdError && (bpdError.code === 'PGRST116' || bpdError.message?.includes('406'))) {
             console.log('useBPDTestResults: БПД тест не найден, ищем любой тест')
             
             // Если БПД не найден, ищем любой тест
@@ -144,7 +144,7 @@ export function useBPDTestResults(userId: string | null) {
             console.log('useBPDTestResults: Получены данные БПД из связей:', bpdData)
             data = bpdData
             fetchError = bpdError
-          } else if (bpdError && bpdError.code === 'PGRST116') {
+          } else if (bpdError && (bpdError.code === 'PGRST116' || bpdError.message?.includes('406'))) {
             // Если БПД тест не найден, берем последний результат любого типа
             console.log('useBPDTestResults: БПД тест не найден в связях, ищем любой тест')
             const { data: anyData, error: anyError } = await supabase
@@ -271,7 +271,7 @@ export function useBPDTestResults(userId: string | null) {
               completed_date: directData.completed_at
             }
             setLastTestResult(result)
-          } else if (directError && directError.code === 'PGRST116') {
+          } else if (directError && (directError.code === 'PGRST116' || directError.message?.includes('406'))) {
             console.log('useBPDTestResults: БПД тест не найден, ищем любой тест')
             const { data: anyData, error: anyError } = await supabase
               .from('test_results')
