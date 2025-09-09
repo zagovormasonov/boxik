@@ -14,7 +14,7 @@ export function useBPDTestResults(userId: string | null) {
   const [lastTestResult, setLastTestResult] = useState<BPDTestResultWithDetails | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const { getTestResultsForUser } = useTestUserMapping()
+  const { getTestResultsForUser, checkTableExists } = useTestUserMapping()
 
   useEffect(() => {
     if (!userId) {
@@ -29,12 +29,36 @@ export function useBPDTestResults(userId: string | null) {
       try {
         console.log('useBPDTestResults: Загружаем результаты БПД теста для пользователя:', userId)
 
+        // Проверяем существование таблицы test_user_mapping
+        const tableExists = await checkTableExists()
+        console.log('useBPDTestResults: Таблица test_user_mapping существует:', tableExists)
+
         // Получаем ID результатов теста через таблицу связей
         const testResultIds = await getTestResultsForUser(userId)
         console.log('useBPDTestResults: Найдены ID результатов теста:', testResultIds)
-
+        
         let data = null
         let fetchError = null
+
+        // Если нет связей, попробуем прямой поиск по user_id
+        if (testResultIds.length === 0) {
+          console.log('useBPDTestResults: Нет связей в test_user_mapping, пробуем прямой поиск')
+          const { data: directData, error: directError } = await supabase
+            .from('test_results')
+            .select('*')
+            .eq('user_id', userId)
+            .order('completed_at', { ascending: false })
+            .limit(1)
+            .single()
+          
+          console.log('useBPDTestResults: Результат прямого поиска БПД:', { data: directData, error: directError })
+          
+          if (directData) {
+            console.log('useBPDTestResults: Получены данные:', directData)
+            data = directData
+            fetchError = directError
+          }
+        }
 
         if (testResultIds.length > 0) {
           // Ищем результаты БПД теста среди связанных результатов
