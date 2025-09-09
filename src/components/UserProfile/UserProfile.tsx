@@ -21,6 +21,7 @@ const UserProfile: React.FC = () => {
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
 
   console.log('UserProfile: Компонент загружен, hasPaid:', hasPaid, 'authState.user:', authState.user?.id)
+  console.log('UserProfile: Referrer:', document.referrer)
 
   // Проверяем статус подписки только при первой загрузке
   useEffect(() => {
@@ -41,6 +42,28 @@ const UserProfile: React.FC = () => {
         if (hasPaid) {
           console.log('UserProfile: Контекст показывает оплату, остаемся в ЛК')
           return
+        }
+        
+        // Проверяем, не пришел ли пользователь после оплаты (по referrer)
+        const isFromTinkoff = document.referrer.includes('tinkoff.ru') || document.referrer.includes('securepay.tinkoff.ru')
+        if (isFromTinkoff) {
+          console.log('UserProfile: Пользователь пришел от Тинькофф, даем время для обновления статуса')
+          // Даем время для обновления статуса в БД
+          setTimeout(async () => {
+            if (authState.user?.id) {
+              try {
+                const dbHasPaid = await getUserHasPaid(authState.user.id)
+                console.log('UserProfile: Повторная проверка статуса после Тинькофф:', dbHasPaid)
+                if (dbHasPaid) {
+                  console.log('UserProfile: Статус обновился, синхронизируем контекст')
+                  forceSetPaid(true)
+                  return
+                }
+              } catch (error) {
+                console.error('UserProfile: Ошибка при повторной проверке:', error)
+              }
+            }
+          }, 2000) // Ждем 2 секунды
         }
         
         try {
