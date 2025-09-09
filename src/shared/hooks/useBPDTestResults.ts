@@ -111,11 +111,20 @@ export function useBPDTestResults(userId: string | null) {
             details: fetchError.details,
             hint: fetchError.hint
           })
+          
           if (fetchError.code === 'PGRST116') {
             console.log('useBPDTestResults: Нет результатов тестов для пользователя')
             setLastTestResult(null)
             return
           }
+          
+          // Для ошибок 406 (Not Acceptable) и других ошибок доступа
+          if (fetchError.code === 'PGRST301' || fetchError.message?.includes('406')) {
+            console.warn('useBPDTestResults: Проблемы с доступом к таблице test_results, используем fallback')
+            setLastTestResult(null)
+            return
+          }
+          
           throw fetchError
         }
 

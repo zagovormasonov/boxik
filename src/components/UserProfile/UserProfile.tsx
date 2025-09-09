@@ -225,9 +225,15 @@ const UserProfile: React.FC = () => {
             <p>Получаем данные о последнем тесте</p>
           </div>
         ) : testError ? (
-          <div className="no-test-message">
-            <h3>Ошибка загрузки</h3>
-            <p>{testError}</p>
+          <div className="error-message">
+            <h3>Ошибка загрузки результатов</h3>
+            <p>Не удалось загрузить результаты тестов: {testError}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="action-button action-button-primary"
+            >
+              Попробовать снова
+            </button>
           </div>
         ) : lastTestResult ? (
           <>
