@@ -256,19 +256,12 @@ const YandexCallback: React.FC = () => {
   }, [navigate, searchParams])
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      height: '100vh',
-      flexDirection: 'column',
-      gap: '20px'
-    }}>
-      <div className="card" style={{ textAlign: 'center' }}>
-        <h2 style={{ marginBottom: '16px', color: '#4f46e5' }}>
-          Обработка авторизации через Яндекс...
+    <div className="yandex-auth-loading-screen">
+      <div className="card">
+        <h2>
+          Идет авторизация через Яндекс...
         </h2>
-        <p style={{ color: '#6b7280' }}>
+        <p>
           Пожалуйста, подождите
         </p>
       </div>

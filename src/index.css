@@ -2314,6 +2314,38 @@ body {
   margin-bottom: 8px !important;
 }
 
+/* Yandex Authorization Screen - Minimalistic */
+.yandex-auth-loading-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #ffffff;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.yandex-auth-loading-screen .card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+
+.yandex-auth-loading-screen h2 {
+  font-size: 18px;
+  font-weight: 400;
+  color: #374151;
+  margin: 0;
+}
+
+.yandex-auth-loading-screen p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
