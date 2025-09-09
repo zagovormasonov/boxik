@@ -113,8 +113,8 @@ export function useBPDTestResults(userId: string | null) {
               data = anyData
               fetchError = anyError
             } else {
-              console.log('useBPDTestResults: Ошибка при загрузке:', anyError)
-              if (anyError) {
+              console.log('useBPDTestResults: Результаты теста не найдены - это нормально')
+              if (anyError && anyError.code !== 'PGRST116') {
                 console.log('useBPDTestResults: Детали ошибки:', {
                   code: anyError.code,
                   message: anyError.message,
@@ -158,6 +158,8 @@ export function useBPDTestResults(userId: string | null) {
             if (anyData) {
               console.log('useBPDTestResults: Получены данные любого теста из связей:', anyData)
               data = anyData
+            } else {
+              console.log('useBPDTestResults: Результаты теста не найдены в связях - это нормально')
             }
             fetchError = anyError
           } else {
@@ -166,30 +168,32 @@ export function useBPDTestResults(userId: string | null) {
           }
         }
 
-        if (fetchError) {
-          console.error('useBPDTestResults: Ошибка при загрузке:', fetchError)
-          console.error('useBPDTestResults: Детали ошибки:', {
-            code: fetchError.code,
-            message: fetchError.message,
-            details: fetchError.details,
-            hint: fetchError.hint
-          })
-          
-          if (fetchError.code === 'PGRST116') {
-            console.log('useBPDTestResults: Нет результатов тестов для пользователя')
-            setLastTestResult(null)
-            return
+          if (fetchError) {
+            console.log('useBPDTestResults: Информация о загрузке:', fetchError)
+            console.log('useBPDTestResults: Детали:', {
+              code: fetchError.code,
+              message: fetchError.message,
+              details: fetchError.details,
+              hint: fetchError.hint
+            })
+            
+            if (fetchError.code === 'PGRST116') {
+              console.log('useBPDTestResults: Нет результатов тестов для пользователя - это нормально')
+              setLastTestResult(null)
+              setError(null) // Не показываем это как ошибку
+              return
+            }
+            
+            // Для ошибок 406 (Not Acceptable) и других ошибок доступа
+            if (fetchError.code === 'PGRST301' || fetchError.message?.includes('406')) {
+              console.warn('useBPDTestResults: Проблемы с доступом к таблице test_results, используем fallback')
+              setLastTestResult(null)
+              setError(null) // Не показываем это как ошибку
+              return
+            }
+            
+            throw fetchError
           }
-          
-          // Для ошибок 406 (Not Acceptable) и других ошибок доступа
-          if (fetchError.code === 'PGRST301' || fetchError.message?.includes('406')) {
-            console.warn('useBPDTestResults: Проблемы с доступом к таблице test_results, используем fallback')
-            setLastTestResult(null)
-            return
-          }
-          
-          throw fetchError
-        }
 
         console.log('useBPDTestResults: Получены данные:', data)
 
@@ -300,8 +304,9 @@ export function useBPDTestResults(userId: string | null) {
               }
               setLastTestResult(result)
             } else {
-              console.log('useBPDTestResults: Результаты теста не найдены')
+              console.log('useBPDTestResults: Результаты теста не найдены - это нормально')
               setLastTestResult(null)
+              setError(null) // Не показываем это как ошибку
             }
           } else {
             console.log('useBPDTestResults: Ошибка при дополнительном поиске:', directError)

@@ -62,6 +62,15 @@ export function useTestUserMapping() {
     try {
       console.log('🔍 useTestUserMapping: Получаем результаты теста для пользователя:', userId)
 
+      // Проверяем, является ли userId валидным UUID
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId)
+      console.log('🔍 useTestUserMapping: userId является валидным UUID:', isUUID, 'userId:', userId)
+
+      if (!isUUID) {
+        console.log('⚠️ useTestUserMapping: userId не является валидным UUID, возвращаем пустой массив')
+        return []
+      }
+
       const { data: mappings, error } = await supabase
         .from('test_user_mapping')
         .select('test_result_id')
@@ -99,6 +108,15 @@ export function useTestUserMapping() {
 
     try {
       console.log('🔗 useTestUserMapping: Связываем существующие результаты с пользователем:', { userId, sessionId })
+
+      // Проверяем, является ли sessionId валидным UUID
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(sessionId)
+      console.log('🔍 useTestUserMapping: sessionId является валидным UUID:', isUUID, 'sessionId:', sessionId)
+
+      if (!isUUID) {
+        console.log('⚠️ useTestUserMapping: sessionId не является валидным UUID, пропускаем поиск')
+        return false
+      }
 
       // Находим результаты теста по session_id
       console.log('🔍 useTestUserMapping: Ищем результаты теста с user_id =', sessionId)
