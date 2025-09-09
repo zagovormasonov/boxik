@@ -235,8 +235,9 @@ export function useBPDTestResults(userId: string | null) {
 
   // Дополнительная проверка: если результаты не загружены, но userId есть, принудительно загружаем
   useEffect(() => {
-    if (userId && !isLoading && !hasLoaded && !lastTestResult) {
+    if (userId && !isLoading && !lastTestResult) {
       console.log('useBPDTestResults: Дополнительная проверка - принудительно загружаем результаты')
+      console.log('useBPDTestResults: Состояние для принудительной загрузки:', { userId, isLoading, hasLoaded, lastTestResult })
       const fetchLastTestResult = async () => {
         setIsLoading(true)
         setError(null)
@@ -334,11 +335,20 @@ export function useBPDTestResults(userId: string | null) {
     }
   }
 
+  // Функция для принудительного сброса состояния и повторной загрузки
+  const forceReload = () => {
+    console.log('useBPDTestResults: Принудительный сброс состояния и повторная загрузка')
+    setHasLoaded(false)
+    setLastTestResult(null)
+    setError(null)
+  }
+
   return {
     lastTestResult,
     isLoading,
     error,
-    sendToSpecialist
+    sendToSpecialist,
+    forceReload
   }
 }
 

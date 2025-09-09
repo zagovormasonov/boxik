@@ -18,7 +18,7 @@ const UserProfile: React.FC = () => {
   const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, hasPaid, forceSetPaid } = usePaymentContext()
   const { getUserHasPaid } = useUserHasPaid()
   
-  const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
+  const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist, forceReload } = useBPDTestResults(authState.user?.id || null)
   
   console.log('UserProfile: Передаем в useBPDTestResults userId:', authState.user?.id || null)
 
@@ -42,9 +42,19 @@ const UserProfile: React.FC = () => {
   useEffect(() => {
     if (authState.user?.id && hasPaid && !lastTestResult && !isLoadingResults) {
       console.log('UserProfile: Принудительно проверяем результаты теста для оплатившего пользователя')
+      console.log('UserProfile: Состояние для принудительной проверки:', { 
+        userId: authState.user.id, 
+        hasPaid, 
+        lastTestResult: lastTestResult ? 'есть' : 'нет', 
+        isLoadingResults 
+      })
       
       // Показываем сообщение пользователю вместо перезагрузки
       console.log('UserProfile: Результаты теста не найдены для оплатившего пользователя')
+      
+      // Принудительно сбрасываем флаг hasLoaded для повторной загрузки
+      console.log('UserProfile: Принудительно сбрасываем флаг hasLoaded для повторной загрузки')
+      forceReload()
     }
   }, [authState.user?.id, hasPaid, lastTestResult, isLoadingResults])
 
@@ -275,13 +285,20 @@ const UserProfile: React.FC = () => {
               }
             </p>
             {hasPaid && (
-              <button 
-                onClick={() => navigate('/test')} 
-                className="action-button action-button-primary"
-                style={{ marginTop: '16px' }}
-              >
-                Пройти тест заново
-              </button>
+              <div style={{ display: 'flex', gap: '12px', marginTop: '16px', justifyContent: 'center' }}>
+                <button 
+                  onClick={() => navigate('/test')} 
+                  className="action-button action-button-primary"
+                >
+                  Пройти тест заново
+                </button>
+                <button 
+                  onClick={forceReload} 
+                  className="action-button action-button-secondary"
+                >
+                  Обновить результаты
+                </button>
+              </div>
             )}
           </div>
         )}
