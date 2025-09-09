@@ -27,6 +27,7 @@ export interface TinkoffInitRequest {
   Token: string
   SuccessURL?: string
   FailURL?: string
+  NotificationURL?: string
 }
 
 export interface TinkoffInitResponse {
@@ -145,6 +146,7 @@ export function usePayment() {
         Description: cleanDescription,
         SuccessURL: callbackUrl,
         FailURL: callbackUrl,
+        NotificationURL: callbackUrl, // Добавляем NotificationURL для получения callback с параметрами
         Token: '' // Будет заполнен после генерации
       }
 
@@ -155,7 +157,8 @@ export function usePayment() {
         OrderId: requestData.OrderId,
         Description: requestData.Description,
         SuccessURL: requestData.SuccessURL,
-        FailURL: requestData.FailURL
+        FailURL: requestData.FailURL,
+        NotificationURL: requestData.NotificationURL
       }, paymentConfig.password)
 
       requestData.Token = token

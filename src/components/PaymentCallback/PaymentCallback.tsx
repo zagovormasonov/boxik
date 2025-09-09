@@ -206,9 +206,48 @@ const PaymentCallback: React.FC = () => {
           // Если нет параметров вообще, возможно пользователь попал по прямой ссылке
           const allParams = Object.fromEntries(searchParams.entries())
           if (Object.keys(allParams).length === 0) {
-            console.log('🔄 PaymentCallback: Нет параметров, перенаправляем на лендинг оплаты')
-            // НЕ устанавливаем hasPaid: true для пользователей без параметров
-            console.log('🔄 PaymentCallback: НЕ устанавливаем hasPaid для пользователя без параметров оплаты')
+            console.log('🔄 PaymentCallback: Нет параметров URL')
+            console.log('🔄 PaymentCallback: Возможно это SuccessURL/FailURL редирект без параметров')
+            
+            // Проверяем, есть ли информация о платеже в localStorage
+            const paymentCreatedAt = localStorage.getItem('paymentCreatedAt')
+            if (paymentCreatedAt) {
+              const paymentTime = parseInt(paymentCreatedAt)
+              const timeDiff = Date.now() - paymentTime
+              const fiveMinutes = 5 * 60 * 1000 // 5 минут
+              
+              console.log('🔄 PaymentCallback: Найдена информация о платеже в localStorage')
+              console.log('🔄 PaymentCallback: Время создания платежа:', new Date(paymentTime).toISOString())
+              console.log('🔄 PaymentCallback: Прошло времени:', timeDiff, 'мс')
+              
+              if (timeDiff < fiveMinutes) {
+                console.log('✅ PaymentCallback: Платеж был создан недавно, считаем его успешным')
+                forceSetPaid(true)
+                
+                if (authState.user?.id) {
+                  try {
+                    console.log('🔄 PaymentCallback: Обновляем статус в БД для пользователя:', authState.user.id)
+                    await setUserPaid(authState.user.id)
+                    console.log('✅ PaymentCallback: Статус успешно обновлен в БД')
+                  } catch (error) {
+                    console.error('❌ PaymentCallback: Ошибка при обновлении статуса в БД:', error)
+                  }
+                }
+                
+                setStatus('success')
+                setMessage('Оплата успешно завершена!')
+                
+                setTimeout(() => {
+                  console.log('🔄 PaymentCallback: Перенаправляем в профиль после успешной оплаты')
+                  navigate('/profile')
+                }, 3000)
+                return
+              } else {
+                console.log('⚠️ PaymentCallback: Платеж был создан давно, возможно это старый редирект')
+              }
+            }
+            
+            console.log('🔄 PaymentCallback: Перенаправляем на лендинг оплаты')
             setStatus('error')
             setMessage('Нет данных об оплате. Перенаправляем на страницу оплаты...')
             setTimeout(() => {
