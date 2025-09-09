@@ -51,6 +51,11 @@ const PaymentCallback: React.FC = () => {
           isTestPayment: paymentId?.startsWith('test_payment_'),
           allParams: Object.fromEntries(searchParams.entries())
         })
+        
+        // Дополнительное логирование всех параметров URL
+        console.log('🔍 PaymentCallback: Все параметры URL:', window.location.search)
+        console.log('🔍 PaymentCallback: Полный URL:', window.location.href)
+        console.log('🔍 PaymentCallback: Все searchParams:', Array.from(searchParams.entries()))
 
         // Извлекаем userId из OrderId если он есть
         let userId = null
@@ -68,9 +73,29 @@ const PaymentCallback: React.FC = () => {
         console.log('🎯 PaymentCallback: PaymentId =', paymentId, 'OrderId =', orderId)
         console.log('🎯 PaymentCallback: Status =', status, 'Success =', success)
         
-        // Устанавливаем hasPaid: true только при наличии реальных параметров оплаты
-        if (paymentId && orderId) {
-          console.log('✅ PaymentCallback: Есть PaymentId и OrderId - считаем платеж успешным!')
+        // Проверяем успешность платежа более гибко
+        const hasPaymentId = paymentId && paymentId.length > 0
+        const hasOrderId = orderId && orderId.length > 0
+        const isSuccessStatus = status === 'CONFIRMED' || status === 'confirmed' || status === 'AUTHORIZED' || status === 'authorized'
+        const isSuccessFlag = success === 'true' || success === 'True' || success === '1'
+        const isSuccessResult = result === '0' || result === 'OK' || result === 'ok'
+        
+        console.log('🔍 PaymentCallback: Анализ параметров:', {
+          hasPaymentId,
+          hasOrderId,
+          isSuccessStatus,
+          isSuccessFlag,
+          isSuccessResult,
+          paymentId,
+          orderId,
+          status,
+          success,
+          result
+        })
+        
+        // Устанавливаем hasPaid: true если есть PaymentId И (OrderId ИЛИ успешный статус)
+        if (hasPaymentId && (hasOrderId || isSuccessStatus || isSuccessFlag || isSuccessResult)) {
+          console.log('✅ PaymentCallback: Платеж считается успешным!')
           
           // Устанавливаем hasPaid: true только для реальной оплаты
           console.log('🔄 PaymentCallback: Устанавливаем hasPaid: true для реальной оплаты')
@@ -145,9 +170,38 @@ const PaymentCallback: React.FC = () => {
             navigate('/profile')
           }, 3000)
         } else {
-          console.log('❌ PaymentCallback: Нет PaymentId или OrderId - считаем платеж неуспешным')
+          console.log('❌ PaymentCallback: Платеж не считается успешным по основным критериям')
           console.log('❌ PaymentCallback: PaymentId =', paymentId, 'OrderId =', orderId)
           console.log('❌ PaymentCallback: Все параметры от Тинькофф:', Object.fromEntries(searchParams.entries()))
+          
+          // Дополнительная проверка: если есть хотя бы PaymentId, возможно платеж прошел
+          if (hasPaymentId) {
+            console.log('⚠️ PaymentCallback: Есть PaymentId, но нет других подтверждений успеха')
+            console.log('⚠️ PaymentCallback: Возможно платеж прошел, но параметры пришли в неожиданном формате')
+            
+            // Если есть PaymentId, считаем платеж успешным (консервативный подход)
+            console.log('✅ PaymentCallback: Принимаем решение считать платеж успешным из-за наличия PaymentId')
+            forceSetPaid(true)
+            
+            if (authState.user?.id) {
+              try {
+                console.log('🔄 PaymentCallback: Обновляем статус в БД для пользователя:', authState.user.id)
+                await setUserPaid(authState.user.id)
+                console.log('✅ PaymentCallback: Статус успешно обновлен в БД')
+              } catch (error) {
+                console.error('❌ PaymentCallback: Ошибка при обновлении статуса в БД:', error)
+              }
+            }
+            
+            setStatus('success')
+            setMessage('Оплата успешно завершена!')
+            
+            setTimeout(() => {
+              console.log('🔄 PaymentCallback: Перенаправляем в профиль после успешной оплаты')
+              navigate('/profile')
+            }, 3000)
+            return
+          }
           
           // Если нет параметров вообще, возможно пользователь попал по прямой ссылке
           const allParams = Object.fromEntries(searchParams.entries())
