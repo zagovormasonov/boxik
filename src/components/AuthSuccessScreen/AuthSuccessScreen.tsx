@@ -33,6 +33,7 @@ const AuthSuccessScreen: React.FC = () => {
     
     try {
       console.log('AuthSuccessScreen: Создаем платеж для пользователя:', authState.user.id)
+      console.log('AuthSuccessScreen: Текущий URL перед созданием платежа:', window.location.href)
       
       const paymentResult = await createPayment({
         amount: 100, // 1 рубль в копейках
@@ -41,7 +42,10 @@ const AuthSuccessScreen: React.FC = () => {
       })
       
       if (paymentResult.success && paymentResult.paymentUrl) {
-        console.log('AuthSuccessScreen: Перенаправляем на оплату:', paymentResult.paymentUrl)
+        console.log('AuthSuccessScreen: Платеж успешно создан!')
+        console.log('AuthSuccessScreen: PaymentId:', paymentResult.paymentId)
+        console.log('AuthSuccessScreen: PaymentUrl:', paymentResult.paymentUrl)
+        console.log('AuthSuccessScreen: Перенаправляем на оплату Тинькофф')
         window.location.href = paymentResult.paymentUrl
       } else {
         console.error('AuthSuccessScreen: Ошибка при создании платежа:', paymentResult.error)
