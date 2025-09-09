@@ -57,12 +57,33 @@ const UserProfile: React.FC = () => {
       // Принудительно сбрасываем флаг hasLoaded для повторной загрузки (только один раз)
       console.log('UserProfile: Принудительно сбрасываем флаг hasLoaded для повторной загрузки')
       setHasTriedForceReload(true)
-        // Принудительно загружаем результаты если их нет
-        setTimeout(() => {
-          forceReload()
-        }, 1000) // Задержка в 1 секунду
+      
+      // Принудительно загружаем результаты если их нет
+      setTimeout(() => {
+        console.log('UserProfile: Вызываем forceReload для принудительной загрузки')
+        forceReload()
+      }, 1000) // Задержка в 1 секунду
     }
   }, [authState.user?.id, hasPaid, isLoadingResults, hasTriedForceReload]) // Убираем lastTestResult из зависимостей
+
+  // Принудительная загрузка результатов при первом входе в ЛК
+  useEffect(() => {
+    if (authState.user?.id && hasPaid && !isLoadingResults) {
+      console.log('UserProfile: Принудительная загрузка результатов при первом входе в ЛК')
+      console.log('UserProfile: Состояние:', { 
+        userId: authState.user.id, 
+        hasPaid, 
+        lastTestResult: lastTestResult ? 'есть' : 'нет', 
+        isLoadingResults
+      })
+      
+      // Принудительно загружаем результаты
+      setTimeout(() => {
+        console.log('UserProfile: Вызываем forceReload для принудительной загрузки при первом входе')
+        forceReload()
+      }, 500) // Задержка в 0.5 секунды
+    }
+  }, [authState.user?.id, hasPaid]) // Только при изменении userId или hasPaid
 
   // Проверяем, должен ли пользователь быть перенаправлен на оплату (только один раз)
   useEffect(() => {
