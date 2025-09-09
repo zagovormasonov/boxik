@@ -2301,7 +2301,6 @@ body {
 .severity-text {
   font-size: 14px !important; /* Уменьшаем размер текста уровня выраженности */
   line-height: 1.4 !important;
-  margin-bottom: 8px !important;
 }
 
 /* Yandex Authorization Screen - Minimalistic */
