@@ -116,16 +116,24 @@ export function useTestUserMapping() {
         return false
       }
 
-      // Создаем связи для каждого результата теста
+      // Обновляем user_id в таблице test_results для каждого результата теста
       for (const testResult of testResults) {
-        await createMapping({
-          session_id: sessionId,
-          user_id: userId,
-          test_result_id: testResult.id
-        })
+        console.log('🔄 useTestUserMapping: Обновляем user_id для результата теста:', testResult.id)
+        
+        const { error: updateError } = await supabase
+          .from('test_results')
+          .update({ user_id: userId })
+          .eq('id', testResult.id)
+
+        if (updateError) {
+          console.error('❌ useTestUserMapping: Ошибка при обновлении user_id:', updateError)
+          throw updateError
+        }
+
+        console.log('✅ useTestUserMapping: user_id обновлен для результата:', testResult.id)
       }
 
-      console.log('✅ useTestUserMapping: Все результаты теста связаны с пользователем')
+      console.log('✅ useTestUserMapping: Все результаты теста связаны с пользователем и обновлены')
       return true
     } catch (err) {
       console.error('❌ useTestUserMapping: Ошибка при связывании результатов:', err)
