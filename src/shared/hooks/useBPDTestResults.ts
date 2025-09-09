@@ -17,6 +17,7 @@ export function useBPDTestResults(userId: string | null) {
   const [error, setError] = useState<string | null>(null)
   const [hasLoaded, setHasLoaded] = useState(false)
   const { getTestResultsForUser, checkTableExists } = useTestUserMapping()
+  
 
   useEffect(() => {
     console.log('useBPDTestResults: useEffect вызван с userId:', userId)
@@ -32,11 +33,17 @@ export function useBPDTestResults(userId: string | null) {
     }
 
     console.log('useBPDTestResults: userId валиден, начинаем загрузку')
+    console.log('useBPDTestResults: Текущее состояние:', { isLoading, hasLoaded, lastTestResult: lastTestResult ? 'есть' : 'нет' })
     
-    // Проверяем, не идет ли уже загрузка или уже загружено
-    if (isLoading || hasLoaded) {
-      console.log('useBPDTestResults: Загрузка уже идет или уже загружено, пропускаем')
+    // Проверяем, не идет ли уже загрузка
+    if (isLoading) {
+      console.log('useBPDTestResults: Загрузка уже идет, пропускаем')
       return
+    }
+    
+    // Если результаты не загружены, принудительно запускаем загрузку
+    if (!hasLoaded && !lastTestResult) {
+      console.log('useBPDTestResults: Результаты не загружены, принудительно запускаем загрузку')
     }
     
     const fetchLastTestResult = async () => {
@@ -239,6 +246,7 @@ export function useBPDTestResults(userId: string | null) {
 
     // Принудительно запускаем загрузку
     console.log('useBPDTestResults: Принудительно запускаем загрузку результатов')
+    console.log('useBPDTestResults: Текущее состояние:', { isLoading, hasLoaded, lastTestResult: lastTestResult ? 'есть' : 'нет' })
     fetchLastTestResult()
   }, [userId])
 
