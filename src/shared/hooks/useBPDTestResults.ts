@@ -11,6 +11,7 @@ export interface BPDTestResultWithDetails extends BPDTestResult {
 }
 
 export function useBPDTestResults(userId: string | null) {
+  console.log('useBPDTestResults: Хук вызван с userId:', userId)
   const [lastTestResult, setLastTestResult] = useState<BPDTestResultWithDetails | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -18,12 +19,17 @@ export function useBPDTestResults(userId: string | null) {
 
   useEffect(() => {
     console.log('useBPDTestResults: useEffect вызван с userId:', userId)
+    console.log('useBPDTestResults: Тип userId:', typeof userId)
+    console.log('useBPDTestResults: userId === null:', userId === null)
+    console.log('useBPDTestResults: userId === undefined:', userId === undefined)
+    
     if (!userId) {
       console.log('useBPDTestResults: userId отсутствует, очищаем результат')
       setLastTestResult(null)
       return
     }
 
+    console.log('useBPDTestResults: userId валиден, начинаем загрузку')
     const fetchLastTestResult = async () => {
       setIsLoading(true)
       setError(null)

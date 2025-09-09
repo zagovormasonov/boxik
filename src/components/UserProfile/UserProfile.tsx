@@ -19,6 +19,8 @@ const UserProfile: React.FC = () => {
   const { getUserHasPaid } = useUserHasPaid()
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
+  
+  console.log('UserProfile: Передаем в useBPDTestResults userId:', authState.user?.id || null)
 
   console.log('UserProfile: Компонент загружен, hasPaid:', hasPaid, 'authState.user:', authState.user?.id)
   console.log('UserProfile: Referrer:', document.referrer)
