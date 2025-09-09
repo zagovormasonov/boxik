@@ -1,7 +1,5 @@
 import React, { useState } from 'react'
 import { Check, Star, Shield, FileText, Send, CreditCard } from 'lucide-react'
-import { useAuth } from '../../contexts/AuthContext'
-import { usePayment } from '../../shared/hooks/usePayment'
 
 interface Advantage {
   icon: React.ReactNode
@@ -12,42 +10,21 @@ interface Advantage {
 
 const SubscriptionLanding: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false)
-  const { authState } = useAuth()
-  const { createPayment } = usePayment()
 
   const handleLoginAndPay = async () => {
     setIsProcessing(true)
     
     try {
-      // Если пользователь уже авторизован, сразу переходим к оплате
-      if (authState.user?.id) {
-        console.log('Пользователь уже авторизован, переходим к оплате:', authState.user.id)
-        
-        const paymentResult = await createPayment({
-          amount: 100, // 1 рубль в копейках
-          description: 'Полный доступ к результатам теста БПД',
-          userId: authState.user.id
-        })
-        
-        if (paymentResult.success && paymentResult.paymentUrl) {
-          console.log('Перенаправляем на оплату:', paymentResult.paymentUrl)
-          window.location.href = paymentResult.paymentUrl
-        } else {
-          console.error('Ошибка при создании платежа:', paymentResult.error)
-          alert('Ошибка при создании платежа. Попробуйте еще раз.')
-        }
-      } else {
-        // Если пользователь не авторизован, запускаем авторизацию через Яндекс
-        console.log('Пользователь не авторизован, запускаем авторизацию через Яндекс')
-        
-        const yandexAuthUrl = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${import.meta.env.VITE_YANDEX_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/yandex/callback')}&scope=login:email+login:info&state=${encodeURIComponent('/subscription')}&force_confirm=true`
-        
-        console.log('Перенаправляем на авторизацию Яндекс:', yandexAuthUrl)
-        window.location.href = yandexAuthUrl
-      }
+      // ВСЕГДА запускаем авторизацию через Яндекс с обязательным выбором аккаунта
+      console.log('Запускаем авторизацию через Яндекс с обязательным выбором аккаунта')
+      
+      const yandexAuthUrl = `https://oauth.yandex.ru/authorize?response_type=code&client_id=${import.meta.env.VITE_YANDEX_CLIENT_ID}&redirect_uri=${encodeURIComponent(window.location.origin + '/auth/yandex/callback')}&scope=login:email+login:info&state=${encodeURIComponent('/subscription')}&force_confirm=true`
+      
+      console.log('Перенаправляем на авторизацию Яндекс:', yandexAuthUrl)
+      window.location.href = yandexAuthUrl
     } catch (error) {
-      console.error('Ошибка при обработке оплаты:', error)
-      alert('Произошла ошибка. Попробуйте еще раз.')
+      console.error('Ошибка при авторизации:', error)
+      alert('Произошла ошибка при авторизации. Попробуйте еще раз.')
     } finally {
       setIsProcessing(false)
     }
@@ -177,7 +154,7 @@ const SubscriptionLanding: React.FC = () => {
               className="purchase-button login-and-pay-button"
             >
               <CreditCard size={20} />
-              {isProcessing ? 'Обрабатываем...' : authState.user ? 'Оплатить 1₽' : 'Войти через Яндекс и оплатить 1₽'}
+              {isProcessing ? 'Перенаправляем...' : 'Войти через Яндекс и оплатить 1₽'}
             </button>
           </div>
         </div>

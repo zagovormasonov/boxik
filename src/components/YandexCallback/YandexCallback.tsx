@@ -241,8 +241,8 @@ const YandexCallback: React.FC = () => {
         
         // Небольшая задержка для обновления состояния
         setTimeout(() => {
-          console.log('YandexCallback: Перенаправление в личный кабинет')
-          navigate('/auth')
+          console.log('YandexCallback: Перенаправление на лендинг оплаты')
+          navigate('/subscription')
         }, 100)
         
       } catch (error) {
