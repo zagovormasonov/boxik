@@ -20,6 +20,8 @@ const UserProfile: React.FC = () => {
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
 
+  console.log('UserProfile: Компонент загружен, hasPaid:', hasPaid, 'authState.user:', authState.user?.id)
+
   // Проверяем статус подписки только при первой загрузке
   useEffect(() => {
     if (authState.user?.id) {

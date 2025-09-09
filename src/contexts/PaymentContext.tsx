@@ -35,7 +35,9 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
           // Получаем статус оплаты из базы данных
           const userHasPaid = await getUserHasPaid(authState.user.id)
           console.log('PaymentProvider: Начальная проверка - статус оплаты из БД:', userHasPaid)
+          console.log('PaymentProvider: Устанавливаем hasPaid в контексте:', userHasPaid)
           setHasPaid(userHasPaid)
+          console.log('PaymentProvider: hasPaid установлен в контексте:', userHasPaid)
         } catch (error) {
           console.error('PaymentProvider: Ошибка при начальной проверке статуса оплаты:', error)
           // При ошибке БД оставляем hasPaid = false (не оплачено)
