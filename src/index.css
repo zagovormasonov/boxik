@@ -36,9 +36,9 @@ body {
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+  max-width: none; /* Убираем ограничение ширины */
+  margin: 0;
+  padding: 0;
   width: 100%;
 }
 
@@ -1591,7 +1591,7 @@ body {
   background: #f8fafc;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
-  text-align: left;
+  text-align: left; /* Выравниваем по левому краю */
   transition: all 0.3s ease;
 }
 
@@ -1611,6 +1611,7 @@ body {
   justify-content: center;
   color: white;
   margin-right: 16px;
+  margin-left: 0; /* Выравниваем иконку по левому краю */
   flex-shrink: 0;
 }
 
@@ -2158,13 +2159,14 @@ body {
   
   .advantage-card {
     flex-direction: column;
-    text-align: center;
+    text-align: left; /* Оставляем выравнивание по левому краю на мобильных */
     padding: 15px;
   }
   
   .advantage-icon {
     margin-right: 0;
     margin-bottom: 12px;
+    margin-left: 0; /* Выравниваем иконку по левому краю */
     width: 40px;
     height: 40px;
   }
@@ -2222,6 +2224,34 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Navigation Styles - кнопки в одну колонку и в 2 строки */
+.test-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.test-navigation .btn {
+  width: 100%;
+  max-width: 200px;
+  justify-content: center;
+}
+
+.test-navigation .question-counter {
+  order: 1;
+  margin-bottom: 8px;
+}
+
+.test-navigation .btn-secondary {
+  order: 2;
+}
+
+.test-navigation .btn-primary {
+  order: 3;
 }
 
 .test-container {
