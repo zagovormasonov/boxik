@@ -241,9 +241,8 @@ const YandexCallback: React.FC = () => {
         
         // Небольшая задержка для обновления состояния
         setTimeout(() => {
-          console.log('YandexCallback: Авторизация успешна, автоматически переходим к оплате')
-          // Автоматически переходим к оплате для авторизованного пользователя
-          window.location.href = `/payment?userId=${realUser.id}&auto=true`
+          console.log('YandexCallback: Авторизация успешна, переходим на экран успешной авторизации')
+          navigate('/auth-success')
         }, 100)
         
       } catch (error) {

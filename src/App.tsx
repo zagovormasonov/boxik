@@ -7,6 +7,7 @@ import UserProfile from './components/UserProfile/UserProfile'
 import SubscriptionLanding from './components/SubscriptionLanding/SubscriptionLanding'
 import PaymentPage from './components/PaymentPage/PaymentPage'
 import PaymentCallback from './components/PaymentCallback/PaymentCallback'
+import AuthSuccessScreen from './components/AuthSuccessScreen/AuthSuccessScreen'
 import { BPDTestProvider } from './contexts/BPDTestContext'
 import { AuthProvider } from './contexts/AuthContext'
 import { PaymentProvider } from './contexts/PaymentContext'
@@ -26,6 +27,7 @@ function App() {
               <Route path="/payment-callback" element={<PaymentCallback />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/auth/yandex/callback" element={<YandexCallback />} />
+              <Route path="/auth-success" element={<AuthSuccessScreen />} />
             </Routes>
           </div>
         </PaymentProvider>
