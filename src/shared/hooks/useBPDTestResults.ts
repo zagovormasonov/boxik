@@ -74,7 +74,7 @@ export function useBPDTestResults(userId: string | null) {
         console.log('useBPDTestResults: Таблица test_user_mapping существует:', tableExists)
 
         // Получаем ID результатов теста через таблицу связей
-        const testResultIds = await getTestResultsForUser(userId)
+        const testResultIds = await getTestResultsForUser(userId!)
         console.log('useBPDTestResults: Найдены ID результатов теста:', testResultIds)
         
         let data = null
@@ -88,7 +88,7 @@ export function useBPDTestResults(userId: string | null) {
           const { data: bpdData, error: bpdError } = await supabase
             .from('test_results')
             .select('*')
-            .eq('user_id', userId)
+            .eq('user_id', userId!)
             .eq('test_type', 'bpd')
             .order('completed_at', { ascending: false })
             .limit(1)
@@ -107,7 +107,7 @@ export function useBPDTestResults(userId: string | null) {
             const { data: anyData, error: anyError } = await supabase
               .from('test_results')
               .select('*')
-              .eq('user_id', userId)
+              .eq('user_id', userId!)
               .order('completed_at', { ascending: false })
               .limit(1)
               .single()

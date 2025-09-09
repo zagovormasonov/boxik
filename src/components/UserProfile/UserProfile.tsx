@@ -57,9 +57,10 @@ const UserProfile: React.FC = () => {
       // Принудительно сбрасываем флаг hasLoaded для повторной загрузки (только один раз)
       console.log('UserProfile: Принудительно сбрасываем флаг hasLoaded для повторной загрузки')
       setHasTriedForceReload(true)
-      setTimeout(() => {
-        forceReload()
-      }, 1000) // Задержка в 1 секунду
+        // Принудительно загружаем результаты если их нет
+        setTimeout(() => {
+          forceReload()
+        }, 1000) // Задержка в 1 секунду
     }
   }, [authState.user?.id, hasPaid, lastTestResult, isLoadingResults, hasTriedForceReload]) // Добавляем hasTriedForceReload в зависимости
 
