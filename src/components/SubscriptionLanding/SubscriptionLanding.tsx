@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Check, Star, Shield, FileText, Send, CreditCard } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePayment } from '../../shared/hooks/usePayment'
+import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../lib/supabase'
 
 interface Advantage {
   icon: React.ReactNode
@@ -14,6 +16,41 @@ const SubscriptionLanding: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false)
   const { authState } = useAuth()
   const { createPayment } = usePayment()
+  const navigate = useNavigate()
+
+  // Проверяем статус оплаты для авторизованных пользователей
+  useEffect(() => {
+    const checkUserPaymentStatus = async () => {
+      if (authState.user?.id) {
+        console.log('SubscriptionLanding: Проверяем статус оплаты для авторизованного пользователя:', authState.user.id)
+        
+        try {
+          const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('haspaid')
+            .eq('id', authState.user.id)
+            .single()
+          
+          if (userError) {
+            console.warn('SubscriptionLanding: Ошибка получения статуса оплаты:', userError)
+            return
+          }
+          
+          const hasPaid = userData?.haspaid === true
+          console.log('SubscriptionLanding: Статус оплаты пользователя:', hasPaid)
+          
+          if (hasPaid) {
+            console.log('SubscriptionLanding: Пользователь уже оплатил, перенаправляем в ЛК')
+            navigate('/profile')
+          }
+        } catch (error) {
+          console.error('SubscriptionLanding: Ошибка проверки статуса оплаты:', error)
+        }
+      }
+    }
+
+    checkUserPaymentStatus()
+  }, [authState.user?.id, navigate])
 
   const handleLoginAndPay = async () => {
     setIsProcessing(true)
