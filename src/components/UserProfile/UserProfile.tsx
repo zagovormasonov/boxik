@@ -68,7 +68,7 @@ const UserProfile: React.FC = () => {
 
   // Принудительная загрузка результатов при первом входе в ЛК
   useEffect(() => {
-    if (authState.user?.id && hasPaid && !isLoadingResults) {
+    if (authState.user?.id && hasPaid && !isLoadingResults && !lastTestResult) {
       console.log('UserProfile: Принудительная загрузка результатов при первом входе в ЛК')
       console.log('UserProfile: Состояние:', { 
         userId: authState.user.id, 
