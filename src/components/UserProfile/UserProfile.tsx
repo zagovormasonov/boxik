@@ -38,7 +38,7 @@ const UserProfile: React.FC = () => {
     }
   }, [authState.user?.id, refreshPaymentStatus])
 
-  // Принудительная проверка результатов теста
+  // Принудительная проверка результатов теста (только один раз)
   useEffect(() => {
     if (authState.user?.id && hasPaid && !lastTestResult && !isLoadingResults) {
       console.log('UserProfile: Принудительно проверяем результаты теста для оплатившего пользователя')
@@ -52,11 +52,13 @@ const UserProfile: React.FC = () => {
       // Показываем сообщение пользователю вместо перезагрузки
       console.log('UserProfile: Результаты теста не найдены для оплатившего пользователя')
       
-      // Принудительно сбрасываем флаг hasLoaded для повторной загрузки
+      // Принудительно сбрасываем флаг hasLoaded для повторной загрузки (только один раз)
       console.log('UserProfile: Принудительно сбрасываем флаг hasLoaded для повторной загрузки')
-      forceReload()
+      setTimeout(() => {
+        forceReload()
+      }, 1000) // Задержка в 1 секунду
     }
-  }, [authState.user?.id, hasPaid, lastTestResult, isLoadingResults])
+  }, [authState.user?.id, hasPaid]) // Убираем lastTestResult и isLoadingResults из зависимостей
 
   // Проверяем, должен ли пользователь быть перенаправлен на оплату
   useEffect(() => {
