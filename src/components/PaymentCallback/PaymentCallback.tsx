@@ -23,6 +23,12 @@ const PaymentCallback: React.FC = () => {
       console.log('🚀 PaymentCallback: Начинаем обработку callback')
       console.log('🚀 PaymentCallback: URL:', window.location.href)
       console.log('🚀 PaymentCallback: Search params:', Object.fromEntries(searchParams.entries()))
+      console.log('🚀 PaymentCallback: Method:', window.location.protocol, 'Host:', window.location.host)
+      console.log('🚀 PaymentCallback: Referrer:', document.referrer)
+      
+      // Проверяем, пришел ли пользователь от Тинькофф
+      const isFromTinkoff = document.referrer.includes('tinkoff.ru') || document.referrer.includes('securepay.tinkoff.ru')
+      console.log('🚀 PaymentCallback: Пришел от Тинькофф:', isFromTinkoff)
       
       try {
         // Сначала проверяем, не оплатил ли пользователь уже ранее
@@ -245,6 +251,36 @@ const PaymentCallback: React.FC = () => {
           if (Object.keys(allParams).length === 0) {
             console.log('🔄 PaymentCallback: Нет параметров URL')
             console.log('🔄 PaymentCallback: Возможно это SuccessURL/FailURL редирект без параметров')
+            
+            // Если пользователь пришел от Тинькофф без параметров, считаем оплату успешной
+            if (isFromTinkoff) {
+              console.log('✅ PaymentCallback: Пользователь пришел от Тинькофф без параметров - считаем оплату успешной')
+              forceSetPaid(true)
+              
+              if (authState.user?.id) {
+                try {
+                  console.log('🔄 PaymentCallback: Обновляем статус в БД для пользователя (Тинькофф редирект):', authState.user.id)
+                  const updateResult = await setUserPaid(authState.user.id)
+                  console.log('✅ PaymentCallback: Результат обновления БД (Тинькофф редирект):', updateResult)
+                  if (updateResult) {
+                    console.log('✅ PaymentCallback: Статус успешно обновлен в БД (Тинькофф редирект)')
+                  } else {
+                    console.error('❌ PaymentCallback: Не удалось обновить статус в БД (Тинькофф редирект)')
+                  }
+                } catch (error) {
+                  console.error('❌ PaymentCallback: Ошибка при обновлении статуса в БД (Тинькофф редирект):', error)
+                }
+              }
+              
+              setStatus('success')
+              setMessage('Оплата успешно завершена!')
+              
+              setTimeout(() => {
+                console.log('🔄 PaymentCallback: Перенаправляем в профиль после успешной оплаты (Тинькофф редирект)')
+                navigate('/profile')
+              }, 3000)
+              return
+            }
             
             // Проверяем, есть ли информация о платеже в localStorage
             const paymentCreatedAt = localStorage.getItem('paymentCreatedAt')
