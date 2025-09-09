@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
 import { useUserHasPaid } from '../shared/hooks/useUserHasPaid'
 import { useAuth } from './AuthContext'
 
@@ -59,7 +59,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
   }
 
   // Принудительная установка статуса оплаты
-  const forceSetPaid = async (paid: boolean) => {
+  const forceSetPaid = useCallback(async (paid: boolean) => {
     console.log('🔄 PaymentContext: Принудительно устанавливаем hasPaid:', paid)
     setHasPaid(paid)
     
@@ -76,10 +76,10 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     }
     
     console.log('🔄 PaymentContext: hasPaid установлен в:', paid)
-  }
+  }, [authState.user?.id, setUserPaid])
 
   // Принудительное обновление статуса оплаты
-  const refreshPaymentStatus = async () => {
+  const refreshPaymentStatus = useCallback(async () => {
     if (authState.user?.id) {
       console.log('🔄 Принудительно обновляем статус оплаты для пользователя:', authState.user.id)
       try {
@@ -96,7 +96,7 @@ export function PaymentProvider({ children }: { children: ReactNode }) {
     } else {
       console.log('🔄 refreshPaymentStatus: Нет пользователя, сохраняем текущий hasPaid:', hasPaid)
     }
-  }
+  }, [authState.user?.id, getUserHasPaid, hasPaid])
 
   return (
     <PaymentContext.Provider value={{

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { CheckCircle, Send, Download, Lock } from 'lucide-react'
 import { usePDFGenerator } from '../../shared/hooks/usePDFGenerator'
 import { BPDTestResultWithDetails } from '../../shared/hooks/useBPDTestResults'
@@ -18,19 +18,9 @@ const BPDTestResultCard: React.FC<BPDTestResultCardProps> = ({
 }) => {
   const [isSent, setIsSent] = useState(false)
   const { generateTestResultPDF, isGenerating } = usePDFGenerator()
-  const { hasPaid, showPaymentModal, refreshPaymentStatus } = usePaymentContext()
+  const { hasPaid, showPaymentModal } = usePaymentContext()
 
-  // Принудительно проверяем статус подписки при загрузке компонента
-  useEffect(() => {
-    console.log('BPDTestResultCard: Принудительно проверяем статус подписки')
-    console.log('BPDTestResultCard: Текущий hasPaid:', hasPaid)
-    refreshPaymentStatus()
-  }, [refreshPaymentStatus])
-
-  // Логируем изменения hasPaid
-  useEffect(() => {
-    console.log('BPDTestResultCard: hasPaid изменился на:', hasPaid)
-  }, [hasPaid])
+  // Убраны лишние useEffect для предотвращения мерцания
 
   const handlePayment = () => {
     if (!hasPaid) {

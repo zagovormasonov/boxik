@@ -14,25 +14,18 @@ const UserProfile: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [isSendingResults, setIsSendingResults] = useState(false)
-  const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, hasPaid, forceSetPaid } = usePaymentContext()
+  const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, forceSetPaid } = usePaymentContext()
   // const { setUserPaid } = useUserHasPaid() // Убрано, так как больше не используется
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
 
-  // Принудительно проверяем статус подписки при загрузке профиля (только один раз)
+  // Проверяем статус подписки только при первой загрузке
   useEffect(() => {
     if (authState.user?.id) {
-      console.log('UserProfile: Принудительно проверяем статус подписки для пользователя:', authState.user.id)
-      console.log('UserProfile: Текущий hasPaid:', hasPaid)
-      
+      console.log('UserProfile: Проверяем статус подписки для пользователя:', authState.user.id)
       refreshPaymentStatus()
     }
-  }, [authState.user?.id]) // Убираем лишние зависимости
-
-  // Логируем изменения hasPaid
-  useEffect(() => {
-    console.log('UserProfile: hasPaid изменился на:', hasPaid)
-  }, [hasPaid])
+  }, [authState.user?.id, refreshPaymentStatus])
 
   // Проверяем параметры оплаты в URL
   useEffect(() => {
