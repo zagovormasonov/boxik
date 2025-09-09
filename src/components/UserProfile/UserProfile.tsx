@@ -15,7 +15,7 @@ const UserProfile: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [isSendingResults, setIsSendingResults] = useState(false)
-  const [hasTriedForceReload, setHasTriedForceReload] = useState(false)
+  // const [hasTriedForceReload, setHasTriedForceReload] = useState(false) // Убрано для упрощения
   const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, hasPaid, forceSetPaid } = usePaymentContext()
   const { getUserHasPaid } = useUserHasPaid()
   
@@ -39,37 +39,10 @@ const UserProfile: React.FC = () => {
     }
   }, [authState.user?.id]) // Убираем refreshPaymentStatus из зависимостей
 
-  // Принудительная проверка результатов теста (только один раз)
+  // Простая проверка результатов теста
   useEffect(() => {
-    if (authState.user?.id && hasPaid && !lastTestResult && !isLoadingResults && !hasTriedForceReload) {
-      console.log('UserProfile: Принудительно проверяем результаты теста для оплатившего пользователя')
-      console.log('UserProfile: Состояние для принудительной проверки:', { 
-        userId: authState.user.id, 
-        hasPaid, 
-        lastTestResult: lastTestResult ? 'есть' : 'нет', 
-        isLoadingResults,
-        hasTriedForceReload
-      })
-      
-      // Показываем сообщение пользователю вместо перезагрузки
+    if (authState.user?.id && hasPaid && !lastTestResult && !isLoadingResults) {
       console.log('UserProfile: Результаты теста не найдены для оплатившего пользователя')
-      
-      // Принудительно сбрасываем флаг hasLoaded для повторной загрузки (только один раз)
-      console.log('UserProfile: Принудительно сбрасываем флаг hasLoaded для повторной загрузки')
-      setHasTriedForceReload(true)
-      
-      // Принудительно загружаем результаты если их нет
-      setTimeout(() => {
-        console.log('UserProfile: Вызываем forceReload для принудительной загрузки')
-        forceReload()
-      }, 1000) // Задержка в 1 секунду
-    }
-  }, [authState.user?.id, hasPaid, isLoadingResults, hasTriedForceReload]) // Убираем lastTestResult из зависимостей
-
-  // Принудительная загрузка результатов при первом входе в ЛК
-  useEffect(() => {
-    if (authState.user?.id && hasPaid && !isLoadingResults && !lastTestResult) {
-      console.log('UserProfile: Принудительная загрузка результатов при первом входе в ЛК')
       console.log('UserProfile: Состояние:', { 
         userId: authState.user.id, 
         hasPaid, 
@@ -79,11 +52,11 @@ const UserProfile: React.FC = () => {
       
       // Принудительно загружаем результаты
       setTimeout(() => {
-        console.log('UserProfile: Вызываем forceReload для принудительной загрузки при первом входе')
+        console.log('UserProfile: Вызываем forceReload для принудительной загрузки')
         forceReload()
-      }, 500) // Задержка в 0.5 секунды
+      }, 1000) // Задержка в 1 секунду
     }
-  }, [authState.user?.id, hasPaid]) // Только при изменении userId или hasPaid
+  }, [authState.user?.id, hasPaid, lastTestResult, isLoadingResults])
 
   // Проверяем, должен ли пользователь быть перенаправлен на оплату (только один раз)
   useEffect(() => {
@@ -321,7 +294,6 @@ const UserProfile: React.FC = () => {
                 </button>
                 <button 
                   onClick={() => {
-                    setHasTriedForceReload(false)
                     forceReload()
                   }} 
                   className="action-button action-button-secondary"

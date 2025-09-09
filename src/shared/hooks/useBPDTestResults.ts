@@ -31,9 +31,6 @@ export function useBPDTestResults(userId: string | null) {
 
   useEffect(() => {
     console.log('useBPDTestResults: useEffect вызван с userId:', userId)
-    console.log('useBPDTestResults: Тип userId:', typeof userId)
-    console.log('useBPDTestResults: userId === null:', userId === null)
-    console.log('useBPDTestResults: userId === undefined:', userId === undefined)
     
     if (!userId) {
       console.log('useBPDTestResults: userId отсутствует, очищаем результат')
@@ -52,15 +49,12 @@ export function useBPDTestResults(userId: string | null) {
     }
     
     // Если результаты уже загружены, не перезагружаем
-    if (hasLoaded && lastTestResult) {
+    if (hasLoaded) {
       console.log('useBPDTestResults: Результаты уже загружены, пропускаем повторную загрузку')
       return
     }
     
-    // Если результаты не загружены, принудительно запускаем загрузку
-    if (!hasLoaded || !lastTestResult) {
-      console.log('useBPDTestResults: Результаты не загружены, принудительно запускаем загрузку')
-    }
+    console.log('useBPDTestResults: Запускаем загрузку результатов')
     
     const fetchLastTestResult = async () => {
       setIsLoading(true)
@@ -356,195 +350,8 @@ export function useBPDTestResults(userId: string | null) {
     console.log('useBPDTestResults: Принудительный сброс состояния и повторная загрузка')
     console.log('useBPDTestResults: Текущее состояние перед сбросом:', { hasLoaded, lastTestResult: lastTestResult ? 'есть' : 'нет' })
     
-    // Сбрасываем состояние для принудительной перезагрузки
+    // Просто сбрасываем флаг hasLoaded, чтобы useEffect снова сработал
     setHasLoaded(false)
-    setLastTestResult(null)
-    setError(null)
-    setIsLoading(false) // Сбрасываем флаг загрузки
-    
-    // Принудительно запускаем загрузку
-    setTimeout(() => {
-      console.log('useBPDTestResults: Принудительно запускаем загрузку после сброса')
-      if (userId) {
-        const fetchLastTestResult = async () => {
-          setIsLoading(true)
-          setError(null)
-
-          try {
-            console.log('useBPDTestResults: Принудительная загрузка для пользователя:', userId)
-
-            // Проверяем существование таблицы test_user_mapping
-            const tableExists = await checkTableExists()
-            console.log('useBPDTestResults: Таблица test_user_mapping существует:', tableExists)
-
-            // Получаем ID результатов теста через таблицу связей
-            const testResultIds = await getTestResultsForUser(userId)
-            console.log('useBPDTestResults: Найдены ID результатов теста:', testResultIds)
-            
-            let data = null
-            let fetchError = null
-
-            // Если нет связей, пробуем прямой поиск по user_id
-            if (testResultIds.length === 0) {
-              console.log('useBPDTestResults: Нет связей в test_user_mapping, пробуем прямой поиск')
-              
-              // Пробуем поиск БПД теста
-              const { data: bpdData, error: bpdError } = await supabase
-                .from('test_results')
-                .select('*')
-                .eq('user_id', userId)
-                .eq('test_type', 'bpd')
-                .order('completed_at', { ascending: false })
-                .limit(1)
-                .single()
-              
-              console.log('useBPDTestResults: Результат прямого поиска БПД:', { data: bpdData, error: bpdError })
-              
-              if (bpdData) {
-                console.log('useBPDTestResults: Получены данные БПД:', bpdData)
-                data = bpdData
-                fetchError = bpdError
-              } else if (bpdError && (bpdError.code === 'PGRST116' || bpdError.message?.includes('406'))) {
-                console.log('useBPDTestResults: БПД тест не найден, ищем любой тест')
-                
-                // Если БПД не найден, ищем любой тест
-                const { data: anyData, error: anyError } = await supabase
-                  .from('test_results')
-                  .select('*')
-                  .eq('user_id', userId)
-                  .order('completed_at', { ascending: false })
-                  .limit(1)
-                  .single()
-                
-                console.log('useBPDTestResults: Результат поиска любого теста:', { data: anyData, error: anyError })
-                
-                if (anyData) {
-                  console.log('useBPDTestResults: Получены данные любого теста:', anyData)
-                  data = anyData
-                  fetchError = anyError
-                } else {
-                  console.log('useBPDTestResults: Результаты теста не найдены - это нормально')
-                  if (anyError && anyError.code !== 'PGRST116') {
-                    console.log('useBPDTestResults: Детали ошибки:', {
-                      code: anyError.code,
-                      message: anyError.message,
-                      details: anyError.details,
-                      hint: anyError.hint
-                    })
-                  }
-                }
-              } else {
-                console.log('useBPDTestResults: Ошибка при поиске БПД:', bpdError)
-                fetchError = bpdError
-              }
-            }
-
-            if (testResultIds.length > 0) {
-              // Ищем результаты БПД теста среди связанных результатов
-              const { data: bpdData, error: bpdError } = await supabase
-                .from('test_results')
-                .select('*')
-                .in('id', testResultIds)
-                .eq('test_type', 'bpd')
-                .order('completed_at', { ascending: false })
-                .limit(1)
-                .single()
-
-              if (bpdData) {
-                console.log('useBPDTestResults: Получены данные БПД из связей:', bpdData)
-                data = bpdData
-                fetchError = bpdError
-              } else if (bpdError && (bpdError.code === 'PGRST116' || bpdError.message?.includes('406'))) {
-                // Если БПД тест не найден, берем последний результат любого типа
-                console.log('useBPDTestResults: БПД тест не найден в связях, ищем любой тест')
-                const { data: anyData, error: anyError } = await supabase
-                  .from('test_results')
-                  .select('*')
-                  .in('id', testResultIds)
-                  .order('completed_at', { ascending: false })
-                  .limit(1)
-                  .single()
-                
-                if (anyData) {
-                  console.log('useBPDTestResults: Получены данные любого теста из связей:', anyData)
-                  data = anyData
-                } else {
-                  console.log('useBPDTestResults: Результаты теста не найдены в связях - это нормально')
-                }
-                fetchError = anyError
-              } else {
-                console.log('useBPDTestResults: Ошибка при поиске БПД в связях:', bpdError)
-                fetchError = bpdError
-              }
-            }
-
-            if (fetchError) {
-              console.log('useBPDTestResults: Информация о загрузке:', fetchError)
-              console.log('useBPDTestResults: Детали:', {
-                code: fetchError.code,
-                message: fetchError.message,
-                details: fetchError.details,
-                hint: fetchError.hint
-              })
-              
-              if (fetchError.code === 'PGRST116') {
-                console.log('useBPDTestResults: Нет результатов тестов для пользователя - это нормально')
-                setLastTestResult(null)
-                setError(null) // Не показываем это как ошибку
-                return
-              }
-              
-              // Для ошибок 406 (Not Acceptable) и других ошибок доступа
-              if (fetchError.code === 'PGRST301' || fetchError.message?.includes('406')) {
-                console.warn('useBPDTestResults: Проблемы с доступом к таблице test_results, используем fallback')
-                setLastTestResult(null)
-                setError(null) // Не показываем это как ошибку
-                return
-              }
-              
-              throw fetchError
-            }
-
-            console.log('useBPDTestResults: Получены данные:', data)
-
-            if (data) {
-              // Определяем тип теста
-              const isBPDTest = data.test_type === 'bpd'
-              
-              const result: BPDTestResultWithDetails = {
-                id: data.id,
-                userId: data.user_id,
-                totalScore: data.score,
-                categoryScores: data.category_scores || {},
-                severity: data.grade as BPDSeverity,
-                completedAt: data.completed_at,
-                answers: data.answers || [],
-                percentage: data.percentage || 0,
-                grade: data.grade || 'none',
-                completed_date: data.completed_at
-              }
-
-              console.log('useBPDTestResults: Обработанный результат:', result)
-              console.log('useBPDTestResults: Тип теста:', isBPDTest ? 'БПД' : 'Старый')
-              setLastTestResult(result)
-            } else {
-              console.log('useBPDTestResults: Нет результатов тестов для пользователя')
-              setLastTestResult(null)
-            }
-          } catch (err) {
-            console.error('useBPDTestResults: Ошибка при загрузке результатов:', err)
-            setError(err instanceof Error ? err.message : 'Ошибка загрузки результатов')
-            setLastTestResult(null)
-          } finally {
-            setIsLoading(false)
-            setHasLoaded(true)
-            console.log('useBPDTestResults: Принудительная загрузка завершена, hasLoaded: true')
-          }
-        }
-        
-        fetchLastTestResult()
-      }
-    }, 100) // Задержка в 100ms для сброса состояния
   }
 
   return {
