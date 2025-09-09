@@ -52,7 +52,7 @@ export function usePayment() {
     terminalKey: import.meta.env.VITE_TINKOFF_TERMINAL_KEY || process.env.VITE_TINKOFF_TERMINAL_KEY || 'your_terminal_key',
     password: import.meta.env.VITE_TINKOFF_PASSWORD || process.env.VITE_TINKOFF_PASSWORD || 'your_password',
     apiUrl: import.meta.env.VITE_TINKOFF_API_URL || process.env.VITE_TINKOFF_API_URL || 'https://securepay.tinkoff.ru/v2/',
-    amount: 1, // 1 рубль за доступ к результатам
+    amount: 1, // 1 копейка за доступ к результатам
     description: 'Доступ к результатам психологического теста БПД'
   }
 

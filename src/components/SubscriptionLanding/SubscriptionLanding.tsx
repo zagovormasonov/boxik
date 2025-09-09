@@ -24,7 +24,7 @@ const SubscriptionLanding: React.FC = () => {
         console.log('Пользователь уже авторизован, переходим к оплате:', authState.user.id)
         
         const paymentResult = await createPayment({
-          amount: 100, // 1 рубль в копейках
+          amount: 1, // 1 копейка
           description: 'Полный доступ к результатам теста БПД',
           userId: authState.user.id
         })
@@ -148,7 +148,7 @@ const SubscriptionLanding: React.FC = () => {
               <h3 className="pricing-title">Полный доступ</h3>
               <div className="pricing-price">
                 <span className="price-amount">1</span>
-                <span className="price-currency">₽</span>
+                <span className="price-currency">коп.</span>
               </div>
             </div>
             
@@ -177,7 +177,7 @@ const SubscriptionLanding: React.FC = () => {
               className="purchase-button login-and-pay-button"
             >
               <CreditCard size={20} />
-              {isProcessing ? 'Обрабатываем...' : authState.user ? 'Оплатить 1₽' : 'Войти через Яндекс и оплатить 1₽'}
+              {isProcessing ? 'Обрабатываем...' : authState.user ? 'Оплатить 1 коп.' : 'Войти через Яндекс и оплатить 1 коп.'}
             </button>
           </div>
         </div>
