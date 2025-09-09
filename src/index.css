@@ -37,6 +37,8 @@ body {
 
 .container {
   width: 100%;
+  padding-bottom: 30px;
+  padding-top: 50px;
 }
 
 .btn {
@@ -2204,7 +2206,6 @@ body {
 /* Test Screen Styles */
 .test-screen {
   min-height: 100vh;
-  background-image: url('./img/forest.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -2248,8 +2249,9 @@ body {
 }
 
 .test-header {
-  text-align: center;
   margin-bottom: 32px; 
+  padding: 20px;
+  text-align: left;
 }
 
 .test-header h1 {
