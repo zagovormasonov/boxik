@@ -8,14 +8,15 @@ import BPDTestResultCard from '../BPDTestResultCard/BPDTestResultCard'
 import MascotRecommendation from '../MascotRecommendation/MascotRecommendation'
 import PaymentModal from '../PaymentModal/PaymentModal'
 import { usePaymentContext } from '../../contexts/PaymentContext'
+import { useUserHasPaid } from '../../shared/hooks/useUserHasPaid'
 
 const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [isSendingResults, setIsSendingResults] = useState(false)
-  const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus } = usePaymentContext()
-  // const { setUserPaid } = useUserHasPaid() // Убрано, так как больше не используется
+  const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, hasPaid } = usePaymentContext()
+  const { getUserHasPaid } = useUserHasPaid()
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
 
@@ -26,6 +27,30 @@ const UserProfile: React.FC = () => {
       refreshPaymentStatus()
     }
   }, [authState.user?.id, refreshPaymentStatus])
+
+  // Проверяем, должен ли пользователь быть перенаправлен на оплату
+  useEffect(() => {
+    const checkPaymentStatus = async () => {
+      if (authState.user?.id && !hasPaid) {
+        console.log('UserProfile: Пользователь не оплатил, проверяем статус в БД')
+        try {
+          const dbHasPaid = await getUserHasPaid(authState.user.id)
+          console.log('UserProfile: Статус оплаты в БД:', dbHasPaid)
+          
+          if (!dbHasPaid) {
+            console.log('UserProfile: Пользователь не оплатил, перенаправляем на AuthSuccessScreen')
+            navigate('/auth-success')
+          }
+        } catch (error) {
+          console.error('UserProfile: Ошибка проверки статуса оплаты:', error)
+          // В случае ошибки перенаправляем на оплату
+          navigate('/auth-success')
+        }
+      }
+    }
+
+    checkPaymentStatus()
+  }, [authState.user?.id, hasPaid, getUserHasPaid, navigate])
 
   // Проверяем параметры оплаты в URL
   useEffect(() => {
