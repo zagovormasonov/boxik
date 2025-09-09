@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import TestLanding from './components/TestLanding/TestLanding'
 import BPDTestScreen from './components/BPDTestScreen/BPDTestScreen'
 import AuthScreen from './components/AuthScreen/AuthScreen'
 import AuthCallback from './components/AuthCallback/AuthCallback'
@@ -21,7 +22,8 @@ function App() {
         <PaymentProvider>
           <div className="container">
             <Routes>
-              <Route path="/" element={<BPDTestScreen />} />
+              <Route path="/" element={<TestLanding />} />
+              <Route path="/test" element={<BPDTestScreen />} />
               <Route path="/auth" element={<AuthScreen />} />
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/subscription" element={<SubscriptionLanding />} />
