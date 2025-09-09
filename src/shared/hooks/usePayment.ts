@@ -47,13 +47,11 @@ export function usePayment() {
   const { createSubscription } = useSubscriptions()
   const { setUserPaid } = useUserHasPaid()
 
-  // Конфигурация для Тинькофф СБП
-  const defaultConfig: PaymentConfig = {
+  // Конфигурация для Тинькофф СБП (только технические параметры)
+  const defaultConfig: Partial<PaymentConfig> = {
     terminalKey: import.meta.env.VITE_TINKOFF_TERMINAL_KEY || process.env.VITE_TINKOFF_TERMINAL_KEY || 'your_terminal_key',
     password: import.meta.env.VITE_TINKOFF_PASSWORD || process.env.VITE_TINKOFF_PASSWORD || 'your_password',
-    apiUrl: import.meta.env.VITE_TINKOFF_API_URL || process.env.VITE_TINKOFF_API_URL || 'https://securepay.tinkoff.ru/v2/',
-    amount: 1, // 1 копейка за доступ к результатам
-    description: 'Доступ к результатам психологического теста БПД'
+    apiUrl: import.meta.env.VITE_TINKOFF_API_URL || process.env.VITE_TINKOFF_API_URL || 'https://securepay.tinkoff.ru/v2/'
   }
 
   // Функция для генерации токена Тинькофф
@@ -86,7 +84,12 @@ export function usePayment() {
     setError(null)
 
     try {
-      const paymentConfig = { ...defaultConfig, ...config }
+      const paymentConfig = { ...defaultConfig, ...config } as PaymentConfig
+      
+      // Проверяем обязательные параметры
+      if (!paymentConfig.amount || !paymentConfig.description) {
+        throw new Error('Необходимо указать amount и description для создания платежа')
+      }
       
       // Отладочная информация для проверки переменных окружения
       console.log('🔧 Отладка переменных окружения:')
@@ -139,7 +142,7 @@ export function usePayment() {
       // Подготавливаем данные для запроса
       const requestData: TinkoffInitRequest = {
         TerminalKey: paymentConfig.terminalKey,
-        Amount: paymentConfig.amount * 100, // Тинькофф принимает сумму в копейках
+        Amount: paymentConfig.amount, // Тинькофф принимает сумму в копейках (уже передаем в копейках)
         OrderId: orderId,
         Description: cleanDescription,
         SuccessURL: callbackUrl,
