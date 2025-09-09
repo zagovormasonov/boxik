@@ -52,20 +52,52 @@ export function useBPDTestResults(userId: string | null) {
         // Если нет связей, попробуем прямой поиск по user_id
         if (testResultIds.length === 0) {
           console.log('useBPDTestResults: Нет связей в test_user_mapping, пробуем прямой поиск')
-          const { data: directData, error: directError } = await supabase
+          
+          // Пробуем поиск БПД теста
+          const { data: bpdData, error: bpdError } = await supabase
             .from('test_results')
             .select('*')
             .eq('user_id', userId)
+            .eq('test_type', 'bpd')
             .order('completed_at', { ascending: false })
             .limit(1)
             .single()
           
-          console.log('useBPDTestResults: Результат прямого поиска БПД:', { data: directData, error: directError })
+          console.log('useBPDTestResults: Результат прямого поиска БПД:', { data: bpdData, error: bpdError })
           
-          if (directData) {
-            console.log('useBPDTestResults: Получены данные:', directData)
-            data = directData
-            fetchError = directError
+          if (bpdData) {
+            console.log('useBPDTestResults: Получены данные БПД:', bpdData)
+            data = bpdData
+            fetchError = bpdError
+          } else {
+            console.log('useBPDTestResults: БПД тест не найден, ищем любой тест')
+            
+            // Если БПД не найден, ищем любой тест
+            const { data: anyData, error: anyError } = await supabase
+              .from('test_results')
+              .select('*')
+              .eq('user_id', userId)
+              .order('completed_at', { ascending: false })
+              .limit(1)
+              .single()
+            
+            console.log('useBPDTestResults: Результат поиска любого теста:', { data: anyData, error: anyError })
+            
+            if (anyData) {
+              console.log('useBPDTestResults: Получены данные любого теста:', anyData)
+              data = anyData
+              fetchError = anyError
+            } else {
+              console.log('useBPDTestResults: Ошибка при загрузке:', anyError)
+              if (anyError) {
+                console.log('useBPDTestResults: Детали ошибки:', {
+                  code: anyError.code,
+                  message: anyError.message,
+                  details: anyError.details,
+                  hint: anyError.hint
+                })
+              }
+            }
           }
         }
 
