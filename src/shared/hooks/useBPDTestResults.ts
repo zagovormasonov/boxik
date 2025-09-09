@@ -30,6 +30,7 @@ export function useBPDTestResults(userId: string | null) {
     }
 
     console.log('useBPDTestResults: userId валиден, начинаем загрузку')
+    
     const fetchLastTestResult = async () => {
       setIsLoading(true)
       setError(null)
@@ -195,8 +196,10 @@ export function useBPDTestResults(userId: string | null) {
       }
     }
 
+    // Принудительно запускаем загрузку
+    console.log('useBPDTestResults: Принудительно запускаем загрузку результатов')
     fetchLastTestResult()
-  }, [userId])
+  }, [userId, getTestResultsForUser, checkTableExists])
 
   const sendToSpecialist = async (testResult: BPDTestResultWithDetails): Promise<boolean> => {
     try {
