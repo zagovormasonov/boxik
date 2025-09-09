@@ -5,6 +5,7 @@ import { usePaymentContext } from '../../contexts/PaymentContext'
 import { useSubscriptions } from '../../shared/hooks/useSubscriptions'
 import { useUserHasPaid } from '../../shared/hooks/useUserHasPaid'
 import { useAuth } from '../../contexts/AuthContext'
+import { useTestUserMapping } from '../../shared/hooks/useTestUserMapping'
 
 const PaymentCallback: React.FC = () => {
   const navigate = useNavigate()
@@ -13,6 +14,7 @@ const PaymentCallback: React.FC = () => {
   const { updateSubscriptionStatus } = useSubscriptions()
   const { setUserPaid } = useUserHasPaid()
   const { authState } = useAuth()
+  const { linkExistingTestResults } = useTestUserMapping()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
 
@@ -123,6 +125,24 @@ const PaymentCallback: React.FC = () => {
             // Принудительно устанавливаем статус оплаты даже при ошибке обновления
             console.log('🔄 PaymentCallback: Принудительно устанавливаем статус оплаты после ошибки')
             forceSetPaid(true)
+          }
+          
+          // Связываем результаты теста с пользователем после успешной оплаты
+          if (authState.user?.id) {
+            try {
+              console.log('🔗 PaymentCallback: Связываем результаты теста с пользователем после оплаты:', authState.user.id)
+              const sessionId = localStorage.getItem('test_session_id') || 'anonymous'
+              console.log('🔗 PaymentCallback: Session ID для связывания:', sessionId)
+              
+              const linked = await linkExistingTestResults(authState.user.id, sessionId)
+              if (linked) {
+                console.log('✅ PaymentCallback: Результаты теста успешно связаны с пользователем после оплаты')
+              } else {
+                console.log('ℹ️ PaymentCallback: Результаты теста для связывания не найдены')
+              }
+            } catch (linkError) {
+              console.error('❌ PaymentCallback: Ошибка при связывании результатов теста после оплаты:', linkError)
+            }
           }
           
           // Перенаправляем в личный кабинет
