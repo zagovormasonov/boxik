@@ -19,23 +19,16 @@ const UserProfile: React.FC = () => {
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist } = useBPDTestResults(authState.user?.id || null)
 
-  // Принудительно проверяем статус подписки при загрузке профиля
+  // Принудительно проверяем статус подписки при загрузке профиля (только один раз)
   useEffect(() => {
     if (authState.user?.id) {
       console.log('UserProfile: Принудительно проверяем статус подписки для пользователя:', authState.user.id)
       console.log('UserProfile: Текущий hasPaid:', hasPaid)
       console.log('UserProfile: localStorage hasPaid:', localStorage.getItem('hasPaid'))
       
-      // Принудительно проверяем localStorage и устанавливаем hasPaid если нужно
-      const localHasPaid = localStorage.getItem('hasPaid') === 'true'
-      if (localHasPaid && !hasPaid) {
-        console.log('UserProfile: Принудительно устанавливаем hasPaid: true из localStorage')
-        forceSetPaid(true)
-      }
-      
       refreshPaymentStatus()
     }
-  }, [authState.user?.id, refreshPaymentStatus, hasPaid, forceSetPaid])
+  }, [authState.user?.id]) // Убираем лишние зависимости
 
   // Логируем изменения hasPaid
   useEffect(() => {
@@ -96,7 +89,7 @@ const UserProfile: React.FC = () => {
                 console.log('UserProfile: Обновляем статус в БД для пользователя:', authState.user.id)
                 await setUserPaid(authState.user.id)
                 console.log('✅ UserProfile: Статус успешно обновлен в БД')
-              } catch (error) {
+    } catch (error) {
                 console.error('❌ UserProfile: Ошибка при обновлении статуса в БД:', error)
               }
             }
@@ -106,7 +99,7 @@ const UserProfile: React.FC = () => {
     }
     
     checkPaymentStatus()
-  }, [searchParams, forceSetPaid, authState.user?.id, setUserPaid])
+  }, [searchParams]) // Убираем лишние зависимости
 
   useEffect(() => {
     // Добавляем небольшую задержку для восстановления пользователя из localStorage
@@ -119,6 +112,17 @@ const UserProfile: React.FC = () => {
 
     return () => clearTimeout(timer)
   }, [authState.user, navigate])
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+      navigate('/')
+    } catch (error) {
+      console.error('Ошибка при выходе:', error)
+      // Все равно перенаправляем на главную
+      navigate('/')
+    }
+  }
 
   const handleRetakeTest = () => {
     navigate('/')
@@ -253,7 +257,7 @@ const UserProfile: React.FC = () => {
           </button>
           
           <button
-            onClick={logout}
+            onClick={handleLogout}
             className="action-button action-button-secondary"
           >
             <LogOut size={20} />
