@@ -124,6 +124,59 @@ export function useTestUserMapping() {
       // Если есть anonymousUserId, ищем результаты по нему
       if (anonymousUserId) {
         console.log('🔍 useTestUserMapping: Ищем результаты по anonymousUserId:', anonymousUserId)
+        
+        // Сначала проверяем localStorage на наличие сохраненных результатов
+        const pendingResult = localStorage.getItem('pending_test_result')
+        if (pendingResult) {
+          console.log('🔍 useTestUserMapping: Найден сохраненный результат в localStorage:', pendingResult)
+          
+          try {
+            const testResult = JSON.parse(pendingResult)
+            console.log('🔍 useTestUserMapping: Парсим результат из localStorage:', testResult)
+            
+            // Проверяем, что результат соответствует нашему anonymousUserId
+            if (testResult.user_id === anonymousUserId) {
+              console.log('🔍 useTestUserMapping: Результат соответствует anonymousUserId, сохраняем в БД')
+              
+              // Сохраняем результат в БД с новым user_id
+              const { data, error: insertError } = await supabase
+                .from('test_results')
+                .insert([
+                  {
+                    user_id: userId, // Используем ID авторизованного пользователя
+                    test_type: testResult.test_type,
+                    total_questions: testResult.total_questions,
+                    score: testResult.score,
+                    percentage: testResult.percentage,
+                    grade: testResult.grade,
+                    answers: testResult.answers,
+                    category_scores: testResult.category_scores,
+                    completed_at: testResult.completed_at
+                  }
+                ])
+                .select()
+
+              if (insertError) {
+                console.error('❌ useTestUserMapping: Ошибка при сохранении результата из localStorage:', insertError)
+                return false
+              }
+
+              console.log('✅ useTestUserMapping: Результат успешно сохранен в БД:', data)
+              
+              // Удаляем результат из localStorage
+              localStorage.removeItem('pending_test_result')
+              console.log('✅ useTestUserMapping: Результат удален из localStorage')
+              
+              return true
+            } else {
+              console.log('⚠️ useTestUserMapping: Результат в localStorage не соответствует anonymousUserId')
+            }
+          } catch (parseError) {
+            console.error('❌ useTestUserMapping: Ошибка при парсинге результата из localStorage:', parseError)
+          }
+        }
+        
+        // Если в localStorage нет результата, ищем в БД
         const { data: testResults, error: testError } = await supabase
           .from('test_results')
           .select('id, user_id, test_type, completed_at')
