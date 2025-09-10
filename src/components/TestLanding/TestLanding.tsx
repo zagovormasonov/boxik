@@ -12,16 +12,19 @@ const TestLanding: React.FC = () => {
   const features = [
     {
       icon: <Brain size={24} />,
+      image: '/src/img/1.png',
       title: 'Профессиональная диагностика',
       description: 'Тест основан на официальных критериях DSM-5 для диагностики пограничного расстройства личности'
     },
     {
       icon: <Shield size={24} />,
+      image: '/src/img/2.png',
       title: 'Конфиденциальность',
       description: 'Все ваши ответы строго конфиденциальны и не передаются третьим лицам'
     },
     {
       icon: <FileText size={24} />,
+      image: '/src/img/3.png',
       title: 'Детальный отчет',
       description: 'Получите подробный анализ результатов с рекомендациями специалистов'
     },
@@ -55,7 +58,11 @@ const TestLanding: React.FC = () => {
           {features.map((feature, index) => (
             <div key={index} className="test-landing-feature">
               <div className="test-landing-feature-icon">
-                {feature.icon}
+                {feature.image ? (
+                  <img src={feature.image} alt={feature.title} className="feature-image" />
+                ) : (
+                  feature.icon
+                )}
               </div>
               <div className="test-landing-feature-content">
                 <h3>{feature.title}</h3>

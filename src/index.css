@@ -2394,6 +2394,13 @@ body {
   flex-shrink: 0;
 }
 
+.feature-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
 .test-landing-feature-content h3 {
   font-size: 18px;
   font-weight: 600;
@@ -2509,34 +2516,93 @@ body {
     padding: 20px 16px;
   }
   
+  .test-landing-header {
+    margin-bottom: 40px;
+  }
+  
   .test-landing-header h1 {
-    font-size: 28px;
+    font-size: 24px;
+    line-height: 1.2;
   }
   
   .test-landing-subtitle {
     font-size: 16px;
+    line-height: 1.5;
   }
   
   .test-landing-features {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 16px;
+    margin-bottom: 40px;
   }
   
   .test-landing-feature {
-    padding: 20px;
+    padding: 16px;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .test-landing-feature-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+  
+  .test-landing-feature-content h3 {
+    font-size: 16px;
+    margin-bottom: 6px;
+  }
+  
+  .test-landing-feature-content p {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  
+  .test-landing-benefits {
+    margin-bottom: 40px;
+  }
+  
+  .test-landing-benefits h2 {
+    font-size: 20px;
+    margin-bottom: 24px;
   }
   
   .test-landing-benefits-list {
     grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .test-landing-benefit {
+    padding: 12px;
+    font-size: 13px;
   }
   
   .test-landing-info {
     grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  
+  .test-landing-info-card {
+    padding: 16px;
+  }
+  
+  .test-landing-info-card h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  
+  .test-landing-info-card p {
+    font-size: 13px;
+    line-height: 1.5;
   }
   
   .test-landing-start-button {
     padding: 14px 32px;
     font-size: 16px;
+    width: 100%;
+    max-width: 280px;
   }
 }
 
