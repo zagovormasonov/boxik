@@ -388,7 +388,7 @@ const PaymentCallback: React.FC = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'white',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       padding: '20px'
     }}>
       <div style={{
@@ -405,7 +405,7 @@ const PaymentCallback: React.FC = () => {
             <div style={{
               width: '80px',
               height: '80px',
-              background: 'white',
+              background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',

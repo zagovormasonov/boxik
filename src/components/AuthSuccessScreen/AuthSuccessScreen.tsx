@@ -188,6 +188,8 @@ const AuthSuccessScreen: React.FC = () => {
   return (
     <div className="auth-success-screen" style={{
       minHeight: '100vh',
+      background: '#f8fafc',
+      padding: '20px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center'
@@ -197,6 +199,8 @@ const AuthSuccessScreen: React.FC = () => {
         borderRadius: '20px',
         padding: '40px',
         textAlign: 'center',
+        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
+        maxWidth: '500px',
         width: '100%'
       }}>
         {/* Заголовок */}
@@ -228,11 +232,12 @@ const AuthSuccessScreen: React.FC = () => {
           margin: '0 0 30px 0',
           fontSize: '16px'
         }}>
-          Добро пожаловать в систему!
+          Добро пожаловать в Boxik
         </p>
 
         {/* Данные пользователя */}
         <div style={{
+          background: '#f8fafc',
           borderRadius: '12px',
           padding: '20px',
           margin: '0 0 30px 0',
@@ -242,6 +247,7 @@ const AuthSuccessScreen: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            margin: '0 0 15px 0'
           }}>
             {authState.user.avatar && (
               <img 
@@ -282,11 +288,11 @@ const AuthSuccessScreen: React.FC = () => {
 
         {/* Информация о подписке */}
         <div style={{
+          background: '#f1f5f9',
           borderRadius: '8px',
           padding: '16px',
           margin: '0 0 24px 0',
-          border: '1px solid #e2e8f0',
-          textAlign: 'left'          
+          border: '1px solid #e2e8f0'
         }}>
           <h3 style={{ 
             margin: '0 0 8px 0', 
@@ -313,8 +319,8 @@ const AuthSuccessScreen: React.FC = () => {
           style={{
             width: '100%',
             background: isProcessing 
-              ? '#1c1c1c' 
-              : '#1c1c1c',
+              ? '#9ca3af' 
+              : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
             color: 'white',
             border: 'none',
             borderRadius: '12px',
@@ -327,6 +333,7 @@ const AuthSuccessScreen: React.FC = () => {
             justifyContent: 'center',
             gap: '10px',
             transition: 'all 0.2s ease',
+            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
           }}
           onMouseOver={(e) => {
             if (!isProcessing) {

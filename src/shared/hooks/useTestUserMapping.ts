@@ -117,48 +117,6 @@ export function useTestUserMapping() {
         session_id: sessionStorage.getItem('session_id')
       })
 
-      // Проверяем localStorage на наличие ожидающих результатов
-      const pendingTestResult = localStorage.getItem('pending_test_result')
-      if (pendingTestResult) {
-        console.log('🔍 useTestUserMapping: Найден ожидающий результат в localStorage')
-        try {
-          const testResult = JSON.parse(pendingTestResult)
-          console.log('🔍 useTestUserMapping: Данные ожидающего результата:', testResult)
-          
-          // Сохраняем результат в БД с правильным user_id
-          const { data, error: insertError } = await supabase
-            .from('test_results')
-            .insert([{
-              user_id: userId, // Используем реальный user_id авторизованного пользователя
-              test_type: testResult.test_type,
-              total_questions: testResult.total_questions,
-              score: testResult.score,
-              percentage: testResult.percentage,
-              grade: testResult.grade,
-              answers: testResult.answers,
-              category_scores: testResult.category_scores,
-              completed_at: testResult.completed_at
-            }])
-            .select()
-          
-          if (insertError) {
-            console.error('❌ useTestUserMapping: Ошибка при сохранении ожидающего результата:', insertError)
-            return false
-          }
-          
-          console.log('✅ useTestUserMapping: Ожидающий результат успешно сохранен в БД:', data)
-          
-          // Удаляем ожидающий результат из localStorage
-          localStorage.removeItem('pending_test_result')
-          console.log('✅ useTestUserMapping: Ожидающий результат удален из localStorage')
-          
-          return true
-        } catch (parseError) {
-          console.error('❌ useTestUserMapping: Ошибка при парсинге ожидающего результата:', parseError)
-          localStorage.removeItem('pending_test_result')
-        }
-      }
-
       // Проверяем localStorage и sessionStorage для поиска anonymousUserId
       const anonymousUserId = localStorage.getItem('anonymous_user_id') || sessionStorage.getItem('anonymous_user_id')
       console.log('🔍 useTestUserMapping: Ищем anonymousUserId в localStorage и sessionStorage:', anonymousUserId)
