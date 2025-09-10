@@ -24,11 +24,13 @@ const BPDTestScreen: React.FC = () => {
     
     // Создаем session_id для неавторизованных пользователей
     if (!authState.user) {
-      let sessionId = localStorage.getItem('test_session_id')
+      let sessionId = localStorage.getItem('session_id')
       if (!sessionId) {
         sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8)
-        localStorage.setItem('test_session_id', sessionId)
+        localStorage.setItem('session_id', sessionId)
         console.log('BPDTestScreen: Создан session_id для неавторизованного пользователя:', sessionId)
+      } else {
+        console.log('BPDTestScreen: Используем существующий session_id:', sessionId)
       }
     }
   }, [authState.user])
@@ -42,11 +44,15 @@ const BPDTestScreen: React.FC = () => {
   }
 
   const handleNext = async () => {
+    console.log('BPDTestScreen: handleNext вызван, текущий вопрос:', state.currentQuestion, 'из', questions.length)
+    
     if (state.currentQuestion === questions.length - 1) {
+      console.log('BPDTestScreen: Завершаем тест')
       dispatch({ type: 'COMPLETE_TEST' })
       
       // Если пользователь авторизован, сохраняем результаты и переходим в профиль
       if (authState.user?.id) {
+        console.log('BPDTestScreen: Пользователь авторизован, сохраняем результаты для:', authState.user.id)
         try {
           console.log('BPDTestScreen: Сохраняем результаты теста БПД для авторизованного пользователя')
           
@@ -78,10 +84,11 @@ const BPDTestScreen: React.FC = () => {
         }
       } else {
         // Если пользователь не авторизован, сохраняем результаты с session_id
+        console.log('BPDTestScreen: Пользователь НЕ авторизован, сохраняем результаты с session_id')
         try {
           console.log('BPDTestScreen: Сохраняем результаты теста БПД для неавторизованного пользователя')
           
-          const sessionId = localStorage.getItem('test_session_id') || 'anonymous'
+          const sessionId = localStorage.getItem('session_id') || 'anonymous'
           
           const completedTestState = {
             ...state,
