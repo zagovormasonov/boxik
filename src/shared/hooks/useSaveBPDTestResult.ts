@@ -36,7 +36,35 @@ export function useSaveBPDTestResult() {
 
       console.log('useSaveBPDTestResult: Результат БПД теста:', bpdTestResult)
 
-      // Сохраняем в таблицу test_results
+      // Проверяем, является ли пользователь неавторизованным (UUID не существует в users)
+      const isAnonymousUser = userId.startsWith('anonymous_') || !userId.includes('-')
+      
+      if (isAnonymousUser) {
+        console.log('useSaveBPDTestResult: Обнаружен неавторизованный пользователь, сохраняем в localStorage')
+        
+        // Сохраняем результат в localStorage для последующего связывания
+        const testResult = {
+          user_id: userId,
+          test_type: 'bpd',
+          total_questions: totalQuestions,
+          score: testState.totalScore,
+          percentage: Math.round((testState.totalScore / (totalQuestions * 4)) * 100),
+          grade: severity,
+          answers: testState.answers,
+          category_scores: testState.categoryScores,
+          completed_at: new Date().toISOString(),
+          session_id: localStorage.getItem('session_id') || 'unknown'
+        }
+        
+        // Сохраняем в localStorage
+        localStorage.setItem('pending_test_result', JSON.stringify(testResult))
+        console.log('useSaveBPDTestResult: Результат сохранен в localStorage для неавторизованного пользователя')
+        
+        // Возвращаем успех без попытки вставки в БД
+        return true
+      }
+
+      // Сохраняем в таблицу test_results для авторизованных пользователей
       const { data, error: insertError } = await supabase
         .from('test_results')
         .insert([
