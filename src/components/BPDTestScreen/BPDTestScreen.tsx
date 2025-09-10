@@ -109,7 +109,14 @@ const BPDTestScreen: React.FC = () => {
           }
 
           // Создаем валидный UUID для неавторизованных пользователей
-          const anonymousUserId = `anonymous_${sessionId.replace(/[^a-zA-Z0-9]/g, '')}_${Date.now()}`
+          const generateUUID = () => {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+              const r = Math.random() * 16 | 0
+              const v = c === 'x' ? r : (r & 0x3 | 0x8)
+              return v.toString(16)
+            })
+          }
+          const anonymousUserId = generateUUID()
           console.log('BPDTestScreen: Создаем анонимный user_id:', anonymousUserId, 'из session_id:', sessionId)
           console.log('BPDTestScreen: sessionId тип:', typeof sessionId, 'длина:', sessionId?.length)
           console.log('BPDTestScreen: anonymousUserId тип:', typeof anonymousUserId, 'длина:', anonymousUserId?.length)

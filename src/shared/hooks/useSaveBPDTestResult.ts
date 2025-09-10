@@ -64,14 +64,17 @@ export function useSaveBPDTestResult() {
         })
         console.error('useSaveBPDTestResult: Полная ошибка:', JSON.stringify(insertError, null, 2))
         
-        // Для ошибок RLS (406, PGRST301), конфликтов (409) и нарушений внешних ключей (23503) не выбрасываем исключение, а возвращаем false
+        // Для ошибок RLS (406, PGRST301), конфликтов (409), нарушений внешних ключей (23503) и неверного UUID (22P02) не выбрасываем исключение, а возвращаем false
         const errorCode = String(insertError.code)
-        if (insertError.code === 'PGRST301' || insertError.message?.includes('406') || errorCode === '409' || errorCode === '23503') {
+        if (insertError.code === 'PGRST301' || insertError.message?.includes('406') || errorCode === '409' || errorCode === '23503' || errorCode === '22P02') {
           if (errorCode === '409') {
             console.warn('⚠️ useSaveBPDTestResult: Конфликт данных (409) - возможно, результат уже существует для этого пользователя')
           } else if (errorCode === '23503') {
             console.warn('⚠️ useSaveBPDTestResult: Нарушение внешнего ключа (23503) - пользователь не найден в таблице users')
             console.warn('⚠️ useSaveBPDTestResult: Возможно, пользователь был удален или ID изменился')
+          } else if (errorCode === '22P02') {
+            console.warn('⚠️ useSaveBPDTestResult: Неверный формат UUID (22P02) - user_id не является валидным UUID')
+            console.warn('⚠️ useSaveBPDTestResult: Возможно, используется неправильный формат ID пользователя')
           } else {
             console.warn('⚠️ useSaveBPDTestResult: Проблемы с БД (RLS), но продолжаем работу')
           }
