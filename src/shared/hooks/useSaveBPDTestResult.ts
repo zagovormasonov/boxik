@@ -61,10 +61,12 @@ export function useSaveBPDTestResult() {
           details: insertError.details,
           hint: insertError.hint
         })
+        console.error('useSaveBPDTestResult: Полная ошибка:', JSON.stringify(insertError, null, 2))
         
         // Для ошибок RLS (406, PGRST301) и конфликтов (409) не выбрасываем исключение, а возвращаем false
-        if (insertError.code === 'PGRST301' || insertError.message?.includes('406') || insertError.code === '409') {
-          if (insertError.code === '409') {
+        const errorCode = String(insertError.code)
+        if (insertError.code === 'PGRST301' || insertError.message?.includes('406') || errorCode === '409') {
+          if (errorCode === '409') {
             console.warn('⚠️ useSaveBPDTestResult: Конфликт данных (409) - возможно, результат уже существует для этого пользователя')
           } else {
             console.warn('⚠️ useSaveBPDTestResult: Проблемы с БД (RLS), но продолжаем работу')
