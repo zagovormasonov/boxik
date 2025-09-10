@@ -48,10 +48,18 @@ const UserProfile: React.FC = () => {
         console.log('UserProfile: Пользователь оплатил, связываем результаты теста в ЛК')
         
         try {
-          // Получаем session_id из localStorage
-          const sessionId = localStorage.getItem('session_id')
-          const anonymousUserId = localStorage.getItem('anonymous_user_id')
+          // Получаем session_id из localStorage и sessionStorage
+          const sessionId = localStorage.getItem('session_id') || sessionStorage.getItem('session_id')
+          const anonymousUserId = localStorage.getItem('anonymous_user_id') || sessionStorage.getItem('anonymous_user_id')
           console.log('UserProfile: Данные из localStorage:', {
+            session_id: localStorage.getItem('session_id'),
+            anonymous_user_id: localStorage.getItem('anonymous_user_id')
+          })
+          console.log('UserProfile: Данные из sessionStorage:', {
+            session_id: sessionStorage.getItem('session_id'),
+            anonymous_user_id: sessionStorage.getItem('anonymous_user_id')
+          })
+          console.log('UserProfile: Используем данные:', {
             session_id: sessionId,
             anonymous_user_id: anonymousUserId
           })
@@ -71,7 +79,7 @@ const UserProfile: React.FC = () => {
               console.log('ℹ️ UserProfile: Результаты теста для связывания не найдены в ЛК')
             }
           } else {
-            console.log('ℹ️ UserProfile: session_id не найден в localStorage в ЛК')
+            console.log('ℹ️ UserProfile: session_id не найден ни в localStorage, ни в sessionStorage в ЛК')
           }
         } catch (linkError) {
           console.error('❌ UserProfile: Ошибка при связывании результатов теста в ЛК:', linkError)

@@ -33,10 +33,18 @@ const AuthSuccessScreen: React.FC = () => {
         console.log('AuthSuccessScreen: Пользователь авторизован, связываем результаты теста')
         
         try {
-          // Получаем session_id из localStorage
-          const sessionId = localStorage.getItem('session_id')
-          const anonymousUserId = localStorage.getItem('anonymous_user_id')
+          // Получаем session_id из localStorage и sessionStorage
+          const sessionId = localStorage.getItem('session_id') || sessionStorage.getItem('session_id')
+          const anonymousUserId = localStorage.getItem('anonymous_user_id') || sessionStorage.getItem('anonymous_user_id')
           console.log('AuthSuccessScreen: Данные из localStorage:', {
+            session_id: localStorage.getItem('session_id'),
+            anonymous_user_id: localStorage.getItem('anonymous_user_id')
+          })
+          console.log('AuthSuccessScreen: Данные из sessionStorage:', {
+            session_id: sessionStorage.getItem('session_id'),
+            anonymous_user_id: sessionStorage.getItem('anonymous_user_id')
+          })
+          console.log('AuthSuccessScreen: Используем данные:', {
             session_id: sessionId,
             anonymous_user_id: anonymousUserId
           })
@@ -51,7 +59,7 @@ const AuthSuccessScreen: React.FC = () => {
               console.log('ℹ️ AuthSuccessScreen: Результаты теста для связывания не найдены')
             }
           } else {
-            console.log('ℹ️ AuthSuccessScreen: session_id не найден в localStorage')
+            console.log('ℹ️ AuthSuccessScreen: session_id не найден ни в localStorage, ни в sessionStorage')
           }
         } catch (linkError) {
           console.error('❌ AuthSuccessScreen: Ошибка при связывании результатов теста после авторизации:', linkError)
