@@ -168,7 +168,6 @@ const AuthSuccessScreen: React.FC = () => {
         <div style={{
           padding: '40px',
           textAlign: 'center',
-          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
           maxWidth: '400px',
           width: '100%'
         }}>
@@ -197,7 +196,6 @@ const AuthSuccessScreen: React.FC = () => {
         borderRadius: '20px',
         padding: '40px',
         textAlign: 'center',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
         maxWidth: '500px',
         width: '100%'
       }}>
