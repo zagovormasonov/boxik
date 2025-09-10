@@ -36,23 +36,51 @@ export function useSaveBPDTestResult() {
 
       console.log('useSaveBPDTestResult: Результат БПД теста:', bpdTestResult)
 
-      // Сохраняем в таблицу test_results
-      const { data, error: insertError } = await supabase
-        .from('test_results')
-        .insert([
-          {
-            user_id: userId,
-            test_type: 'bpd',
-            total_questions: totalQuestions,
-            score: testState.totalScore,
-            percentage: Math.round((testState.totalScore / (totalQuestions * 4)) * 100), // Максимальный балл = количество вопросов * 4
-            grade: severity,
-            answers: testState.answers,
-            category_scores: testState.categoryScores,
-            completed_at: new Date().toISOString()
-          }
-        ])
-        .select()
+       // Проверяем, является ли пользователь анонимным (неавторизованным)
+       const isAnonymousUser = userId.startsWith('anonymous_') || userId.includes('session_') || !userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
+       
+       if (isAnonymousUser) {
+         console.log('useSaveBPDTestResult: Обнаружен анонимный пользователь, сохраняем в localStorage')
+         
+         // Сохраняем результат в localStorage для последующего связывания
+         const testResult = {
+           user_id: userId,
+           test_type: 'bpd',
+           total_questions: totalQuestions,
+           score: testState.totalScore,
+           percentage: Math.round((testState.totalScore / (totalQuestions * 4)) * 100),
+           grade: severity,
+           answers: testState.answers,
+           category_scores: testState.categoryScores,
+           completed_at: new Date().toISOString(),
+           session_id: localStorage.getItem('session_id') || 'unknown'
+         }
+         
+         // Сохраняем в localStorage
+         localStorage.setItem('pending_test_result', JSON.stringify(testResult))
+         console.log('useSaveBPDTestResult: Результат сохранен в localStorage для анонимного пользователя')
+         
+         // Возвращаем успех без попытки вставки в БД
+         return true
+       }
+
+       // Сохраняем в таблицу test_results для авторизованных пользователей
+       const { data, error: insertError } = await supabase
+         .from('test_results')
+         .insert([
+           {
+             user_id: userId,
+             test_type: 'bpd',
+             total_questions: totalQuestions,
+             score: testState.totalScore,
+             percentage: Math.round((testState.totalScore / (totalQuestions * 4)) * 100), // Максимальный балл = количество вопросов * 4
+             grade: severity,
+             answers: testState.answers,
+             category_scores: testState.categoryScores,
+             completed_at: new Date().toISOString()
+           }
+         ])
+         .select()
 
       if (insertError) {
         console.error('useSaveBPDTestResult: Ошибка при вставке в БД:', insertError)
