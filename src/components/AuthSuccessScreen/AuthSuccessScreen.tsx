@@ -36,18 +36,24 @@ const AuthSuccessScreen: React.FC = () => {
           // Получаем session_id из localStorage и sessionStorage
           const sessionId = localStorage.getItem('session_id') || sessionStorage.getItem('session_id')
           const anonymousUserId = localStorage.getItem('anonymous_user_id') || sessionStorage.getItem('anonymous_user_id')
-          console.log('AuthSuccessScreen: Данные из localStorage:', {
+          const localStorageData = {
             session_id: localStorage.getItem('session_id'),
             anonymous_user_id: localStorage.getItem('anonymous_user_id')
-          })
-          console.log('AuthSuccessScreen: Данные из sessionStorage:', {
+          }
+          const sessionStorageData = {
             session_id: sessionStorage.getItem('session_id'),
             anonymous_user_id: sessionStorage.getItem('anonymous_user_id')
-          })
-          console.log('AuthSuccessScreen: Используем данные:', {
+          }
+          const usedData = {
             session_id: sessionId,
             anonymous_user_id: anonymousUserId
-          })
+          }
+          
+          console.log('AuthSuccessScreen: Данные из localStorage:', localStorageData)
+          console.log('AuthSuccessScreen: Данные из sessionStorage:', sessionStorageData)
+          console.log('AuthSuccessScreen: Используем данные:', usedData)
+          console.log('AuthSuccessScreen: sessionId значение:', sessionId, 'тип:', typeof sessionId)
+          console.log('AuthSuccessScreen: anonymousUserId значение:', anonymousUserId, 'тип:', typeof anonymousUserId)
           
           if (sessionId) {
             console.log('AuthSuccessScreen: Связываем результаты теста с пользователем')

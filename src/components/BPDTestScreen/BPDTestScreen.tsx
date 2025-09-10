@@ -91,6 +91,8 @@ const BPDTestScreen: React.FC = () => {
           // Создаем валидный UUID для неавторизованных пользователей
           const anonymousUserId = `anonymous_${sessionId.replace(/[^a-zA-Z0-9]/g, '')}_${Date.now()}`
           console.log('BPDTestScreen: Создаем анонимный user_id:', anonymousUserId, 'из session_id:', sessionId)
+          console.log('BPDTestScreen: sessionId тип:', typeof sessionId, 'длина:', sessionId?.length)
+          console.log('BPDTestScreen: anonymousUserId тип:', typeof anonymousUserId, 'длина:', anonymousUserId?.length)
           
           const saveResult = await saveBPDTestResult({
             userId: anonymousUserId, // Используем созданный UUID для неавторизованных пользователей
@@ -98,6 +100,7 @@ const BPDTestScreen: React.FC = () => {
             totalQuestions: questions.length
           })
           console.log('BPDTestScreen: Результат сохранения БПД теста с анонимным user_id:', saveResult)
+          console.log('BPDTestScreen: saveResult тип:', typeof saveResult, 'значение:', saveResult)
           
           if (saveResult) {
             console.log('BPDTestScreen: Результаты БПД теста успешно сохранены с анонимным user_id:', anonymousUserId)

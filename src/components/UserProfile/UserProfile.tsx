@@ -51,18 +51,24 @@ const UserProfile: React.FC = () => {
           // Получаем session_id из localStorage и sessionStorage
           const sessionId = localStorage.getItem('session_id') || sessionStorage.getItem('session_id')
           const anonymousUserId = localStorage.getItem('anonymous_user_id') || sessionStorage.getItem('anonymous_user_id')
-          console.log('UserProfile: Данные из localStorage:', {
+          const localStorageData = {
             session_id: localStorage.getItem('session_id'),
             anonymous_user_id: localStorage.getItem('anonymous_user_id')
-          })
-          console.log('UserProfile: Данные из sessionStorage:', {
+          }
+          const sessionStorageData = {
             session_id: sessionStorage.getItem('session_id'),
             anonymous_user_id: sessionStorage.getItem('anonymous_user_id')
-          })
-          console.log('UserProfile: Используем данные:', {
+          }
+          const usedData = {
             session_id: sessionId,
             anonymous_user_id: anonymousUserId
-          })
+          }
+          
+          console.log('UserProfile: Данные из localStorage:', localStorageData)
+          console.log('UserProfile: Данные из sessionStorage:', sessionStorageData)
+          console.log('UserProfile: Используем данные:', usedData)
+          console.log('UserProfile: sessionId значение:', sessionId, 'тип:', typeof sessionId)
+          console.log('UserProfile: anonymousUserId значение:', anonymousUserId, 'тип:', typeof anonymousUserId)
           
           if (sessionId) {
             console.log('UserProfile: Связываем результаты теста с пользователем в ЛК')
