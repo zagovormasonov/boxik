@@ -1501,7 +1501,7 @@ span.test-date {
 .success-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #6dffcf, #046345);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1624,7 +1624,7 @@ span.test-date {
 }
 
 .pricing-card {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #e8ffdd, #8fd0ff);
   border-radius: 16px;
   padding: 30px;
   color: white;
@@ -1748,7 +1748,7 @@ span.test-date {
 
 /* Login and Pay Button Styles */
 .login-and-pay-button {
-  background: #4990ff !important;
+  background: #28b4ff !important;
   color: white !important;
   border: none !important;
   position: relative;
