@@ -19,6 +19,7 @@ export function useSaveBPDTestResult() {
     try {
       console.log('useSaveBPDTestResult: Начинаем сохранение результатов БПД теста')
       console.log('useSaveBPDTestResult: Данные для сохранения:', { userId, testState, totalQuestions })
+      console.log('useSaveBPDTestResult: ID пользователя для сохранения:', userId, 'тип:', typeof userId)
 
       // Определяем уровень выраженности БПД
       const severity = calculateSeverity(testState.totalScore)
@@ -63,11 +64,14 @@ export function useSaveBPDTestResult() {
         })
         console.error('useSaveBPDTestResult: Полная ошибка:', JSON.stringify(insertError, null, 2))
         
-        // Для ошибок RLS (406, PGRST301) и конфликтов (409) не выбрасываем исключение, а возвращаем false
+        // Для ошибок RLS (406, PGRST301), конфликтов (409) и нарушений внешних ключей (23503) не выбрасываем исключение, а возвращаем false
         const errorCode = String(insertError.code)
-        if (insertError.code === 'PGRST301' || insertError.message?.includes('406') || errorCode === '409') {
+        if (insertError.code === 'PGRST301' || insertError.message?.includes('406') || errorCode === '409' || errorCode === '23503') {
           if (errorCode === '409') {
             console.warn('⚠️ useSaveBPDTestResult: Конфликт данных (409) - возможно, результат уже существует для этого пользователя')
+          } else if (errorCode === '23503') {
+            console.warn('⚠️ useSaveBPDTestResult: Нарушение внешнего ключа (23503) - пользователь не найден в таблице users')
+            console.warn('⚠️ useSaveBPDTestResult: Возможно, пользователь был удален или ID изменился')
           } else {
             console.warn('⚠️ useSaveBPDTestResult: Проблемы с БД (RLS), но продолжаем работу')
           }
