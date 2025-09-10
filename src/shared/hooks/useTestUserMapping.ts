@@ -108,6 +108,11 @@ export function useTestUserMapping() {
 
     try {
       console.log('🔗 useTestUserMapping: Связываем существующие результаты с пользователем:', { userId, sessionId })
+      console.log('🔍 useTestUserMapping: Весь localStorage:', {
+        anonymous_user_id: localStorage.getItem('anonymous_user_id'),
+        session_id: localStorage.getItem('session_id'),
+        test_session_id: localStorage.getItem('test_session_id')
+      })
 
       // Проверяем localStorage для поиска anonymousUserId
       const anonymousUserId = localStorage.getItem('anonymous_user_id')

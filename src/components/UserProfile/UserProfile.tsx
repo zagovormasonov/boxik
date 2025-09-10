@@ -50,7 +50,11 @@ const UserProfile: React.FC = () => {
         try {
           // Получаем session_id из localStorage
           const sessionId = localStorage.getItem('session_id')
-          console.log('UserProfile: session_id из localStorage:', sessionId)
+          const anonymousUserId = localStorage.getItem('anonymous_user_id')
+          console.log('UserProfile: Данные из localStorage:', {
+            session_id: sessionId,
+            anonymous_user_id: anonymousUserId
+          })
           
           if (sessionId) {
             console.log('UserProfile: Связываем результаты теста с пользователем в ЛК')

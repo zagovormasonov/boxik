@@ -105,6 +105,10 @@ const BPDTestScreen: React.FC = () => {
             localStorage.setItem('anonymous_user_id', anonymousUserId)
             localStorage.setItem('session_id', sessionId)
             console.log('BPDTestScreen: Связь сохранена в localStorage:', { sessionId, anonymousUserId })
+            console.log('BPDTestScreen: Проверяем сохранение в localStorage:', {
+              anonymous_user_id: localStorage.getItem('anonymous_user_id'),
+              session_id: localStorage.getItem('session_id')
+            })
           } else {
             console.warn('BPDTestScreen: Не удалось сохранить результаты БПД теста с анонимным user_id:', anonymousUserId)
           }
