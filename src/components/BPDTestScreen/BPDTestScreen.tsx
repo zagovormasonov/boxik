@@ -53,10 +53,17 @@ const BPDTestScreen: React.FC = () => {
       answer 
     })
     console.log('BPDTestScreen: После выбора ответа, текущий вопрос:', state.currentQuestion, 'из', questions.length)
+    console.log('BPDTestScreen: Состояние теста после ответа:', {
+      currentQuestion: state.currentQuestion,
+      totalQuestions: questions.length,
+      isLastQuestion: state.currentQuestion === questions.length - 1,
+      answers: state.answers.length
+    })
   }
 
   const handleNext = async () => {
     console.log('BPDTestScreen: handleNext вызван, текущий вопрос:', state.currentQuestion, 'из', questions.length)
+    console.log('BPDTestScreen: Проверяем условие завершения:', state.currentQuestion === questions.length - 1)
     
     if (state.currentQuestion === questions.length - 1) {
       console.log('BPDTestScreen: Завершаем тест')
