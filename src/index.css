@@ -1568,7 +1568,7 @@ span.test-date {
 .advantage-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #4c6dff;
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -1748,7 +1748,7 @@ span.test-date {
 
 /* Login and Pay Button Styles */
 .login-and-pay-button {
-  background: #374151 !important;
+  background: #4990ff !important;
   color: white !important;
   border: none !important;
   position: relative;
