@@ -130,6 +130,15 @@ export function useSaveBPDTestResult() {
       }
 
       console.log('useSaveBPDTestResult: Результат успешно сохранен:', data)
+      
+      // Очищаем сохраненное состояние теста из localStorage после успешного сохранения в БД
+      try {
+        localStorage.removeItem('bpd_test_state')
+        console.log('useSaveBPDTestResult: Очищено сохраненное состояние теста из localStorage')
+      } catch (error) {
+        console.error('useSaveBPDTestResult: Ошибка при очистке localStorage:', error)
+      }
+      
       return true
     } catch (err) {
       console.error('useSaveBPDTestResult: Ошибка при сохранении:', err)

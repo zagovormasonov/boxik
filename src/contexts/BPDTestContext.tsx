@@ -245,22 +245,59 @@ interface BPDTestContextType {
   dispatch: React.Dispatch<BPDTestAction>
   questions: BPDQuestion[]
   severity: BPDSeverity
+  clearSavedState: () => void
 }
 
 const BPDTestContext = createContext<BPDTestContextType | undefined>(undefined)
 
 // Провайдер контекста теста БПД
 export const BPDTestProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(bpdTestReducer, initialState)
+  // Загружаем сохраненное состояние из localStorage при инициализации
+  const loadSavedState = (): BPDTestState => {
+    try {
+      const savedState = localStorage.getItem('bpd_test_state')
+      if (savedState) {
+        const parsedState = JSON.parse(savedState)
+        console.log('BPDTestProvider: Загружено сохраненное состояние теста:', parsedState)
+        return parsedState
+      }
+    } catch (error) {
+      console.error('BPDTestProvider: Ошибка при загрузке сохраненного состояния:', error)
+    }
+    return initialState
+  }
+
+  const [state, dispatch] = useReducer(bpdTestReducer, loadSavedState())
   
   const severity = calculateSeverity(state.totalScore)
+
+  // Сохраняем состояние в localStorage при каждом изменении
+  React.useEffect(() => {
+    try {
+      localStorage.setItem('bpd_test_state', JSON.stringify(state))
+      console.log('BPDTestProvider: Сохранено состояние теста в localStorage:', state)
+    } catch (error) {
+      console.error('BPDTestProvider: Ошибка при сохранении состояния:', error)
+    }
+  }, [state])
+
+  // Функция для очистки сохраненного состояния
+  const clearSavedState = () => {
+    try {
+      localStorage.removeItem('bpd_test_state')
+      console.log('BPDTestProvider: Очищено сохраненное состояние теста')
+    } catch (error) {
+      console.error('BPDTestProvider: Ошибка при очистке сохраненного состояния:', error)
+    }
+  }
 
   return (
     <BPDTestContext.Provider value={{
       state,
       dispatch,
       questions: bpdQuestions,
-      severity
+      severity,
+      clearSavedState
     }}>
       {children}
     </BPDTestContext.Provider>

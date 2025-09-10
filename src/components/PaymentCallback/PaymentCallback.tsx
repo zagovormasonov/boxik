@@ -6,6 +6,7 @@ import { useSubscriptions } from '../../shared/hooks/useSubscriptions'
 import { useUserHasPaid } from '../../shared/hooks/useUserHasPaid'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTestUserMapping } from '../../shared/hooks/useTestUserMapping'
+import { useSaveTestFromLocalStorage } from '../../shared/hooks/useSaveTestFromLocalStorage'
 
 const PaymentCallback: React.FC = () => {
   const navigate = useNavigate()
@@ -15,6 +16,7 @@ const PaymentCallback: React.FC = () => {
   const { setUserPaid, getUserHasPaid } = useUserHasPaid()
   const { authState } = useAuth()
   const { linkExistingTestResults, findAllTestResults } = useTestUserMapping()
+  const { saveTestFromLocalStorage } = useSaveTestFromLocalStorage()
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
 
@@ -191,8 +193,38 @@ const PaymentCallback: React.FC = () => {
               console.log('🔗 PaymentCallback: Все данные localStorage:', {
                 session_id: localStorage.getItem('session_id'),
                 yandex_user: localStorage.getItem('yandex_user'),
-                yandex_auth_success: localStorage.getItem('yandex_auth_success')
+                yandex_auth_success: localStorage.getItem('yandex_auth_success'),
+                bpd_test_state: localStorage.getItem('bpd_test_state')
               })
+              
+              // Проверяем, есть ли сохраненное состояние теста в localStorage
+              const savedTestState = localStorage.getItem('bpd_test_state')
+              if (savedTestState) {
+                console.log('🔍 PaymentCallback: Найдено сохраненное состояние теста в localStorage')
+                try {
+                  const testState = JSON.parse(savedTestState)
+                  console.log('🔍 PaymentCallback: Сохраненное состояние теста:', testState)
+                  
+                  // Если тест завершен, сохраняем его в БД
+                  if (testState.isCompleted && testState.totalScore > 0) {
+                    console.log('💾 PaymentCallback: Сохраняем завершенный тест в БД')
+                    
+                    const saveResult = await saveTestFromLocalStorage({
+                      userId: authState.user.id,
+                      testState: testState,
+                      totalQuestions: 18 // Количество вопросов в БПД тесте
+                    })
+                    
+                    if (saveResult) {
+                      console.log('✅ PaymentCallback: Тест успешно сохранен в БД из localStorage')
+                    } else {
+                      console.warn('⚠️ PaymentCallback: Не удалось сохранить тест в БД из localStorage')
+                    }
+                  }
+                } catch (parseError) {
+                  console.error('❌ PaymentCallback: Ошибка при парсинге сохраненного состояния теста:', parseError)
+                }
+              }
               
               const linked = await linkExistingTestResults(authState.user.id, sessionId)
               if (linked) {

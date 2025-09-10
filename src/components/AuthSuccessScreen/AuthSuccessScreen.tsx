@@ -6,6 +6,7 @@ import { usePaymentContext } from '../../contexts/PaymentContext'
 import { useNavigate } from 'react-router-dom'
 import { useUserHasPaid } from '../../shared/hooks/useUserHasPaid'
 import { useTestUserMapping } from '../../shared/hooks/useTestUserMapping'
+import { useSaveTestFromLocalStorage } from '../../shared/hooks/useSaveTestFromLocalStorage'
 
 const AuthSuccessScreen: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false)
@@ -15,6 +16,7 @@ const AuthSuccessScreen: React.FC = () => {
   const navigate = useNavigate()
   const { getUserHasPaid, setUserPaid } = useUserHasPaid()
   const { linkExistingTestResults } = useTestUserMapping()
+  const { saveTestFromLocalStorage } = useSaveTestFromLocalStorage()
 
   console.log('AuthSuccessScreen: Компонент загружен, authState.user:', authState.user?.id, 'hasPaid:', hasPaid)
 
@@ -55,6 +57,35 @@ const AuthSuccessScreen: React.FC = () => {
           console.log('AuthSuccessScreen: sessionId значение:', sessionId, 'тип:', typeof sessionId)
           console.log('AuthSuccessScreen: anonymousUserId значение:', anonymousUserId, 'тип:', typeof anonymousUserId)
           
+          // Проверяем, есть ли сохраненное состояние теста в localStorage
+          const savedTestState = localStorage.getItem('bpd_test_state')
+          if (savedTestState) {
+            console.log('🔍 AuthSuccessScreen: Найдено сохраненное состояние теста в localStorage')
+            try {
+              const testState = JSON.parse(savedTestState)
+              console.log('🔍 AuthSuccessScreen: Сохраненное состояние теста:', testState)
+              
+              // Если тест завершен, сохраняем его в БД
+              if (testState.isCompleted && testState.totalScore > 0) {
+                console.log('💾 AuthSuccessScreen: Сохраняем завершенный тест в БД')
+                
+                const saveResult = await saveTestFromLocalStorage({
+                  userId: authState.user.id,
+                  testState: testState,
+                  totalQuestions: 18 // Количество вопросов в БПД тесте
+                })
+                
+                if (saveResult) {
+                  console.log('✅ AuthSuccessScreen: Тест успешно сохранен в БД из localStorage')
+                } else {
+                  console.warn('⚠️ AuthSuccessScreen: Не удалось сохранить тест в БД из localStorage')
+                }
+              }
+            } catch (parseError) {
+              console.error('❌ AuthSuccessScreen: Ошибка при парсинге сохраненного состояния теста:', parseError)
+            }
+          }
+
           if (sessionId) {
             console.log('AuthSuccessScreen: Связываем результаты теста с пользователем')
             const linked = await linkExistingTestResults(authState.user.id, sessionId)
