@@ -166,8 +166,11 @@ const AuthSuccessScreen: React.FC = () => {
         padding: '20px'
       }}>
         <div style={{
+          background: 'white',
+          borderRadius: '20px',
           padding: '40px',
           textAlign: 'center',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
           maxWidth: '400px',
           width: '100%'
         }}>
@@ -196,6 +199,7 @@ const AuthSuccessScreen: React.FC = () => {
         borderRadius: '20px',
         padding: '40px',
         textAlign: 'center',
+        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
         maxWidth: '500px',
         width: '100%'
       }}>
@@ -211,7 +215,7 @@ const AuthSuccessScreen: React.FC = () => {
           margin: '0 auto 20px',
           color: 'white'
         }}>
-          <Check size={40} />
+          <Check size={32} />
         </div>
         
         <h1 style={{ 
@@ -233,6 +237,7 @@ const AuthSuccessScreen: React.FC = () => {
 
         {/* Данные пользователя */}
         <div style={{
+          background: '#f8fafc',
           borderRadius: '12px',
           padding: '20px',
           margin: '0 0 30px 0',
@@ -242,6 +247,7 @@ const AuthSuccessScreen: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            margin: '0 0 15px 0'
           }}>
             {authState.user.avatar && (
               <img 
@@ -282,6 +288,7 @@ const AuthSuccessScreen: React.FC = () => {
 
         {/* Информация о подписке */}
         <div style={{
+          background: '#f1f5f9',
           borderRadius: '8px',
           padding: '16px',
           margin: '0 0 24px 0',
@@ -313,7 +320,7 @@ const AuthSuccessScreen: React.FC = () => {
             width: '100%',
             background: isProcessing 
               ? '#9ca3af' 
-              : '#1c1c1c',
+              : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
             color: 'white',
             border: 'none',
             borderRadius: '12px',
@@ -325,7 +332,8 @@ const AuthSuccessScreen: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'center',
             gap: '10px',
-            transition: 'all 0.2s ease'
+            transition: 'all 0.2s ease',
+            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)'
           }}
           onMouseOver={(e) => {
             if (!isProcessing) {

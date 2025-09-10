@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { BPDTestState, BPDTestResult, BPDSeverity } from '../../types'
-import { useAuth } from '../../contexts/AuthContext'
 
 interface SaveBPDTestResultParams {
   userId: string
@@ -12,7 +11,6 @@ interface SaveBPDTestResultParams {
 export function useSaveBPDTestResult() {
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const authState = useAuth()
 
   const saveBPDTestResult = async ({ userId, testState, totalQuestions }: SaveBPDTestResultParams): Promise<boolean> => {
     setIsSaving(true)
@@ -38,17 +36,8 @@ export function useSaveBPDTestResult() {
 
       console.log('useSaveBPDTestResult: Результат БПД теста:', bpdTestResult)
 
-      // Проверяем, является ли пользователь неавторизованным
-      // Неавторизованный пользователь - это тот, кто не авторизован в системе
-      // Мы можем определить это по отсутствию пользователя в authState или по специальному префиксу
-      const isAnonymousUser = !authState.authState.user || userId.startsWith('anonymous_') || userId.includes('session_')
-      
-      console.log('useSaveBPDTestResult: Проверка типа пользователя:', {
-        userId,
-        hasAuthUser: !!authState.authState.user,
-        authUserId: authState.authState.user?.id,
-        isAnonymousUser
-      })
+      // Проверяем, является ли пользователь неавторизованным (UUID не существует в users)
+      const isAnonymousUser = userId.startsWith('anonymous_') || !userId.includes('-')
       
       if (isAnonymousUser) {
         console.log('useSaveBPDTestResult: Обнаружен неавторизованный пользователь, сохраняем в localStorage')
