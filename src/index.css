@@ -1501,13 +1501,13 @@ span.test-date {
 .success-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #6dffcf, #046345);
   border-radius: 50%;
   display: flex;
+  border: 3px solid #0eb77f;
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
-  color: white;
+  color: #0eb77f;
 }
 
 .landing-title {
