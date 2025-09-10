@@ -194,7 +194,6 @@ const AuthSuccessScreen: React.FC = () => {
         alignItems: 'center',
         justifyContent: 'center',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        padding: '20px'
       }}>
         <div style={{
           background: 'white',
@@ -268,7 +267,6 @@ const AuthSuccessScreen: React.FC = () => {
 
         {/* Данные пользователя */}
         <div style={{
-          background: '#f8fafc',
           borderRadius: '12px',
           padding: '20px',
           margin: '0 0 30px 0',
@@ -278,7 +276,6 @@ const AuthSuccessScreen: React.FC = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0 0 15px 0'
           }}>
             {authState.user.avatar && (
               <img 
@@ -319,7 +316,6 @@ const AuthSuccessScreen: React.FC = () => {
 
         {/* Информация о подписке */}
         <div style={{
-          background: '#f1f5f9',
           borderRadius: '8px',
           padding: '16px',
           margin: '0 0 24px 0',
@@ -329,7 +325,8 @@ const AuthSuccessScreen: React.FC = () => {
             margin: '0 0 8px 0', 
             color: '#334155',
             fontSize: '16px',
-            fontWeight: '500'
+            fontWeight: '500',
+            textAlign: 'left'
           }}>
             Получите полный доступ
           </h3>
@@ -350,8 +347,8 @@ const AuthSuccessScreen: React.FC = () => {
           style={{
             width: '100%',
             background: isProcessing 
-              ? '#9ca3af' 
-              : 'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+              ? '#1c1c1c' 
+              : '#1c1c1c',
             color: 'white',
             border: 'none',
             borderRadius: '12px',
