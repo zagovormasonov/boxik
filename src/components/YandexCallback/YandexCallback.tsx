@@ -217,7 +217,7 @@ const YandexCallback: React.FC = () => {
         console.log('YandexCallback: Пользователь успешно создан в localStorage', realUser)
         
         // Связываем существующие результаты теста с пользователем
-        const sessionId = localStorage.getItem('test_session_id') || 'anonymous'
+        const sessionId = localStorage.getItem('session_id') || 'anonymous'
         console.log('YandexCallback: Связываем результаты теста с пользователем:', { userId: realUser.id, sessionId })
         
         try {

@@ -110,13 +110,11 @@ export function useTestUserMapping() {
       console.log('🔗 useTestUserMapping: Связываем существующие результаты с пользователем:', { userId, sessionId })
       console.log('🔍 useTestUserMapping: Весь localStorage:', {
         anonymous_user_id: localStorage.getItem('anonymous_user_id'),
-        session_id: localStorage.getItem('session_id'),
-        test_session_id: localStorage.getItem('test_session_id')
+        session_id: localStorage.getItem('session_id')
       })
       console.log('🔍 useTestUserMapping: Весь sessionStorage:', {
         anonymous_user_id: sessionStorage.getItem('anonymous_user_id'),
-        session_id: sessionStorage.getItem('session_id'),
-        test_session_id: sessionStorage.getItem('test_session_id')
+        session_id: sessionStorage.getItem('session_id')
       })
 
       // Проверяем localStorage и sessionStorage для поиска anonymousUserId

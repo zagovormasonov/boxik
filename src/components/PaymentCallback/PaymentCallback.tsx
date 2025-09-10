@@ -186,10 +186,10 @@ const PaymentCallback: React.FC = () => {
           if (authState.user?.id) {
             try {
               console.log('🔗 PaymentCallback: Связываем результаты теста с пользователем после оплаты:', authState.user.id)
-              const sessionId = localStorage.getItem('test_session_id') || 'anonymous'
+              const sessionId = localStorage.getItem('session_id') || 'anonymous'
               console.log('🔗 PaymentCallback: Session ID для связывания:', sessionId)
               console.log('🔗 PaymentCallback: Все данные localStorage:', {
-                test_session_id: localStorage.getItem('test_session_id'),
+                session_id: localStorage.getItem('session_id'),
                 yandex_user: localStorage.getItem('yandex_user'),
                 yandex_auth_success: localStorage.getItem('yandex_auth_success')
               })
