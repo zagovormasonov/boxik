@@ -712,7 +712,7 @@ body {
 
 /* BPD Test Styles */
 .bpd-question-card {
-  padding: 32px;
+  padding: 20px;
   margin-bottom: 24px;
 }
 
@@ -741,6 +741,7 @@ body {
   color: #1a202c;
   margin-bottom: 32px;
   line-height: 1.5;
+  text-align: left;
 }
 
 .answer-options {
@@ -2217,6 +2218,7 @@ body {
 
 .test-container {
   width: 100%;
+  padding-bottom: 50px;
 }
 
 .test-header {
