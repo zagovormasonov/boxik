@@ -39,6 +39,14 @@ export function useSaveBPDTestResult() {
        // Проверяем, является ли пользователь анонимным (неавторизованным)
        const isAnonymousUser = userId.startsWith('anonymous_') || userId.includes('session_') || !userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
        
+       console.log('useSaveBPDTestResult: Проверка типа пользователя:', {
+         userId,
+         startsWithAnonymous: userId.startsWith('anonymous_'),
+         includesSession: userId.includes('session_'),
+         isUUID: userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i),
+         isAnonymousUser
+       })
+       
        if (isAnonymousUser) {
          console.log('useSaveBPDTestResult: Обнаружен анонимный пользователь, сохраняем в localStorage')
          
@@ -56,9 +64,15 @@ export function useSaveBPDTestResult() {
            session_id: localStorage.getItem('session_id') || 'unknown'
          }
          
+         console.log('useSaveBPDTestResult: Данные для сохранения в localStorage:', testResult)
+         
          // Сохраняем в localStorage
          localStorage.setItem('pending_test_result', JSON.stringify(testResult))
          console.log('useSaveBPDTestResult: Результат сохранен в localStorage для анонимного пользователя')
+         
+         // Проверяем, что действительно сохранилось
+         const savedResult = localStorage.getItem('pending_test_result')
+         console.log('useSaveBPDTestResult: Проверяем сохранение:', savedResult ? 'СОХРАНЕНО' : 'НЕ СОХРАНЕНО')
          
          // Возвращаем успех без попытки вставки в БД
          return true

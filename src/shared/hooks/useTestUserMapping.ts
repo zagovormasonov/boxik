@@ -127,12 +127,15 @@ export function useTestUserMapping() {
         
         // Сначала проверяем localStorage на наличие сохраненных результатов
         const pendingResult = localStorage.getItem('pending_test_result')
+        console.log('🔍 useTestUserMapping: Проверяем localStorage на pending_test_result:', pendingResult ? 'НАЙДЕН' : 'НЕ НАЙДЕН')
+        
         if (pendingResult) {
           console.log('🔍 useTestUserMapping: Найден сохраненный результат в localStorage:', pendingResult)
           
           try {
             const testResult = JSON.parse(pendingResult)
             console.log('🔍 useTestUserMapping: Парсим результат из localStorage:', testResult)
+            console.log('🔍 useTestUserMapping: Сравниваем user_id:', testResult.user_id, 'с anonymousUserId:', anonymousUserId)
             
             // Проверяем, что результат соответствует нашему anonymousUserId
             if (testResult.user_id === anonymousUserId) {
@@ -170,13 +173,17 @@ export function useTestUserMapping() {
               return true
             } else {
               console.log('⚠️ useTestUserMapping: Результат в localStorage не соответствует anonymousUserId')
+              console.log('⚠️ useTestUserMapping: testResult.user_id:', testResult.user_id, 'anonymousUserId:', anonymousUserId)
             }
           } catch (parseError) {
             console.error('❌ useTestUserMapping: Ошибка при парсинге результата из localStorage:', parseError)
           }
+        } else {
+          console.log('ℹ️ useTestUserMapping: pending_test_result не найден в localStorage')
         }
         
         // Если в localStorage нет результата, ищем в БД
+        console.log('🔍 useTestUserMapping: Ищем результаты в БД по anonymousUserId:', anonymousUserId)
         const { data: testResults, error: testError } = await supabase
           .from('test_results')
           .select('id, user_id, test_type, completed_at')
@@ -209,7 +216,11 @@ export function useTestUserMapping() {
 
           console.log('✅ useTestUserMapping: Все результаты теста связаны с пользователем и обновлены')
           return true
+        } else {
+          console.log('ℹ️ useTestUserMapping: Результаты не найдены в БД по anonymousUserId')
         }
+      } else {
+        console.log('ℹ️ useTestUserMapping: anonymousUserId не найден в localStorage/sessionStorage')
       }
 
       // Проверяем, является ли sessionId валидным UUID
