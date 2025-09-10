@@ -260,7 +260,7 @@ const AuthSuccessScreen: React.FC = () => {
           margin: '0 0 30px 0',
           fontSize: '16px'
         }}>
-          Добро пожаловать в Boxik
+          Добро пожаловать в систему!
         </p>
 
         {/* Данные пользователя */}
