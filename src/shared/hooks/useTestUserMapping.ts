@@ -129,6 +129,16 @@ export function useTestUserMapping() {
         const pendingResult = localStorage.getItem('pending_test_result')
         console.log('🔍 useTestUserMapping: Проверяем localStorage на pending_test_result:', pendingResult ? 'НАЙДЕН' : 'НЕ НАЙДЕН')
         
+        // Также проверяем другие возможные ключи в localStorage
+        const allLocalStorageKeys = Object.keys(localStorage)
+        console.log('🔍 useTestUserMapping: Все ключи в localStorage:', allLocalStorageKeys)
+        
+        // Ищем любые результаты теста в localStorage
+        const testResultKeys = allLocalStorageKeys.filter(key => 
+          key.includes('test') || key.includes('result') || key.includes('bpd')
+        )
+        console.log('🔍 useTestUserMapping: Ключи связанные с тестами:', testResultKeys)
+        
         if (pendingResult) {
           console.log('🔍 useTestUserMapping: Найден сохраненный результат в localStorage:', pendingResult)
           
@@ -180,6 +190,18 @@ export function useTestUserMapping() {
           }
         } else {
           console.log('ℹ️ useTestUserMapping: pending_test_result не найден в localStorage')
+          
+          // Проверяем, есть ли другие данные о тесте
+          if (testResultKeys.length > 0) {
+            console.log('🔍 useTestUserMapping: Найдены другие ключи с тестами, проверяем их содержимое')
+            for (const key of testResultKeys) {
+              const value = localStorage.getItem(key)
+              console.log(`🔍 useTestUserMapping: Ключ ${key}:`, value)
+            }
+          } else {
+            console.log('ℹ️ useTestUserMapping: Никаких данных о тестах в localStorage не найдено')
+            console.log('ℹ️ useTestUserMapping: Возможно, тест не был пройден в этой сессии')
+          }
         }
         
         // Если в localStorage нет результата, ищем в БД
