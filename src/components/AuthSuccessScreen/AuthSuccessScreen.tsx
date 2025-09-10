@@ -213,7 +213,7 @@ const AuthSuccessScreen: React.FC = () => {
           margin: '0 auto 20px',
           color: 'white'
         }}>
-          <Check size={32} />
+          <Check size={40} />
         </div>
         
         <h1 style={{ 
