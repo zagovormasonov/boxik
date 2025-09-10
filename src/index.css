@@ -99,7 +99,7 @@ body {
 
 .progress-fill {
   height: 100%;
-  background: #4f46e5;
+  background: #548fff;
   transition: width 0.3s ease;
 }
 
@@ -712,8 +712,7 @@ span.test-date {
 
 /* BPD Test Styles */
 .bpd-question-card {
-  padding: 32px;
-  margin-bottom: 24px;
+  padding: 20px;
 }
 
 .question-category {
