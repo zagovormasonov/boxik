@@ -228,7 +228,7 @@ const AuthSuccessScreen: React.FC = () => {
           margin: '0 0 30px 0',
           fontSize: '16px'
         }}>
-          Добро пожаловать в Boxik
+          Добро пожаловать в систему!
         </p>
 
         {/* Данные пользователя */}
@@ -314,7 +314,7 @@ const AuthSuccessScreen: React.FC = () => {
             width: '100%',
             background: isProcessing 
               ? '#1c1c1c' 
-              : '#1c1c1c)',
+              : '#1c1c1c',
             color: 'white',
             border: 'none',
             borderRadius: '12px',
