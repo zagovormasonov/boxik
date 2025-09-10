@@ -351,8 +351,7 @@ body {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgb(225 225 225);
   margin-bottom: 20px;
   backdrop-filter: blur(10px);
 }
@@ -691,7 +690,6 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
-  max-width: 280px;
   justify-content: center;
 }
 
@@ -2281,7 +2279,7 @@ body {
 
 /* Auth Success Screen - Remove gradient */
 .auth-success-screen {
-  background: #f8fafc !important; /* Убираем градиент */
+  background: white !important; /* Убираем градиент */
 }
 
 /* User Profile - Smaller severity text */
