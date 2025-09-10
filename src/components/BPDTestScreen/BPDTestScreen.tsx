@@ -101,6 +101,14 @@ const BPDTestScreen: React.FC = () => {
           console.log('BPDTestScreen: sessionId тип:', typeof sessionId, 'длина:', sessionId?.length)
           console.log('BPDTestScreen: anonymousUserId тип:', typeof anonymousUserId, 'длина:', anonymousUserId?.length)
           
+          console.log('BPDTestScreen: Данные для сохранения:', {
+            userId: anonymousUserId,
+            testState: completedTestState,
+            totalQuestions: questions.length,
+            totalScore: completedTestState.totalScore,
+            categoryScores: completedTestState.categoryScores
+          })
+          
           const saveResult = await saveBPDTestResult({
             userId: anonymousUserId, // Используем созданный UUID для неавторизованных пользователей
             testState: completedTestState,
@@ -128,6 +136,7 @@ const BPDTestScreen: React.FC = () => {
             })
           } else {
             console.warn('BPDTestScreen: Не удалось сохранить результаты БПД теста с анонимным user_id:', anonymousUserId)
+            console.log('BPDTestScreen: saveResult вернул false, проверяем ошибки сохранения')
           }
         } catch (error) {
           console.error('BPDTestScreen: Ошибка при сохранении результатов БПД теста для неавторизованного пользователя:', error)
