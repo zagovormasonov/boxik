@@ -99,7 +99,7 @@ body {
 
 .progress-fill {
   height: 100%;
-  background: #548fff;
+  background: #4f46e5;
   transition: width 0.3s ease;
 }
 
@@ -261,7 +261,15 @@ body {
 }
 
 .info-item {
-  display: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
 }
 
 .info-item:hover {
@@ -316,7 +324,7 @@ body {
 }
 
 .action-button-primary {
-  background: linear-gradient(135deg, #3b93ff, #9fc6ff);
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
   color: white;
 }
 
@@ -326,7 +334,7 @@ body {
 }
 
 .action-button-secondary {
-  background: linear-gradient(135deg, #2b2b2b, #56657b);
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
   color: white;
 }
 
@@ -347,9 +355,11 @@ body {
 
 /* Test Result Card Styles */
 .test-result-card {
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   padding: 20px;
-  border: 1px solid rgb(133 129 129 / 30%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 20px;
   backdrop-filter: blur(10px);
 }
@@ -359,11 +369,9 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e2e8f0;
   color: black;
-}
-
-span.test-date {
-  color: #a5a5a5;
 }
 
 .test-result-title {
@@ -391,6 +399,10 @@ span.test-date {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
 }
 
 .score-main {
@@ -490,6 +502,7 @@ span.test-date {
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
+  max-width: 280px;
   justify-content: center;
 }
 
@@ -692,6 +705,7 @@ span.test-date {
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
+  max-width: 280px;
   justify-content: center;
 }
 
@@ -712,7 +726,8 @@ span.test-date {
 
 /* BPD Test Styles */
 .bpd-question-card {
-  padding: 20px;
+  padding: 32px;
+  margin-bottom: 24px;
 }
 
 .question-category {
@@ -737,7 +752,6 @@ span.test-date {
 .question-text {
   font-size: 20px;
   font-weight: 600;
-  text-align: left;
   color: #1a202c;
   margin-bottom: 32px;
   line-height: 1.5;
@@ -830,8 +844,9 @@ span.test-date {
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.7);
   border-radius: 8px;
-  border: 1px solid rgb(135 135 135 / 30%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .score-label {
@@ -1501,13 +1516,13 @@ span.test-date {
 .success-icon {
   width: 80px;
   height: 80px;
+  background: linear-gradient(135deg, #10b981, #059669);
   border-radius: 50%;
   display: flex;
-  border: 3px solid #0eb77f;
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
-  color: #0eb77f;
+  color: white;
 }
 
 .landing-title {
@@ -1568,13 +1583,12 @@ span.test-date {
 .advantage-icon {
   width: 48px;
   height: 48px;
-  background: #ffffff;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: black;
-  border: 1px solid #c5c5c5;
+  color: white;
   margin-right: 16px;
   margin-left: 0; /* Выравниваем иконку по левому краю */
   flex-shrink: 0;
@@ -1625,7 +1639,7 @@ span.test-date {
 }
 
 .pricing-card {
-  background: linear-gradient(135deg, #e8ffdd, #8fd0ff) !important;
+  background: linear-gradient(135deg, #667eea, #764ba2);
   border-radius: 16px;
   padding: 30px;
   color: white;
@@ -1749,7 +1763,7 @@ span.test-date {
 
 /* Login and Pay Button Styles */
 .login-and-pay-button {
-  background: #1c1c1c !important;
+  background: #374151 !important;
   color: white !important;
   border: none !important;
   position: relative;
@@ -1916,6 +1930,7 @@ span.test-date {
 }
 
 .pricing-card {
+  background: rgba(107, 114, 128, 0.1);
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 20px;
@@ -2181,7 +2196,6 @@ span.test-date {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  padding-bottom: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2278,8 +2292,7 @@ span.test-date {
 
 /* Auth Success Screen - Remove gradient */
 .auth-success-screen {
-  background: white !important;
-  padding: 0px !important; /* Убираем градиент */
+  background: #f8fafc !important; /* Убираем градиент */
 }
 
 /* User Profile - Smaller severity text */
@@ -2323,7 +2336,7 @@ span.test-date {
 /* Test Landing Page - Clean and Minimalistic */
 .test-landing {
   min-height: 100vh;
-  background: #FFEED4;
+  background: #ffffff;
   padding: 40px 20px;
 }
 
@@ -2361,9 +2374,7 @@ span.test-date {
 
 .test-landing-feature {
   display: flex;
-  flex-direction: row;
   align-items: flex-start;
-  text-align: left;
   gap: 16px;
   padding: 24px;
   background: #f8fafc;
@@ -2375,19 +2386,12 @@ span.test-date {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
+  width: 48px;
+  height: 48px;
   background: #ffffff;
   border-radius: 8px;
   color: #4f46e5;
   flex-shrink: 0;
-}
-
-.feature-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 8px;
 }
 
 .test-landing-feature-content h3 {
@@ -2505,94 +2509,34 @@ span.test-date {
     padding: 20px 16px;
   }
   
-  .test-landing-header {
-    margin-bottom: 40px;
-  }
-  
   .test-landing-header h1 {
-    font-size: 24px;
-    line-height: 1.2;
+    font-size: 28px;
   }
   
   .test-landing-subtitle {
     font-size: 16px;
-    line-height: 1.5;
   }
   
   .test-landing-features {
     grid-template-columns: 1fr;
-    gap: 16px;
-    margin-bottom: 40px;
+    gap: 20px;
   }
   
   .test-landing-feature {
-    padding: 16px;
-    flex-direction: row;
-    align-items: flex-start;
-    text-align: left;
-    gap: 12px;
-  }
-  
-  .test-landing-feature-icon {
-    width: 50px;
-    height: 50px;
-    flex-shrink: 0;
-  }
-  
-  .test-landing-feature-content h3 {
-    font-size: 16px;
-    margin-bottom: 6px;
-  }
-  
-  .test-landing-feature-content p {
-    font-size: 13px;
-    line-height: 1.4;
-  }
-  
-  .test-landing-benefits {
-    margin-bottom: 40px;
-  }
-  
-  .test-landing-benefits h2 {
-    font-size: 20px;
-    margin-bottom: 24px;
+    padding: 20px;
   }
   
   .test-landing-benefits-list {
     grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  
-  .test-landing-benefit {
-    padding: 12px;
-    font-size: 13px;
   }
   
   .test-landing-info {
     grid-template-columns: 1fr;
-    gap: 16px;
-    margin-bottom: 40px;
-  }
-  
-  .test-landing-info-card {
-    padding: 16px;
-  }
-  
-  .test-landing-info-card h3 {
-    font-size: 16px;
-    margin-bottom: 8px;
-  }
-  
-  .test-landing-info-card p {
-    font-size: 13px;
-    line-height: 1.5;
   }
   
   .test-landing-start-button {
     padding: 14px 32px;
     font-size: 16px;
-    width: 100%;
-    max-width: 280px;
   }
 }
 

@@ -1,29 +1,9 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Brain, Shield, FileText, Clock, CheckCircle } from 'lucide-react'
-import image1 from '../../img/1.png'
-import image2 from '../../img/2.png'
-import image3 from '../../img/3.png'
-import { useAuth } from '../../contexts/AuthContext'
-import { usePaymentContext } from '../../contexts/PaymentContext'
 
 const TestLanding: React.FC = () => {
   const navigate = useNavigate()
-  const { authState } = useAuth()
-  const { hasPaid } = usePaymentContext()
-
-  useEffect(() => {
-    // Если пользователь авторизован и оплатил, перенаправляем в ЛК
-    if (authState.user && hasPaid) {
-      console.log('TestLanding: Пользователь оплатил, перенаправляем в ЛК')
-      navigate('/profile')
-      return
-    }
-    
-    // Если пользователь не авторизован или не оплатил, перенаправляем на внешний сайт
-    console.log('TestLanding: Перенаправляем на внешний сайт теста')
-    window.location.href = 'https://generous-thanks-034471.framer.app/'
-  }, [authState.user, hasPaid, navigate])
 
   const handleStartTest = () => {
     navigate('/test')
@@ -32,19 +12,16 @@ const TestLanding: React.FC = () => {
   const features = [
     {
       icon: <Brain size={24} />,
-      image: image1,
       title: 'Профессиональная диагностика',
       description: 'Тест основан на официальных критериях DSM-5 для диагностики пограничного расстройства личности'
     },
     {
       icon: <Shield size={24} />,
-      image: image2,
       title: 'Конфиденциальность',
       description: 'Все ваши ответы строго конфиденциальны и не передаются третьим лицам'
     },
     {
       icon: <FileText size={24} />,
-      image: image3,
       title: 'Детальный отчет',
       description: 'Получите подробный анализ результатов с рекомендациями специалистов'
     },
@@ -78,11 +55,7 @@ const TestLanding: React.FC = () => {
           {features.map((feature, index) => (
             <div key={index} className="test-landing-feature">
               <div className="test-landing-feature-icon">
-                {feature.image ? (
-                  <img src={feature.image} alt={feature.title} className="feature-image" />
-                ) : (
-                  feature.icon
-                )}
+                {feature.icon}
               </div>
               <div className="test-landing-feature-content">
                 <h3>{feature.title}</h3>
