@@ -4,14 +4,26 @@ import { Brain, Shield, FileText, Clock, CheckCircle } from 'lucide-react'
 import image1 from '../../img/1.png'
 import image2 from '../../img/2.png'
 import image3 from '../../img/3.png'
+import { useAuth } from '../../contexts/AuthContext'
+import { usePaymentContext } from '../../contexts/PaymentContext'
 
 const TestLanding: React.FC = () => {
   const navigate = useNavigate()
+  const { authState } = useAuth()
+  const { hasPaid } = usePaymentContext()
 
   useEffect(() => {
-    // Редирект на внешний сайт при загрузке лендинга
+    // Если пользователь авторизован и оплатил, перенаправляем в ЛК
+    if (authState.user && hasPaid) {
+      console.log('TestLanding: Пользователь оплатил, перенаправляем в ЛК')
+      navigate('/profile')
+      return
+    }
+    
+    // Если пользователь не авторизован или не оплатил, перенаправляем на внешний сайт
+    console.log('TestLanding: Перенаправляем на внешний сайт теста')
     window.location.href = 'https://generous-thanks-034471.framer.app/'
-  }, [])
+  }, [authState.user, hasPaid, navigate])
 
   const handleStartTest = () => {
     navigate('/test')
