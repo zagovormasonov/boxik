@@ -9,11 +9,15 @@ import BPDQuestionCard from '../BPDQuestionCard/BPDQuestionCard'
 import Navigation from '../Navigation/Navigation'
 
 const BPDTestScreen: React.FC = () => {
+  console.log('BPDTestScreen: Компонент инициализируется')
+  
   const { state, questions, dispatch, severity } = useBPDTest()
   const { authState } = useAuth()
   // const { hasPaid } = usePaymentContext() // Убрано, так как теперь всегда переходим на лендинг
   const navigate = useNavigate()
   const { saveBPDTestResult, error: saveError } = useSaveBPDTestResult()
+  
+  console.log('BPDTestScreen: Хуки инициализированы')
 
   const currentQuestion = questions[state.currentQuestion]
   const selectedAnswer = state.answers[state.currentQuestion]
@@ -174,6 +178,7 @@ const BPDTestScreen: React.FC = () => {
   }, [state.isCompleted, navigate])
 
   if (state.isCompleted) {
+    console.log('BPDTestScreen: Рендерим экран завершения теста')
     return (
       <div className="test-screen">
         <div className="test-container">
@@ -188,6 +193,8 @@ const BPDTestScreen: React.FC = () => {
     )
   }
 
+  console.log('BPDTestScreen: Рендерим основной экран теста')
+  
   return (
     <div className="test-screen">
       <div className="test-container">
