@@ -2278,7 +2278,8 @@ span.test-date {
 
 /* Auth Success Screen - Remove gradient */
 .auth-success-screen {
-  background: #f8fafc !important; /* Убираем градиент */
+  background: white !important;
+  padding: 0px !important; /* Убираем градиент */
 }
 
 /* User Profile - Smaller severity text */
