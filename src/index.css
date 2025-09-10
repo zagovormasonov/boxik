@@ -1624,7 +1624,7 @@ span.test-date {
 }
 
 .pricing-card {
-  background: linear-gradient(135deg, #e8ffdd, #8fd0ff);
+  background: linear-gradient(135deg, #e8ffdd, #8fd0ff) !important;
   border-radius: 16px;
   padding: 30px;
   color: white;
@@ -1915,7 +1915,6 @@ span.test-date {
 }
 
 .pricing-card {
-  background: rgba(107, 114, 128, 0.1);
   border-radius: 12px;
   padding: 24px;
   margin-bottom: 20px;
