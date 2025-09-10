@@ -2336,7 +2336,7 @@ body {
 /* Test Landing Page - Clean and Minimalistic */
 .test-landing {
   min-height: 100vh;
-  background: #ffffff;
+  background: #FFEED4;
   padding: 40px 20px;
 }
 
@@ -2374,7 +2374,9 @@ body {
 
 .test-landing-feature {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 16px;
   padding: 24px;
   background: #f8fafc;
@@ -2386,10 +2388,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 80px;
+  height: 80px;
   background: #ffffff;
-  border-radius: 8px;
+  border-radius: 12px;
   color: #4f46e5;
   flex-shrink: 0;
 }
@@ -2538,14 +2540,15 @@ body {
   
   .test-landing-feature {
     padding: 16px;
-    flex-direction: row;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     gap: 12px;
   }
   
   .test-landing-feature-icon {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     flex-shrink: 0;
   }
   
