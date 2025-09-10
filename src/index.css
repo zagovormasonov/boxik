@@ -502,7 +502,6 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
-  max-width: 280px;
   justify-content: center;
 }
 
@@ -705,7 +704,6 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
-  max-width: 280px;
   justify-content: center;
 }
 
