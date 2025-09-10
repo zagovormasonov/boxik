@@ -219,7 +219,6 @@ const AuthSuccessScreen: React.FC = () => {
     <div className="auth-success-screen" style={{
       minHeight: '100vh',
       background: '#f8fafc',
-      padding: '20px',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center'
@@ -229,7 +228,6 @@ const AuthSuccessScreen: React.FC = () => {
         borderRadius: '20px',
         padding: '40px',
         textAlign: 'center',
-        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
         maxWidth: '500px',
         width: '100%'
       }}>
