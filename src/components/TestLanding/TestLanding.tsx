@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Brain, Shield, FileText, Clock, CheckCircle } from 'lucide-react'
 import image1 from '../../img/1.png'
@@ -7,6 +7,11 @@ import image3 from '../../img/3.png'
 
 const TestLanding: React.FC = () => {
   const navigate = useNavigate()
+
+  useEffect(() => {
+    // Редирект на внешний сайт при загрузке лендинга
+    window.location.href = 'https://generous-thanks-034471.framer.app/'
+  }, [])
 
   const handleStartTest = () => {
     navigate('/test')
