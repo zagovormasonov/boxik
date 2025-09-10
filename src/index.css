@@ -261,15 +261,7 @@ body {
 }
 
 .info-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  background: #f8fafc;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  border: 1px solid #e2e8f0;
-  transition: all 0.2s ease;
+  display: none;
 }
 
 .info-item:hover {
@@ -324,7 +316,7 @@ body {
 }
 
 .action-button-primary {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #3b93ff, #9fc6ff);
   color: white;
 }
 
@@ -334,7 +326,7 @@ body {
 }
 
 .action-button-secondary {
-  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  background: linear-gradient(135deg, #2b2b2b, #56657b);
   color: white;
 }
 
@@ -355,11 +347,9 @@ body {
 
 /* Test Result Card Styles */
 .test-result-card {
-  background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgb(133 129 129 / 30%);
   margin-bottom: 20px;
   backdrop-filter: blur(10px);
 }
@@ -400,7 +390,6 @@ body {
   flex-direction: column;
   gap: 12px;
   padding: 20px;
-  background: #f8fafc;
   border-radius: 12px;
   border: 1px solid #e2e8f0;
 }
@@ -842,9 +831,8 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.7);
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgb(135 135 135 / 30%);
 }
 
 .score-label {
