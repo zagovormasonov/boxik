@@ -5,6 +5,7 @@ import { usePayment } from '../../shared/hooks/usePayment'
 import { usePaymentContext } from '../../contexts/PaymentContext'
 import { useNavigate } from 'react-router-dom'
 import { useUserHasPaid } from '../../shared/hooks/useUserHasPaid'
+import { useTestUserMapping } from '../../shared/hooks/useTestUserMapping'
 
 const AuthSuccessScreen: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false)
@@ -13,6 +14,7 @@ const AuthSuccessScreen: React.FC = () => {
   const { hasPaid } = usePaymentContext()
   const navigate = useNavigate()
   const { getUserHasPaid, setUserPaid } = useUserHasPaid()
+  const { linkExistingTestResults } = useTestUserMapping()
 
   console.log('AuthSuccessScreen: Компонент загружен, authState.user:', authState.user?.id, 'hasPaid:', hasPaid)
 
@@ -23,6 +25,38 @@ const AuthSuccessScreen: React.FC = () => {
       navigate('/profile')
     }
   }, [hasPaid, navigate])
+
+  // Связываем результаты теста сразу после авторизации
+  useEffect(() => {
+    const linkTestResultsAfterAuth = async () => {
+      if (authState.user?.id) {
+        console.log('AuthSuccessScreen: Пользователь авторизован, связываем результаты теста')
+        
+        try {
+          // Получаем session_id из localStorage
+          const sessionId = localStorage.getItem('session_id')
+          console.log('AuthSuccessScreen: session_id из localStorage:', sessionId)
+          
+          if (sessionId) {
+            console.log('AuthSuccessScreen: Связываем результаты теста с пользователем')
+            const linked = await linkExistingTestResults(authState.user.id, sessionId)
+            
+            if (linked) {
+              console.log('✅ AuthSuccessScreen: Результаты теста успешно связаны с пользователем после авторизации')
+            } else {
+              console.log('ℹ️ AuthSuccessScreen: Результаты теста для связывания не найдены')
+            }
+          } else {
+            console.log('ℹ️ AuthSuccessScreen: session_id не найден в localStorage')
+          }
+        } catch (linkError) {
+          console.error('❌ AuthSuccessScreen: Ошибка при связывании результатов теста после авторизации:', linkError)
+        }
+      }
+    }
+    
+    linkTestResultsAfterAuth()
+  }, [authState.user?.id, linkExistingTestResults])
 
   // Проверяем, не пришел ли пользователь после оплаты от Тинькофф
   useEffect(() => {

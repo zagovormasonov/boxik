@@ -9,6 +9,7 @@ import MascotRecommendation from '../MascotRecommendation/MascotRecommendation'
 import PaymentModal from '../PaymentModal/PaymentModal'
 import { usePaymentContext } from '../../contexts/PaymentContext'
 import { useUserHasPaid } from '../../shared/hooks/useUserHasPaid'
+import { useTestUserMapping } from '../../shared/hooks/useTestUserMapping'
 
 const UserProfile: React.FC = () => {
   const { authState, logout } = useAuth()
@@ -18,6 +19,7 @@ const UserProfile: React.FC = () => {
   // const [hasTriedForceReload, setHasTriedForceReload] = useState(false) // Убрано для упрощения
   const { paymentModalOpen, setPaymentModalOpen, refreshPaymentStatus, hasPaid, forceSetPaid } = usePaymentContext()
   const { getUserHasPaid } = useUserHasPaid()
+  const { linkExistingTestResults } = useTestUserMapping()
   
   const { lastTestResult, isLoading: isLoadingResults, error: testError, sendToSpecialist, forceReload } = useBPDTestResults(authState.user?.id || null)
   
@@ -38,6 +40,43 @@ const UserProfile: React.FC = () => {
       refreshPaymentStatus()
     }
   }, [authState.user?.id]) // Убираем refreshPaymentStatus из зависимостей
+
+  // Связываем результаты теста при входе в ЛК
+  useEffect(() => {
+    const linkTestResultsInProfile = async () => {
+      if (authState.user?.id && hasPaid) {
+        console.log('UserProfile: Пользователь оплатил, связываем результаты теста в ЛК')
+        
+        try {
+          // Получаем session_id из localStorage
+          const sessionId = localStorage.getItem('session_id')
+          console.log('UserProfile: session_id из localStorage:', sessionId)
+          
+          if (sessionId) {
+            console.log('UserProfile: Связываем результаты теста с пользователем в ЛК')
+            const linked = await linkExistingTestResults(authState.user.id, sessionId)
+            
+            if (linked) {
+              console.log('✅ UserProfile: Результаты теста успешно связаны с пользователем в ЛК')
+              // После связывания принудительно загружаем результаты
+              setTimeout(() => {
+                console.log('UserProfile: Принудительно загружаем результаты после связывания')
+                forceReload()
+              }, 500)
+            } else {
+              console.log('ℹ️ UserProfile: Результаты теста для связывания не найдены в ЛК')
+            }
+          } else {
+            console.log('ℹ️ UserProfile: session_id не найден в localStorage в ЛК')
+          }
+        } catch (linkError) {
+          console.error('❌ UserProfile: Ошибка при связывании результатов теста в ЛК:', linkError)
+        }
+      }
+    }
+    
+    linkTestResultsInProfile()
+  }, [authState.user?.id, hasPaid, linkExistingTestResults, forceReload])
 
   // Простая проверка результатов теста
   useEffect(() => {
