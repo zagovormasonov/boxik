@@ -87,7 +87,8 @@ const BPDTestScreen: React.FC = () => {
           const saveResult = await saveBPDTestResult({
             userId: authState.user.id,
             testState: completedTestState,
-            totalQuestions: questions.length
+            totalQuestions: questions.length,
+            isAuthenticated: true
           })
           console.log('BPDTestScreen: Результат сохранения БПД теста:', saveResult)
           
@@ -142,7 +143,8 @@ const BPDTestScreen: React.FC = () => {
           const saveResult = await saveBPDTestResult({
             userId: anonymousUserId, // Используем созданный UUID для неавторизованных пользователей
             testState: completedTestState,
-            totalQuestions: questions.length
+            totalQuestions: questions.length,
+            isAuthenticated: false
           })
           console.log('BPDTestScreen: Результат сохранения БПД теста с анонимным user_id:', saveResult)
           console.log('BPDTestScreen: saveResult тип:', typeof saveResult, 'значение:', saveResult)

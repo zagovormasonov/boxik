@@ -6,13 +6,14 @@ interface SaveBPDTestResultParams {
   userId: string
   testState: BPDTestState
   totalQuestions: number
+  isAuthenticated?: boolean
 }
 
 export function useSaveBPDTestResult() {
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const saveBPDTestResult = async ({ userId, testState, totalQuestions }: SaveBPDTestResultParams): Promise<boolean> => {
+  const saveBPDTestResult = async ({ userId, testState, totalQuestions, isAuthenticated = false }: SaveBPDTestResultParams): Promise<boolean> => {
     setIsSaving(true)
     setError(null)
 
@@ -37,13 +38,15 @@ export function useSaveBPDTestResult() {
       console.log('useSaveBPDTestResult: Результат БПД теста:', bpdTestResult)
 
        // Проверяем, является ли пользователь анонимным (неавторизованным)
-       const isAnonymousUser = userId.startsWith('anonymous_') || userId.includes('session_') || !userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
+       // Анонимный пользователь - это UUID, который НЕ существует в таблице users
+       const isAnonymousUser = userId.startsWith('anonymous_') || userId.includes('session_') || !userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) || !isAuthenticated
        
        console.log('useSaveBPDTestResult: Проверка типа пользователя:', {
          userId,
          startsWithAnonymous: userId.startsWith('anonymous_'),
          includesSession: userId.includes('session_'),
          isUUID: userId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i),
+         isAuthenticated,
          isAnonymousUser
        })
        
