@@ -261,15 +261,7 @@ body {
 }
 
 .info-item {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  background: #f8fafc;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  border: 1px solid #e2e8f0;
-  transition: all 0.2s ease;
+  display: none;
 }
 
 .info-item:hover {
@@ -324,7 +316,7 @@ body {
 }
 
 .action-button-primary {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #080808, #4b4b4b);
   color: white;
 }
 
@@ -334,8 +326,9 @@ body {
 }
 
 .action-button-secondary {
-  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-  color: white;
+  background: linear-gradient(135deg, #ffffff, #ffffff);
+  color: #ff3d3d;
+  border: 2px solid #ffd4d4;
 }
 
 .action-button-secondary:hover:not(:disabled) {
@@ -358,8 +351,7 @@ body {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgb(225 225 225);
   margin-bottom: 20px;
   backdrop-filter: blur(10px);
 }
@@ -368,9 +360,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #e2e8f0;
   color: black;
 }
 
@@ -399,10 +389,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 20px;
-  background: #f8fafc;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
 }
 
 .score-main {
@@ -502,8 +488,7 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
-  max-width: 280px;
-  justify-content: center;
+  justify-content: center; 
 }
 
 .send-button:hover:not(:disabled) {
@@ -705,7 +690,6 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
-  max-width: 280px;
   justify-content: center;
 }
 
@@ -726,7 +710,7 @@ body {
 
 /* BPD Test Styles */
 .bpd-question-card {
-  padding: 32px;
+  padding: 20px;
   margin-bottom: 24px;
 }
 
@@ -755,6 +739,7 @@ body {
   color: #1a202c;
   margin-bottom: 32px;
   line-height: 1.5;
+  text-align: left;
 }
 
 .answer-options {
@@ -1516,13 +1501,13 @@ body {
 .success-icon {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #10b981, #059669);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
-  color: white;
+  border: 3px solid #14c564;
+  color: #14c564;
 }
 
 .landing-title {
@@ -1583,12 +1568,13 @@ body {
 .advantage-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: white;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: rgb(0, 0, 0);
+  border: 1px solid #e5e7eb;
   margin-right: 16px;
   margin-left: 0; /* Выравниваем иконку по левому краю */
   flex-shrink: 0;
@@ -1639,7 +1625,7 @@ body {
 }
 
 .pricing-card {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #ffe0e9, #c3d2ff) !important;
   border-radius: 16px;
   padding: 30px;
   color: white;
@@ -1763,7 +1749,7 @@ body {
 
 /* Login and Pay Button Styles */
 .login-and-pay-button {
-  background: #374151 !important;
+  background: #1c1c1c !important;
   color: white !important;
   border: none !important;
   position: relative;
@@ -2231,6 +2217,7 @@ body {
 
 .test-container {
   width: 100%;
+  padding-bottom: 50px;
 }
 
 .test-header {
@@ -2292,7 +2279,7 @@ body {
 
 /* Auth Success Screen - Remove gradient */
 .auth-success-screen {
-  background: #f8fafc !important; /* Убираем градиент */
+  background: white !important; /* Убираем градиент */
 }
 
 /* User Profile - Smaller severity text */
@@ -2336,7 +2323,7 @@ body {
 /* Test Landing Page - Clean and Minimalistic */
 .test-landing {
   min-height: 100vh;
-  background: #FFEED4;
+  background: #ffffff;
   padding: 40px 20px;
 }
 
@@ -2374,9 +2361,7 @@ body {
 
 .test-landing-feature {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+  align-items: flex-start;
   gap: 16px;
   padding: 24px;
   background: #f8fafc;
@@ -2388,19 +2373,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
+  width: 48px;
+  height: 48px;
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 8px;
   color: #4f46e5;
   flex-shrink: 0;
-}
-
-.feature-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 8px;
 }
 
 .test-landing-feature-content h3 {
@@ -2518,94 +2496,34 @@ body {
     padding: 20px 16px;
   }
   
-  .test-landing-header {
-    margin-bottom: 40px;
-  }
-  
   .test-landing-header h1 {
-    font-size: 24px;
-    line-height: 1.2;
+    font-size: 28px;
   }
   
   .test-landing-subtitle {
     font-size: 16px;
-    line-height: 1.5;
   }
   
   .test-landing-features {
     grid-template-columns: 1fr;
-    gap: 16px;
-    margin-bottom: 40px;
+    gap: 20px;
   }
   
   .test-landing-feature {
-    padding: 16px;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 12px;
-  }
-  
-  .test-landing-feature-icon {
-    width: 60px;
-    height: 60px;
-    flex-shrink: 0;
-  }
-  
-  .test-landing-feature-content h3 {
-    font-size: 16px;
-    margin-bottom: 6px;
-  }
-  
-  .test-landing-feature-content p {
-    font-size: 13px;
-    line-height: 1.4;
-  }
-  
-  .test-landing-benefits {
-    margin-bottom: 40px;
-  }
-  
-  .test-landing-benefits h2 {
-    font-size: 20px;
-    margin-bottom: 24px;
+    padding: 20px;
   }
   
   .test-landing-benefits-list {
     grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  
-  .test-landing-benefit {
-    padding: 12px;
-    font-size: 13px;
   }
   
   .test-landing-info {
     grid-template-columns: 1fr;
-    gap: 16px;
-    margin-bottom: 40px;
-  }
-  
-  .test-landing-info-card {
-    padding: 16px;
-  }
-  
-  .test-landing-info-card h3 {
-    font-size: 16px;
-    margin-bottom: 8px;
-  }
-  
-  .test-landing-info-card p {
-    font-size: 13px;
-    line-height: 1.5;
   }
   
   .test-landing-start-button {
     padding: 14px 32px;
     font-size: 16px;
-    width: 100%;
-    max-width: 280px;
   }
 }
 
