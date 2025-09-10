@@ -2181,6 +2181,7 @@ span.test-date {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
+  padding-bottom: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
