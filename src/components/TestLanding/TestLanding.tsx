@@ -1,6 +1,9 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Brain, Shield, FileText, Clock, CheckCircle } from 'lucide-react'
+import image1 from '../../img/1.png'
+import image2 from '../../img/2.png'
+import image3 from '../../img/3.png'
 
 const TestLanding: React.FC = () => {
   const navigate = useNavigate()
@@ -12,16 +15,19 @@ const TestLanding: React.FC = () => {
   const features = [
     {
       icon: <Brain size={24} />,
+      image: image1,
       title: 'Профессиональная диагностика',
       description: 'Тест основан на официальных критериях DSM-5 для диагностики пограничного расстройства личности'
     },
     {
       icon: <Shield size={24} />,
+      image: image2,
       title: 'Конфиденциальность',
       description: 'Все ваши ответы строго конфиденциальны и не передаются третьим лицам'
     },
     {
       icon: <FileText size={24} />,
+      image: image3,
       title: 'Детальный отчет',
       description: 'Получите подробный анализ результатов с рекомендациями специалистов'
     },
@@ -55,7 +61,11 @@ const TestLanding: React.FC = () => {
           {features.map((feature, index) => (
             <div key={index} className="test-landing-feature">
               <div className="test-landing-feature-icon">
-                {feature.icon}
+                {feature.image ? (
+                  <img src={feature.image} alt={feature.title} className="feature-image" />
+                ) : (
+                  feature.icon
+                )}
               </div>
               <div className="test-landing-feature-content">
                 <h3>{feature.title}</h3>

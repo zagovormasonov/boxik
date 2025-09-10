@@ -21,6 +21,15 @@ const BPDTestScreen: React.FC = () => {
 
   const currentQuestion = questions[state.currentQuestion]
   const selectedAnswer = state.answers[state.currentQuestion]
+  
+  console.log('BPDTestScreen: Рендерим основной экран теста')
+  console.log('BPDTestScreen: Текущий вопрос:', state.currentQuestion, 'из', questions.length)
+  console.log('BPDTestScreen: Выбранный ответ:', selectedAnswer)
+  console.log('BPDTestScreen: Состояние теста:', {
+    isCompleted: state.isCompleted,
+    totalScore: state.totalScore,
+    answersCount: state.answers.length
+  })
 
   useEffect(() => {
     console.log('BPDTestScreen: Компонент загружен')
@@ -180,7 +189,11 @@ const BPDTestScreen: React.FC = () => {
       }
     } else {
       console.log('BPDTestScreen: Переходим к следующему вопросу:', state.currentQuestion + 1)
+      console.log('BPDTestScreen: Текущий вопрос перед переходом:', state.currentQuestion)
+      console.log('BPDTestScreen: Всего вопросов:', questions.length)
+      console.log('BPDTestScreen: Условие завершения:', state.currentQuestion === questions.length - 1)
       dispatch({ type: 'NEXT_QUESTION' })
+      console.log('BPDTestScreen: Переход к следующему вопросу выполнен')
     }
   }
 
