@@ -21,6 +21,12 @@ const BPDTestScreen: React.FC = () => {
   useEffect(() => {
     console.log('BPDTestScreen: Компонент загружен')
     console.log('BPDTestScreen: Состояние авторизации:', authState.user ? 'авторизован' : 'не авторизован')
+    console.log('BPDTestScreen: Текущий вопрос:', state.currentQuestion, 'из', questions.length)
+    console.log('BPDTestScreen: Состояние теста:', {
+      isCompleted: state.isCompleted,
+      totalScore: state.totalScore,
+      categoryScores: state.categoryScores
+    })
     
     // Создаем session_id для неавторизованных пользователей
     if (!authState.user) {
@@ -36,11 +42,13 @@ const BPDTestScreen: React.FC = () => {
   }, [authState.user])
 
   const handleAnswerSelect = (answer: number) => {
+    console.log('BPDTestScreen: Выбран ответ:', answer, 'для вопроса:', state.currentQuestion)
     dispatch({ 
       type: 'ANSWER_QUESTION', 
       questionId: state.currentQuestion, 
       answer 
     })
+    console.log('BPDTestScreen: После выбора ответа, текущий вопрос:', state.currentQuestion, 'из', questions.length)
   }
 
   const handleNext = async () => {
@@ -147,6 +155,7 @@ const BPDTestScreen: React.FC = () => {
         navigate('/subscription')
       }
     } else {
+      console.log('BPDTestScreen: Переходим к следующему вопросу:', state.currentQuestion + 1)
       dispatch({ type: 'NEXT_QUESTION' })
     }
   }
