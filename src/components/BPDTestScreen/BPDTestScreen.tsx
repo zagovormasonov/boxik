@@ -60,6 +60,9 @@ const BPDTestScreen: React.FC = () => {
     
     if (state.currentQuestion === questions.length - 1) {
       console.log('BPDTestScreen: Завершаем тест')
+      console.log('BPDTestScreen: Текущий вопрос:', state.currentQuestion, 'из', questions.length - 1)
+      console.log('BPDTestScreen: Состояние авторизации:', authState.user ? 'авторизован' : 'не авторизован')
+      console.log('BPDTestScreen: ID пользователя:', authState.user?.id || 'нет')
       dispatch({ type: 'COMPLETE_TEST' })
       
       // Если пользователь авторизован, сохраняем результаты и переходим в профиль
